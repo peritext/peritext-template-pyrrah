@@ -5,61 +5,86 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { StructuredCOinS } from 'peritext-utils';
 import MarkdownPlayer from './MarkdownPlayer';
 
 const BlockAssetWrapper = ( {
   data
-}, context ) => {
+}, {
+  production = {},
+  productionAssets: assets = {},
+  openAsideContextualization,
+  contextualizers,
+  containerId,
+  bindContextualizationElement,
+  renderingMode = 'screened'
+} ) => {
   const assetId = data.asset.id;
-  const contextualization = context.production && context.production.contextualizations && context.production.contextualizations[assetId];
+  const contextualization = production && production.contextualizations && production.contextualizations[assetId];
   if ( !contextualization ) {
     return null;
   }
   const {
     visibility = {
-        screened: true,
-        paged: true
-      }
+      paged: true,
+      screened: true
+    },
   } = contextualization;
-  const production = context.production || {};
-  const containerId = context.containerId;
-  const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.resourceId];
-  const dimensions = context.dimensions || {};
-  const fixedPresentationId = context.fixedPresentationId;
-  // const onPresentationExit = context.onPresentationExit;
-  const inNote = context.inNote;
-  const contextualizers = context.contextualizers;
+
   const contextualizerModule = contextualizers[contextualizer.type];
 
   const Component = contextualizerModule && contextualizerModule.Block;
 
+  const handleMoreInformation = () => {
+    if ( typeof openAsideContextualization === 'function' ) {
+      openAsideContextualization( contextualization.id );
+    }
+  };
+
+  const bindRef = ( element ) => {
+    if ( typeof bindContextualizationElement === 'function' ) {
+      bindContextualizationElement( contextualization.id, element );
+    }
+  };
+
   if ( contextualization && Component ) {
-    const hide = !visibility.paged;
-    return hide ? null : (
+
+    const isHidden = !visibility[renderingMode];
+    return isHidden ? null : (
       <figure
         className={ `block-contextualization-container ${ contextualizer.type}` }
         style={ {
           position: 'relative',
-          minHeight: contextualizer.type === 'data-presentation' ? dimensions.height : '20px'
         } }
         id={ `contextualization-${containerId}-${assetId}` }
+        ref={ bindRef }
       >
         <Component
           resource={ resource }
           contextualizer={ contextualizer }
           contextualization={ contextualization }
-          renderingMode={ 'paged' }
+          renderingMode={ renderingMode }
           assets={ assets }
-
-          fixed={ fixedPresentationId === assetId }
-          allowInteractions={ inNote || fixedPresentationId === assetId }
         />
         <figcaption className={ 'figure-caption' }>
           {
             <h4 className={ 'figure-title' }>
-              <span>{contextualization.title || resource.metadata.title}</span>
+
+              {
+                renderingMode === 'screened' ?
+                  <div>
+                    <button
+                      className={ 'link mention-context-pointer' }
+                      onClick={ handleMoreInformation }
+                    >
+                      <span>{contextualization.title || resource.metadata.title}</span>
+                      <sup>◈</sup>
+                    </button>
+                  </div> :
+                  <span>{contextualization.title || resource.metadata.title}</span>
+              }
             </h4>
           }
           {contextualization.legend &&
@@ -69,6 +94,7 @@ const BlockAssetWrapper = ( {
           }
 
         </figcaption>
+        <StructuredCOinS resource={ resource } />
       </figure>
     );
   }
@@ -108,11 +134,6 @@ BlockAssetWrapper.contextTypes = {
   dimensions: PropTypes.object,
 
   /**
-   * Id of the presentation being displayed full screen if any
-   */
-  fixedPresentationId: PropTypes.string,
-
-  /**
    * Whether the block asset is displayed in a note (and not in main content)
    */
   inNote: PropTypes.bool,
@@ -122,6 +143,13 @@ BlockAssetWrapper.contextTypes = {
   productionAssets: PropTypes.object,
 
   containerId: PropTypes.string,
+
+  openAsideContextualization: PropTypes.func,
+
+  bindContextualizationElement: PropTypes.func,
+
+  renderingMode: PropTypes.string,
 };
 
 export default BlockAssetWrapper;
+

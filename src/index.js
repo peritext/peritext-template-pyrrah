@@ -3,6 +3,7 @@ import Wrapper from './components/Wrapper';
 import References from './components/References';
 import Glossary from './components/Glossary';
 import EndNotes from './components/EndNotes';
+import Renderer from './components/Renderer';
 
 import style from './defaultStyle';
 
@@ -13,6 +14,7 @@ const components = {
   EndNotes,
   References,
   Glossary,
+  Renderer,
 };
 
 export default {

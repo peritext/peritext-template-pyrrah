@@ -1,29 +1,28 @@
-/**
- * This module exports a statefull reusable draft-js raw-to-react renderer component
- * It wrapps around the redraft engine that converts draft-s raw to a react representation,
- * providing it specific settings and callbacks.
- */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import redraft from 'redraft';
 import { constants } from 'peritext-schemas';
 
 import Link from './Link';
+
 import BlockAssetWrapper from './BlockAssetWrapper';
 import InlineAssetWrapper from './InlineAssetWrapper';
 import NotePointer from './NotePointer';
-import Footnote from './Footnote';
-import InternalLink from './InternalLink';
+import SectionLink from './SectionLink';
+
 const {
   LINK,
   BLOCK_ASSET,
   INLINE_ASSET,
   SECTION_POINTER,
-  NOTE_POINTER,
+
+  /*
+   * NOTE_POINTER,
+   */
 } = constants.draftEntitiesNames;
 
 // just a helper to add a <br /> after each block
-const addBreaklines = ( children ) => children.map( ( child, index ) => [ child, <br key={ index } /> ] );
+const addBreaklines = ( children ) => children.map( ( child, index ) => [ child, <br key={ index + 1 } /> ] );
 
 /**
  * Define the renderers
@@ -46,68 +45,67 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': ( children ) => children.map( ( child, index ) =>
-      (
-        <div
-          className={ 'unstyled' }
-          key={ index }
-        >
-          {child}
-        </div>
-      ) ),
-    'blockquote': ( children, index ) => <blockquote key={ index } >{addBreaklines( children )}</blockquote>,
+    'unstyled': ( children, { keys } ) => children.map( ( child, index ) => (
+      <div
+        className={ 'unstyled' }
+        id={ keys[index] }
+        key={ index }
+      >
+        {child}
+      </div>
+    ) ),
+    'blockquote': ( children, { keys } ) => <blockquote id={ keys[0] } >{addBreaklines( children )}</blockquote>,
     'header-one': ( children, { keys } ) => children.map( ( child, index ) => (
       <h1
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h1>
     ) ),
     'header-two': ( children, { keys } ) => children.map( ( child, index ) => (
       <h2
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h2>
     ) ),
     'header-three': ( children, { keys } ) => children.map( ( child, index ) => (
       <h3
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h3>
     ) ),
     'header-four': ( children, { keys } ) => children.map( ( child, index ) => (
       <h4
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h4>
     ) ),
     'header-five': ( children, { keys } ) => children.map( ( child, index ) => (
       <h5
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h5>
     ) ),
     'header-six': ( children, { keys } ) => children.map( ( child, index ) => (
       <h6
-        key={ index }
         id={ keys[index] }
+        key={ index }
       >
         {child}
       </h6>
     ) ),
 
     // You can also access the original keys of the blocks
-    'code-block': ( children, { keys } ) =>
-      <pre key={ keys[0] } >{addBreaklines( children )}</pre>,
+    'code-block': ( children, { keys } ) => <pre key={ keys[0] } >{addBreaklines( children )}</pre>,
     // or depth for nested lists
     'unordered-list-item': ( children, { depth, keys } ) => (
       <ul
@@ -115,11 +113,11 @@ const renderers = {
         className={ `ul-level-${depth}` }
       >
         {
-          children.map(
-            ( child, index ) =>
-              <li key={ index }>{child}</li>
-          )
-        }
+        children.map(
+          ( child, index ) =>
+            <li key={ index }>{child}</li>
+        )
+      }
       </ul>
     ),
     'ordered-list-item': ( children, { depth, keys } ) => (
@@ -161,7 +159,9 @@ const renderers = {
         <BlockAssetWrapper
           key={ key }
           data={ data }
-        />
+        >
+          {children}
+        </BlockAssetWrapper>
       );
     },
     [INLINE_ASSET]: ( children, data, { key } ) => {
@@ -174,25 +174,25 @@ const renderers = {
         </InlineAssetWrapper>
       );
     },
-    [SECTION_POINTER]: ( children, data, { key } ) => {
-      return (
-        <InternalLink
-          key={ key }
-          sectionId={ data.sectionId }
-        >
-          {children}
-        </InternalLink>
-      );
-    },
-    [NOTE_POINTER]: ( children, data, { key } ) => {
+    NOTE_POINTER: ( children, data, { key } ) => {
       return (
         <NotePointer
           key={ key }
           children={ children }
           noteId={ data.noteId }
         />
+        );
+    },
+    [SECTION_POINTER]: ( children, data, { key } ) => {
+      return (
+        <SectionLink
+          key={ key }
+          sectionId={ data.sectionId }
+        >
+          {children}
+        </SectionLink>
       );
-    }
+    },
   },
 };
 
@@ -209,10 +209,6 @@ class Renderer extends Component {
     super( props );
   }
 
-  getChildContext = () => ( {
-    containerId: this.props.containerId,
-  } )
-
   /**
    * Determines whether to update the component or not
    * @param {object} nextProps - the future properties of the component
@@ -220,6 +216,7 @@ class Renderer extends Component {
    */
   shouldComponentUpdate( ) {
     return true;
+    // return this.props.raw !== nextProps.raw;
   }
 
   /**
@@ -237,22 +234,9 @@ class Renderer extends Component {
   render() {
     const {
       raw,
-      notesPosition,
     } = this.props;
     if ( !raw ) {
       return this.renderWarning();
-    }
-    if ( notesPosition === 'footnotes' || notesPosition === 'sidenotes' ) {
-      renderers.entities.NOTE_POINTER = ( children, data, { key } ) => {
-        return (
-          <Footnote
-            key={ key }
-            children={ children }
-            noteId={ data.noteId }
-            notesPosition={ notesPosition }
-          />
-        );
-      };
     }
     const rendered = redraft( raw, renderers );
     // redraft can return a null if there's nothing to render
@@ -277,10 +261,6 @@ Renderer.propTypes = {
    * see https://draftjs.org/docs/api-reference-data-conversion.html
    */
   raw: PropTypes.object
-};
-
-Renderer.childContextTypes = {
-  containerId: PropTypes.string,
 };
 
 export default Renderer;

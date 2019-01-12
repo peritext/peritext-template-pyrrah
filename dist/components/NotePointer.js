@@ -14,11 +14,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * This module exports a stateless reusable note pointer component
  * ============
- * @module quinoa-production-player/components/NotePointer
+ * @module peritext-template-deucalion/components/NotePointer
  */
 
 /**
- * Renders a note pointer as a pure component
+ * Renders a not pointer as a pure component
  * @param {object} props
  * @param {array} props.children - children elements of the component
  * @param {array} props.noteId - the id of the note to point to
@@ -30,20 +30,20 @@ const NotePointer = ({
   noteId = ''
 }, context) => {
   const notes = context.notes;
-  const NoteLinkComponent = context.NoteLinkComponent;
+
+  const onNoteContentPointerClick = () => {
+    return typeof context.onNoteContentPointerClick === 'function' && context.onNoteContentPointerClick(noteId);
+  };
 
   if (notes) {
     const note = notes[noteId];
 
     if (note) {
       return _react.default.createElement("sup", {
-        className: 'note-pointer',
-        id: `note-pointer-${noteId}`
-      }, NoteLinkComponent ? _react.default.createElement(NoteLinkComponent, {
-        href: `#note-content-${noteId}`
-      }, note.order, children) : _react.default.createElement("a", {
-        href: `#note-content-${noteId}`
-      }, note.order, children));
+        onClick: onNoteContentPointerClick,
+        className: 'note-content-pointer link',
+        id: `note-content-pointer-${noteId}`
+      }, note.order, children);
     }
 
     return null;
@@ -80,8 +80,7 @@ NotePointer.contextTypes = {
   /**
    * Triggers a callback upstream when the pointer is clicked
    */
-  onNoteContentPointerClick: _propTypes.default.func,
-  NoteLinkComponent: _propTypes.default.func
+  onNoteContentPointerClick: _propTypes.default.func
 };
 var _default = NotePointer;
 exports.default = _default;

@@ -21,26 +21,25 @@ var _InlineAssetWrapper = _interopRequireDefault(require("./InlineAssetWrapper")
 
 var _NotePointer = _interopRequireDefault(require("./NotePointer"));
 
-var _Footnote = _interopRequireDefault(require("./Footnote"));
-
-var _InternalLink = _interopRequireDefault(require("./InternalLink"));
+var _SectionLink = _interopRequireDefault(require("./SectionLink"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 const {
   LINK,
   BLOCK_ASSET,
   INLINE_ASSET,
-  SECTION_POINTER,
-  NOTE_POINTER
+  SECTION_POINTER
+  /*
+   * NOTE_POINTER,
+   */
+
 } = _peritextSchemas.constants.draftEntitiesNames; // just a helper to add a <br /> after each block
 
 const addBreaklines = children => children.map((child, index) => [child, _react.default.createElement("br", {
-  key: index
+  key: index + 1
 })]);
 /**
  * Define the renderers
@@ -80,48 +79,53 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': children => children.map((child, index) => _react.default.createElement("div", {
+    'unstyled': (children, {
+      keys
+    }) => children.map((child, index) => _react.default.createElement("div", {
       className: 'unstyled',
+      id: keys[index],
       key: index
     }, child)),
-    'blockquote': (children, index) => _react.default.createElement("blockquote", {
-      key: index
+    'blockquote': (children, {
+      keys
+    }) => _react.default.createElement("blockquote", {
+      id: keys[0]
     }, addBreaklines(children)),
     'header-one': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h1", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     'header-two': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h2", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     'header-three': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h3", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     'header-four': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h4", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     'header-five': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h5", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     'header-six': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h6", {
-      key: index,
-      id: keys[index]
+      id: keys[index],
+      key: index
     }, child)),
     // You can also access the original keys of the blocks
     'code-block': (children, {
@@ -172,7 +176,7 @@ const renderers = {
       return _react.default.createElement(_BlockAssetWrapper.default, {
         key: key,
         data: data
-      });
+      }, children);
     },
     [INLINE_ASSET]: (children, data, {
       key
@@ -182,15 +186,7 @@ const renderers = {
         key: key
       }, children);
     },
-    [SECTION_POINTER]: (children, data, {
-      key
-    }) => {
-      return _react.default.createElement(_InternalLink.default, {
-        key: key,
-        sectionId: data.sectionId
-      }, children);
-    },
-    [NOTE_POINTER]: (children, data, {
+    NOTE_POINTER: (children, data, {
       key
     }) => {
       return _react.default.createElement(_NotePointer.default, {
@@ -198,6 +194,14 @@ const renderers = {
         children: children,
         noteId: data.noteId
       });
+    },
+    [SECTION_POINTER]: (children, data, {
+      key
+    }) => {
+      return _react.default.createElement(_SectionLink.default, {
+        key: key,
+        sectionId: data.sectionId
+      }, children);
     }
   }
 };
@@ -212,19 +216,16 @@ class Renderer extends _react.Component {
    */
   constructor(props) {
     super(props);
-
-    _defineProperty(this, "getChildContext", () => ({
-      containerId: this.props.containerId
-    }));
   }
-
   /**
    * Determines whether to update the component or not
    * @param {object} nextProps - the future properties of the component
    * @return {boolean} shouldUpdate - yes or no
    */
+
+
   shouldComponentUpdate() {
-    return true;
+    return true; // return this.props.raw !== nextProps.raw;
   }
   /**
    * Displays something when no suitable content state is provided to the renderer
@@ -243,25 +244,11 @@ class Renderer extends _react.Component {
 
   render() {
     const {
-      raw,
-      notesPosition
+      raw
     } = this.props;
 
     if (!raw) {
       return this.renderWarning();
-    }
-
-    if (notesPosition === 'footnotes' || notesPosition === 'sidenotes') {
-      renderers.entities.NOTE_POINTER = (children, data, {
-        key
-      }) => {
-        return _react.default.createElement(_Footnote.default, {
-          key: key,
-          children: children,
-          noteId: data.noteId,
-          notesPosition: notesPosition
-        });
-      };
     }
 
     const rendered = (0, _redraft.default)(raw, renderers); // redraft can return a null if there's nothing to render
@@ -287,9 +274,6 @@ Renderer.propTypes = {
    * see https://draftjs.org/docs/api-reference-data-conversion.html
    */
   raw: _propTypes.default.object
-};
-Renderer.childContextTypes = {
-  containerId: _propTypes.default.string
 };
 var _default = Renderer;
 exports.default = _default;

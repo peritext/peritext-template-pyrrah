@@ -5,25 +5,31 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _uniq = _interopRequireDefault(require("lodash/uniq"));
+var _RelatedContexts = _interopRequireDefault(require("./RelatedContexts"));
 
-var _reactCiteproc = require("react-citeproc");
+var _Aside = _interopRequireDefault(require("./Aside"));
 
 var _peritextUtils = require("peritext-utils");
 
+var _reactCiteproc = require("react-citeproc");
+
+var _uniq = _interopRequireDefault(require("lodash/uniq"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * Builds an interactive bibliography for a given edition
- * @returns {ReactMarkup}
+ * Computes interactive bibliography materials
+ * @return {array} items - list of context-loaded items
  */
 function buildBibliography({
   production,
@@ -36,10 +42,6 @@ function buildBibliography({
   sortingAscending
 }) {
   const {
-    /*
-     * contextualizations,
-     * contextualizers,
-     */
     resources
   } = production;
   /**
@@ -93,6 +95,7 @@ function buildBibliography({
       citationKey,
       title,
       item: citations.citationItems[citationKey] || cit[0],
+      resourceId,
       mentions: mentions.map(mention => _objectSpread({}, mention, {
         contextContent: (0, _peritextUtils.buildContextContent)(production, mention.id)
       }))
@@ -159,113 +162,117 @@ function buildBibliography({
   return items;
 }
 
-const References = ({
-  production,
-  edition,
-  translate,
-  data = {
-    showMentions: true,
-    showUncitedReferences: false,
-    resourceTypes: ['bib'],
-    sortingKey: 'authors',
-    sortingAscending: true
-  },
-  citations,
-  citationStyle,
-  citationLocale,
-  id,
-  // LinkComponent: propLinkComponent,
-  MentionComponent: propMentionComponent
-}, {
-  // LinkComponent: contextLinkComponent,
-  MentionComponent: contextMentionComponent
-}) => {
-  const {
-    showMentions,
-    showUncitedReferences,
-    resourceTypes,
-    sortingKey,
-    sortingAscending,
-    customTitle
-  } = data; // const LinkComponent = propLinkComponent || contextLinkComponent;
+class References extends _react.Component {
+  constructor(props) {
+    super(props);
 
-  const MentionComponent = propMentionComponent || contextMentionComponent;
-  /**
-   * @todo compute citations based on edition
-   */
-
-  const contextualizations = (0, _peritextUtils.getContextualizationsFromEdition)(production, edition);
-  const references = buildBibliography({
-    production,
-    edition,
-    citations,
-    contextualizations,
-    showUncitedReferences,
-    resourceTypes,
-    sortingKey,
-    sortingAscending
-  });
-  return _react.default.createElement("section", {
-    className: 'composition-block references',
-    title: customTitle || translate('References')
-  }, _react.default.createElement(_reactCiteproc.ReferencesManager, {
-    style: citationStyle,
-    locale: citationLocale,
-    items: citations.citationItems,
-    citations: citations.citationData,
-    componentClass: 'references-manager'
-  }, _react.default.createElement("h2", {
-    id: `reference-block-${id}`,
-    className: 'composition-block-title peritext-block-title'
-  }, customTitle || translate('References')), _react.default.createElement("ul", {
-    className: 'mentions-container'
-  }, references.map((entry, index) => {
-    const entryName = entry.title;
-    return _react.default.createElement("li", {
-      key: index,
-      id: entry.citationKey,
-      className: 'mention-item'
-    }, _react.default.createElement("div", {
-      className: 'title'
-    }, _react.default.createElement("div", {
-      dangerouslySetInnerHTML: {
-        __html: entryName
-        /* eslint react/no-danger: 0 */
-
+    _defineProperty(this, "openResource", id => {
+      if (!this.context.asideVisible) {
+        this.context.toggleAsideVisible();
       }
-    })), showMentions && entry.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
-      className: 'mentions-list'
-    }, entry.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
-      const {
-        contextContent: {
-          /*
-           * targetContents,
-           * contents,
-           * sectionTitle,
-           */
-          sectionId
-        },
-        id: thatId,
-        containerId
-      } = mention;
-      return _react.default.createElement(MentionComponent, {
-        key: count,
-        href: `#contextualization-${containerId}-${thatId}`,
-        sectionId: sectionId
+
+      this.setState({
+        openResourceId: id
       });
-    }).reduce((prev, curr, thatIndex) => {
-      if (thatIndex === 0) {
-        return [curr];
-      }
+    });
 
-      return [prev, ', ', curr];
-    }, [])));
-  }))));
-};
+    _defineProperty(this, "toggleOpenedResource", id => {
+      this.context.toggleAsideVisible();
+      this.setState({
+        openResourceId: this.state.openResourceId ? undefined : id
+      });
+    });
 
-References.contextTypes = {
-  LinkComponent: _propTypes.default.func,
-  MentionComponent: _propTypes.default.func
-};
-var _default = References;
-exports.default = _default;
+    _defineProperty(this, "render", () => {
+      const {
+        props: {
+          production,
+          edition,
+          options = {},
+          title
+        },
+        state: {
+          openResourceId
+        },
+        context: {
+          translate
+        },
+        toggleOpenedResource,
+        openResource
+      } = this;
+      const {
+        showUncitedReferences = false,
+        resourceTypes = ['bib'],
+        sortingKey = 'authors',
+        sortingAscending = true
+      } = options;
+      /**
+       * @todo compute citations based on edition
+       */
+
+      const citations = (0, _peritextUtils.buildCitations)(production);
+      const contextualizations = (0, _peritextUtils.getContextualizationsFromEdition)(production, edition);
+      const references = buildBibliography({
+        production,
+        edition,
+        citations,
+        contextualizations,
+        showUncitedReferences,
+        resourceTypes,
+        sortingKey,
+        sortingAscending
+      });
+      return _react.default.createElement("div", {
+        className: 'main-contents-container references-player'
+      }, _react.default.createElement("div", {
+        className: 'main-column'
+      }, _react.default.createElement("h1", {
+        className: 'view-title'
+      }, title), _react.default.createElement("ul", {
+        className: 'big-list-items-container'
+      }, references.map((item, index) => {
+        const handleClick = () => {
+          openResource(item.resourceId);
+        };
+
+        return _react.default.createElement("li", {
+          className: 'big-list-item',
+          key: index
+        }, _react.default.createElement("div", {
+          className: 'big-list-item-content'
+        }, _react.default.createElement("div", {
+          dangerouslySetInnerHTML: {
+            /* eslint react/no-danger: 0 */
+            __html: item.title
+          }
+        })), _react.default.createElement("div", {
+          className: 'big-list-item-actions'
+        }, _react.default.createElement("button", {
+          className: 'link',
+          onClick: handleClick
+        }, item.mentions.length, " ", item.mentions.length === 1 ? translate('mention') : translate('mentions'))));
+      }))), _react.default.createElement(_Aside.default, {
+        isActive: openResourceId !== undefined,
+        title: translate('Mentions of this item'),
+        onClose: toggleOpenedResource
+      }, openResourceId && _react.default.createElement(_RelatedContexts.default, {
+        production: production,
+        edition: edition,
+        resourceId: openResourceId
+      })));
+    });
+
+    this.state = {
+      openResourceId: undefined
+    };
+  }
+
+}
+
+exports.default = References;
+
+_defineProperty(References, "contextTypes", {
+  translate: _propTypes.default.func,
+  asideVisible: _propTypes.default.bool,
+  toggleAsideVisible: _propTypes.default.func
+});

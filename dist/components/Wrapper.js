@@ -3,347 +3,235 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.renderHeadFromRouteItem = exports.routeItemToUrl = exports.buildNav = exports.getAdditionalRoutes = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _peritextUtils = require("peritext-utils");
-
-var _FrontCover = _interopRequireDefault(require("./FrontCover"));
-
-var _TitlePage = _interopRequireDefault(require("./TitlePage"));
-
-var _BackCover = _interopRequireDefault(require("./BackCover"));
-
-var _Colophon = _interopRequireDefault(require("./Colophon"));
-
-var _References = _interopRequireDefault(require("./References"));
-
-var _Glossary = _interopRequireDefault(require("./Glossary"));
-
-var _EndNotes = _interopRequireDefault(require("./EndNotes"));
-
-var _DefaultLinkComponent = _interopRequireDefault(require("./DefaultLinkComponent"));
-
-var _DefaultMentionComponent = _interopRequireDefault(require("./DefaultMentionComponent"));
-
-var _DefaultSectionLinkComponent = _interopRequireDefault(require("./DefaultSectionLinkComponent"));
-
-var _MarkdownPlayer = _interopRequireDefault(require("./MarkdownPlayer"));
-
-var _TableOfContents = _interopRequireDefault(require("./TableOfContents"));
+var _reactRouterDom = require("react-router-dom");
 
 var _Section = _interopRequireDefault(require("./Section"));
 
-var _defaultStyle = _interopRequireDefault(require("../defaultStyle"));
+var _SectionHead = _interopRequireDefault(require("./SectionHead"));
+
+var _ProductionHead = _interopRequireDefault(require("./ProductionHead"));
+
+var _Layout = _interopRequireDefault(require("./Layout"));
+
+var _CustomPage = _interopRequireDefault(require("./CustomPage"));
+
+var _Landing = _interopRequireDefault(require("./Landing"));
+
+var _ResourceSheet = _interopRequireDefault(require("./ResourceSheet"));
+
+var _Glossary = _interopRequireDefault(require("./Glossary"));
+
+var _Places = _interopRequireDefault(require("./Places"));
+
+var _Events = _interopRequireDefault(require("./Events"));
+
+var _References = _interopRequireDefault(require("./References"));
+
+var _ResourcesMap = _interopRequireDefault(require("./ResourcesMap"));
+
+var _PreviewLink = _interopRequireDefault(require("./PreviewLink"));
+
+var _RouterLink = _interopRequireDefault(require("./RouterLink"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+const isBrowser = new Function('try {return this===window;}catch(e){ return false;}');
+/* eslint no-new-func : 0 */
 
-const EmptyPage = () => _react.default.createElement("div", {
-  className: 'composition-block empty-page'
-});
+const inBrowser = isBrowser();
 
-const updateStyles = props => {
-  const {
-    edition: {
-      data = {}
-    },
-    contextualizers = {}
-  } = props;
-  const {
-    style: {
-      css = '',
-      mode = 'merge'
-    } = {
-      css: ''
-    }
-  } = data;
-  const contextualizersStyles = Object.keys(contextualizers).map(type => contextualizers[type] && contextualizers[type].defaultCss || '').join('\n');
-
-  if (mode === 'merge') {
-    return [_defaultStyle.default, // templateStylesheet,
-    contextualizersStyles, css].join('\n');
-  } else {
-    // styleMode === 'replace'
-    return [// templateStylesheet,
-    contextualizersStyles, css].join('\n');
-  }
+const getAdditionalRoutes = () => {
+  return [{
+    routeClass: 'resourceSheet',
+    routeParams: {}
+  }];
 };
-/**
- * @todo externalize
- */
 
+exports.getAdditionalRoutes = getAdditionalRoutes;
 
-const buildToc = (production, edition, translate) => {
-  const summary = edition.data.plan.summary; // returns [{level, title, href}]
-
-  return summary.reduce((res, element) => {
-    const {
-      data = {}
-    } = element;
-
+const buildNav = ({
+  production,
+  edition = {},
+  locale = {}
+}) => {
+  const {
+    data = {}
+  } = edition;
+  const {
+    plan = {}
+  } = data;
+  const {
+    summary = []
+  } = plan;
+  return summary.reduce((result, element, index) => {
     switch (element.type) {
+      case 'landing':
+        return [...result, {
+          routeClass: 'landing',
+          level: 0,
+          title: production.metadata.title,
+          routeParams: {},
+          options: element.data,
+          viewId: element.id
+        }];
+
       case 'customPage':
-        const {
-          title,
-          displayInTableOfContents
-        } = data;
-
-        if (displayInTableOfContents) {
-          return [...res, {
-            title,
-            level: 0,
-            href: `custom-block-${element.id}`
-          }];
-        }
-
-        return res;
+        return [...result, {
+          routeClass: 'customPage',
+          level: 0,
+          title: element.data.title,
+          routeParams: {
+            routeSlug: element.data.routeSlug || index
+          },
+          options: element.data,
+          viewId: element.id
+        }];
 
       case 'sections':
         const {
-          id
+          data: sectionData = {}
         } = element;
         const {
-          customSummary = {
-            active: false
-          }
-        } = data;
+          customSummary = {}
+        } = sectionData;
+        let sections;
 
         if (customSummary.active) {
           const {
-            summary: thatCustomSummary
+            summary: sectionsSummary
           } = customSummary;
-          return [...res, ...thatCustomSummary.map(el => {
-            const thatSection = production.sections[el.id];
-            return {
-              title: thatSection && thatSection.metadata.title,
-              level: el.level,
-              href: `section-${id}-${el.id}`
-            };
-          }).filter(s => s)];
+          sections = sectionsSummary.map(({
+            id: sectionId,
+            sectionLevel: level
+          }, thatIndex) => ({
+            routeClass: 'sections',
+            level,
+            title: production.sections[sectionId].metadata.title,
+            routeParams: {
+              sectionId
+            },
+            options: element.data,
+            viewId: `${element.id}-${thatIndex}`
+          }));
+        } else {
+          sections = production.sectionsOrder.map((sectionId, thatIndex) => ({
+            routeClass: 'sections',
+            level: production.sections[sectionId].metadata.level,
+            title: production.sections[sectionId].metadata.title,
+            options: element.data,
+            viewId: `${element.id}-${thatIndex}`,
+            routeParams: {
+              sectionId
+            }
+          }));
         }
 
-        return [...res, ...production.sectionsOrder.map(sectionId => {
-          const thatSection = production.sections[sectionId];
-          return {
-            title: thatSection && thatSection.metadata.title,
-            level: thatSection && thatSection.metadata.level || 0,
-            href: `section-${id}-${sectionId}`
-          };
-        })];
-
-      case 'glossary':
-        return [...res, {
-          title: data.customTitle || translate('Glossary list'),
-          level: 0,
-          href: `glossary-block-${element.id}`
-        }];
-
-      case 'references':
-        return [...res, {
-          level: 0,
-          title: data.customTitle || translate('References'),
-          href: `reference-block-${element.id}`
-        }];
+        return [...result, ...sections];
 
       default:
-        return res;
+        const {
+          data: elementData = {}
+        } = element;
+        return [...result, {
+          routeClass: element.type,
+          level: 0,
+          title: elementData.customTitle || locale[element.type] || element.type,
+          options: element.data,
+          viewId: element.id,
+          routeParams: {}
+        }];
     }
   }, []);
 };
 
-const buildSectionBlockSummary = (sectionBlock, production) => {
-  if (sectionBlock.customSummary && sectionBlock.customSummary.active) {
-    return sectionBlock.customSummary.summary.map(el => el.id);
+exports.buildNav = buildNav;
+
+const routeItemToUrl = (item, index) => {
+  /*
+   * if nav index specified
+   * and nav index is 0 then this is the landing page
+   */
+  if (index !== undefined && index === 0) {
+    return '/';
   }
 
-  return production.sectionsOrder;
+  switch (item.routeClass) {
+    case 'landing':
+      return '/';
+
+    case 'sections':
+      return `/sections/${item.viewId}${item.routeParams.contextualizationId ? `?contextualizationId=${item.routeParams.contextualizationId}` : ''}`;
+
+    case 'customPage':
+      return `/c/${item.viewId}/${item.routeParams.routeSlug}`;
+
+    case 'resourceSheet':
+      return `/resource?resourceId=${item.routeParams.resourceId}`;
+
+    default:
+      return `/${item.routeClass}/${item.viewId}`;
+  }
 };
 
-const Sections = ({
+exports.routeItemToUrl = routeItemToUrl;
+
+const renderHeadFromRouteItem = ({
+  item,
   production,
-  edition,
-  translate,
-  data = {},
-  citations,
-  citationStyle,
-  citationLocale,
-  publicationTitle,
-  publicationSubtitle,
-  id
+  edition
 }) => {
-  const summary = edition.data.plan.summary;
-  const notesPosition = data.notesPosition || 'footnotes';
-  const sectionsBlocks = summary.filter(s => s.type === 'sections');
-  const sectionsIds = sectionsBlocks.reduce((res, sectionBlock) => {
-    // @todo handle custom sections order
-    return [...res, ...buildSectionBlockSummary(sectionBlock, production)];
-  }, []);
-  return [...sectionsIds.map((sectionId, index) => {
-    const section = production.sections[sectionId];
-    return _react.default.createElement(_Section.default, {
-      section: section,
-      notesPosition: notesPosition,
-      key: `${index}-${sectionId}`,
-      production: production,
-      containerId: id,
-      translate: translate,
-      citations: citations,
-      citationStyle: citationStyle,
-      citationLocale: citationLocale,
-      publicationTitle: publicationTitle,
-      publicationSubtitle: publicationSubtitle
-    });
-  }), // @todo endnotes relative to sections and not to production sectionsOrder
-  notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {
-    key: 'endnotes',
-    sectionsIds: sectionsIds,
-    production: production,
-    translate: translate,
-    citations: citations,
-    citationStyle: citationStyle,
-    citationLocale: citationLocale,
-    publicationTitle: publicationTitle,
-    publicationSubtitle: publicationSubtitle
-  }) : null];
+  switch (item.routeClass) {
+    case 'sections':
+      return _react.default.createElement(_SectionHead.default, {
+        production: production,
+        edition: edition,
+        section: production.sections[item.routeParams.sectionId]
+      });
+
+    case 'landing':
+    case 'customPage':
+    case 'resourceSheet':
+    default:
+      return _react.default.createElement(_ProductionHead.default, {
+        production: production,
+        edition: edition,
+        pageName: `${production.metadata.title} - ${item.title}`
+      });
+  }
 };
 
-const renderSummary = ({
-  production,
-  edition,
-  translate,
-  citations
-}) => {
-  const summary = edition.data.plan.summary;
-  const citationStyle = edition.data.citationStyle.data;
-  const citationLocale = edition.data.citationLocale.data;
-  const {
-    data: editionData = {}
-  } = edition;
-  const {
-    metadata
-  } = production;
-  const finalTitle = editionData.publicationTitle || metadata.title;
-  const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
-  return summary.map((element, index) => {
-    switch (element.type) {
-      case 'frontCover':
-        return _react.default.createElement(_FrontCover.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate
-        }, element));
+exports.renderHeadFromRouteItem = renderHeadFromRouteItem;
 
-      case 'titlePage':
-        return _react.default.createElement(_TitlePage.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate
-        }, element));
-
-      case 'colophon':
-        return _react.default.createElement(_Colophon.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate
-        }, element));
-
-      case 'backCover':
-        return _react.default.createElement(_BackCover.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate
-        }, element));
-
-      case 'emptyPage':
-        return _react.default.createElement(EmptyPage, {
-          key: index
-        });
-
-      case 'tableOfContents':
-        const toc = buildToc(production, edition, translate);
-        return _react.default.createElement(_TableOfContents.default, {
-          key: index,
-          data: element.data,
-          tableOfContents: toc,
-          translate: translate,
-          id: element.id
-        });
-
-      case 'customPage':
-        return _react.default.createElement("div", {
-          id: element.data.customCssId || element.id,
-          key: index,
-          className: `composition-block custom-page ${element.data.displayPageNumber ? 'has-page-number' : ''}`
-        }, element.data.title && _react.default.createElement("h1", {
-          id: `custom-block-${element.id}`,
-          className: 'composition-block-title peritext-block-title'
-        }, element.data.title), element.data.markdownContents && _react.default.createElement(_MarkdownPlayer.default, {
-          src: element.data.markdownContents
-        }));
-
-      case 'sections':
-        return _react.default.createElement(Sections, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate,
-          citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale,
-          publicationTitle: finalTitle,
-          publicationSubtitle: finalSubtitle
-        }, element));
-
-      case 'glossary':
-        return _react.default.createElement(_Glossary.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate,
-          citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale
-        }, element));
-
-      case 'references':
-        return _react.default.createElement(_References.default, _extends({
-          key: index,
-          production: production,
-          edition: edition,
-          translate: translate,
-          citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale
-        }, element));
-
-      default:
-        return _react.default.createElement("div", {
-          id: element.id,
-          className: 'composition-block',
-          key: index
-        }, element.type);
-    }
-  });
-};
-
-class Template extends _react.Component {
+class Wrapper extends _react.Component {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "shouldComponentUpdate", () => true);
+    _defineProperty(this, "getChildContext", () => ({
+      LinkComponent: this.props.previewMode ? _PreviewLink.default : _RouterLink.default,
+      activeViewId: this.state.viewId,
+      activeViewParams: this.state.viewParams,
+      contextualizers: this.props.contextualizers,
+      edition: this.props.edition,
+      translate: this.translate,
+      navigateTo: this.navigateTo,
+      routeItemToUrl,
+      production: this.props.production,
+      productionAssets: this.props.production.assets,
+      usedDocument: this.props.usedDocument,
+      getViewIdForSectionId: this.getViewIdForSectionId
+    }));
 
     _defineProperty(this, "translate", key => {
       const {
@@ -351,18 +239,252 @@ class Template extends _react.Component {
       } = this.props;
       return locale[key] || key;
     });
+
+    _defineProperty(this, "identifyView", (viewType, params1, params2) => {
+      switch (viewType) {
+        case 'sections':
+          return params1.sectionId === params2.sectionId;
+
+        case 'customPage':
+          return params1.routeSlug === params2.routeSlug;
+
+        default:
+          return true;
+      }
+    });
+
+    _defineProperty(this, "getSummaryIndex", ({
+      viewId,
+      routeClass,
+      routeParams
+    }) => {
+      let index;
+      this.state.navSummary.find((item, thatIndex) => {
+        if (item.viewId === viewId
+        /* ||  item.routeClass === routeClass && this.identifyView( routeClass, routeParams, item.routeParams )
+        */
+        ) {
+            index = thatIndex;
+            return true;
+          }
+      });
+
+      if (!index) {
+        this.state.navSummary.find((item, thatIndex) => {
+          if (item.routeClass === routeClass && this.identifyView(routeClass, routeParams, item.routeParams)) {
+            index = thatIndex;
+            return true;
+          }
+        });
+      }
+
+      return index;
+    });
+
+    _defineProperty(this, "navigateTo", ({
+      routeClass,
+      routeParams,
+      viewNavSummaryIndex,
+      viewId
+    }) => {
+      let index = viewNavSummaryIndex;
+      let finalViewId = viewId;
+
+      if (!index) {
+        index = this.getSummaryIndex({
+          routeClass,
+          routeParams,
+          viewId
+        });
+
+        if (!finalViewId && index) {
+          finalViewId = this.state.navSummary[index].viewId;
+        }
+      }
+
+      if (!index) {
+        this.state.navSummary.some((item, thatIndex) => {
+          if (item.routeClass === routeClass) {
+            index = thatIndex;
+            finalViewId = item.viewId;
+            return true;
+          }
+        });
+      }
+
+      this.setState({
+        viewClass: routeClass,
+        viewParams: routeParams,
+        viewNavSummaryIndex: index,
+        viewId: finalViewId
+      });
+    });
+
+    _defineProperty(this, "getViewIdForSectionId", sectionId => {
+      /*
+       * gets the first section nav item that matches a specific section
+       * (explanations: there can be several times the same section)
+       */
+      const {
+        navSummary
+      } = this.state;
+      const firstMatch = navSummary.find(item => item.routeClass === 'sections' && item.routeParams.sectionId === sectionId);
+
+      if (firstMatch) {
+        return firstMatch.viewId;
+      }
+    });
+
+    _defineProperty(this, "renderView", ({
+      viewClass,
+      viewParams,
+      navSummary,
+      viewNavSummaryIndex
+    }) => {
+      switch (viewClass) {
+        case 'sections':
+          let previousSection;
+          let nextSection;
+
+          if (viewNavSummaryIndex > 0 && navSummary[viewNavSummaryIndex - 1].routeClass === 'sections') {
+            previousSection = navSummary[viewNavSummaryIndex - 1];
+          }
+
+          if (viewNavSummaryIndex < navSummary.length - 1 && navSummary[viewNavSummaryIndex + 1].routeClass === 'sections') {
+            nextSection = navSummary[viewNavSummaryIndex + 1];
+          }
+
+          return _react.default.createElement(_Section.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            previousSection: previousSection,
+            nextSection: nextSection,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'landing':
+          const nextNavItem = viewNavSummaryIndex < navSummary.length - 1 && navSummary[viewNavSummaryIndex + 1];
+          return _react.default.createElement(_Landing.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            nextNavItem: nextNavItem,
+            options: viewNavSummaryIndex < navSummary.length && navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'customPage':
+          return _react.default.createElement(_CustomPage.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'glossary':
+          return _react.default.createElement(_Glossary.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            title: navSummary[viewNavSummaryIndex].title,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'places':
+          return _react.default.createElement(_Places.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            title: navSummary[viewNavSummaryIndex].title,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'events':
+          return _react.default.createElement(_Events.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            title: navSummary[viewNavSummaryIndex].title,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'references':
+          return _react.default.createElement(_References.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            title: navSummary[viewNavSummaryIndex].title,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams,
+            options: navSummary[viewNavSummaryIndex].options
+          });
+
+        case 'resourceSheet':
+          return _react.default.createElement(_ResourceSheet.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams
+          });
+
+        case 'resourcesMap':
+          return _react.default.createElement(_ResourcesMap.default, {
+            production: this.props.production,
+            edition: this.props.edition,
+            activeViewClass: viewClass,
+            activeViewParams: viewParams
+          });
+
+        default:
+          return _react.default.createElement("div", null, _react.default.createElement("p", null, "view id: ", viewClass), _react.default.createElement("pre", null, "route params: ", JSON.stringify(viewParams, null, 2)));
+      }
+    });
+
+    const {
+      production,
+      edition,
+      locale: _locale
+    } = props;
+    const summary = buildNav({
+      production,
+      edition,
+      locale: _locale
+    });
+    const firstEl = summary.length && summary[0];
+    this.state = {
+      viewClass: props.viewClass || firstEl && firstEl.routeClass || 'landing',
+      viewId: props.viewId || firstEl && firstEl.viewId,
+      viewParams: props.viewParams || firstEl && firstEl.routeParams || {},
+      viewNavSummaryIndex: 0,
+      navSummary: summary
+    };
   }
 
-  getChildContext() {
-    return {
-      LinkComponent: this.props.LinkComponent || _DefaultLinkComponent.default,
-      MentionComponent: this.props.MentionComponent || _DefaultMentionComponent.default,
-      SectionLinkComponent: this.props.SectionLinkComponent || _DefaultSectionLinkComponent.default,
-      production: this.props.production,
-      productionAssets: this.props.production.assets,
-      contextualizers: this.props.contextualizers,
-      translate: this.translate
-    };
+  componentWillReceiveProps(nextProps) {
+    if (this.props.production !== nextProps.production || this.props.contextualizers !== nextProps.contextualizers || this.props.edition !== nextProps.edition) {
+      const {
+        production,
+        edition,
+        locale
+      } = nextProps;
+      const summary = buildNav({
+        production,
+        edition,
+        locale
+      });
+      const firstEl = summary.length && summary[0];
+      this.setState({
+        viewClass: firstEl && firstEl.routeClass || 'landing',
+        viewParams: firstEl && firstEl.routeParams || {},
+        viewNavSummaryIndex: 0,
+        navSummary: summary
+      });
+    }
   }
 
   render() {
@@ -370,59 +492,149 @@ class Template extends _react.Component {
       props: {
         production,
         edition,
-        contextualizers,
-        renderAdditionalHTML = false
+        previewMode,
+        useBrowserRouter = false
       },
-      translate
+      state: {
+        viewId,
+        viewClass,
+        viewParams,
+        navSummary,
+        viewNavSummaryIndex
+      },
+      renderView
     } = this;
-    const {
-      data = {}
-    } = edition;
-    const {
-      additionalHTML = ''
-    } = data;
-    const citations = (0, _peritextUtils.buildCitations)(production);
-    const finalStyles = updateStyles({
-      edition,
-      contextualizers
-    });
+    const Router = useBrowserRouter ? _reactRouterDom.BrowserRouter : _reactRouterDom.HashRouter;
+
+    if (previewMode || !inBrowser) {
+      return _react.default.createElement(_Layout.default, {
+        summary: navSummary,
+        production: production,
+        edition: edition,
+        viewId: viewId,
+        viewClass: viewClass
+      }, renderView({
+        viewId,
+        viewClass,
+        viewParams,
+        navSummary,
+        viewNavSummaryIndex
+      }));
+    }
+
+    let routerSummary = navSummary;
     /**
-     * We render an array
-     * to have our sections as a flat collection
-     * which facilitates @paged rules about pages breaks
+     * If first view is not landing
+     * then we double it to allow internal links
      */
 
-    return [...renderSummary({
-      production,
-      edition,
-      translate,
-      citations
-    }), _react.default.createElement("style", {
-      key: 'styles',
-      dangerouslySetInnerHTML: {
-        __html: finalStyles
-        /* eslint react/no-danger : 0 */
+    if (routerSummary.length && routerSummary[0].routeClass !== 'landing') {
+      routerSummary = [routerSummary[0], ...routerSummary];
+    }
 
+    return _react.default.createElement(Router, null, _react.default.createElement("div", null, _react.default.createElement(_reactRouterDom.Switch, null, routerSummary.map((element, index) => {
+      const url = routeItemToUrl(element, index);
+      const summaryIndex = this.getSummaryIndex({
+        routeClass: element.routeClass,
+        routeParams: element.routeParams,
+        viewId: element.viewId
+      });
+      return _react.default.createElement(_reactRouterDom.Route, {
+        exact: true,
+        path: url,
+        key: index,
+        component: props => {
+          let additionalRouteParams = {};
+
+          if (props.location.search) {
+            additionalRouteParams = props.location.search.slice(1).split('&').map(item => item.split('=')).map(tuple => ({
+              [tuple[0]]: tuple[1]
+            })).reduce((result, mini) => _objectSpread({}, result, mini), {});
+          }
+
+          return _react.default.createElement(_Layout.default, {
+            summary: navSummary,
+            production: production,
+            edition: edition,
+            viewId: viewId,
+            viewClass: element.routeClass
+          }, renderView({
+            viewClass: element.routeClass,
+            viewParams: _objectSpread({}, element.routeParams, additionalRouteParams),
+            navSummary,
+            viewNavSummaryIndex: summaryIndex
+          }));
+        }
+      });
+    }), _react.default.createElement(_reactRouterDom.Route, {
+      path: '/resource',
+      component: props => {
+        const search = props.history.location.search || '';
+        const searchParams = search.slice(1).split('&').map(str => str.split('=')).reduce((result, tuple) => _objectSpread({}, result, {
+          [tuple[0]]: tuple[1]
+        }), {});
+        const {
+          resourceId
+        } = searchParams;
+        return _react.default.createElement(_Layout.default, {
+          summary: navSummary,
+          production: production,
+          edition: edition,
+          viewId: 'resource',
+          viewClass: 'resource'
+        }, renderView({
+          viewClass: 'resourceSheet',
+          viewParams: {
+            resourceId
+          },
+          navSummary,
+          viewNavSummaryIndex
+        }));
       }
-    }), renderAdditionalHTML ? _react.default.createElement("div", {
-      id: 'additional-html',
-      key: 'additional-html',
-      dangerouslySetInnerHTML: {
-        /* eslint react/no-danger : 0 */
-        __html: `${additionalHTML} `
+    }), _react.default.createElement(_reactRouterDom.Route, {
+      component: () => {
+        return _react.default.createElement(_Layout.default, {
+          summary: navSummary,
+          production: production,
+          edition: edition,
+          viewId: '404',
+          viewClass: '404'
+        }, _react.default.createElement(_Layout.default, {
+          summary: navSummary,
+          production: production,
+          edition: edition,
+          viewId: 'resource',
+          viewClass: 'resource'
+        }, _react.default.createElement("div", {
+          className: 'main-contents-container'
+        }, _react.default.createElement("div", {
+          className: 'main-column'
+        }, _react.default.createElement("h1", null, this.translate('Nothing to see here!')), _react.default.createElement("h2", null, this.translate('There is not content to display for this URL.'))))));
       }
-    }) : null].filter(s => s);
+    }))));
   }
 
 }
 
-exports.default = Template;
-Template.childContextTypes = {
+exports.default = Wrapper;
+
+_defineProperty(Wrapper, "childContextTypes", {
+  activeViewId: _propTypes.default.string,
+  activeViewParams: _propTypes.default.object,
+  navigateTo: _propTypes.default.func,
   LinkComponent: _propTypes.default.func,
-  MentionComponent: _propTypes.default.func,
-  SectionLinkComponent: _propTypes.default.func,
-  translate: _propTypes.default.func,
   production: _propTypes.default.object,
+  edition: _propTypes.default.object,
+  contextualizers: _propTypes.default.object,
   productionAssets: _propTypes.default.object,
-  contextualizers: _propTypes.default.object
-};
+  routeItemToUrl: _propTypes.default.func,
+  usedDocument: _propTypes.default.object,
+  translate: _propTypes.default.func,
+  getViewIdForSectionId: _propTypes.default.func
+});
+
+_defineProperty(Wrapper, "propTypes", {
+  contextualizers: _propTypes.default.object,
+  locale: _propTypes.default.object,
+  production: _propTypes.default.object
+});

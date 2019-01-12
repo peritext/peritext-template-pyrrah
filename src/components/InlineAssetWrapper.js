@@ -1,12 +1,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { StructuredCOinS } from 'peritext-utils';
 
 const InlineAssetWrapper = ( {
   data,
-  children
-}, context ) => {
-  const { production, containerId } = context;
+  children,
+}, {
+  production,
+  contextualizers,
+  openedContextualizationId,
+  openAsideContextualization,
+  bindContextualizationElement,
+  renderingMode = 'screened',
+} ) => {
   const assetId = data.asset && data.asset.id;
   if ( !assetId || !production ) {
     return null;
@@ -18,32 +25,55 @@ const InlineAssetWrapper = ( {
 
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.resourceId];
-
-  const contextualizers = context.contextualizers;
   const contextualizerModule = contextualizers[contextualizer.type];
-
   const Component = contextualizerModule && contextualizerModule.Inline;
-  if ( contextualizer && Component ) {
 
-    /**
-     * @todo this is a fix for a rendering bug
-     */
-    if ( contextualizer.type === 'glossary' ) {
-      return children;
+  const onClick = () => {
+    if ( typeof openAsideContextualization === 'function' ) {
+      openAsideContextualization( contextualization.id );
     }
+  };
+
+  const handleMainClick = () => {
+    if ( resource.metadata.type === 'glossary' ) {
+      onClick();
+    }
+  };
+
+  const active = assetId === openedContextualizationId;
+
+  const bindRef = ( element ) => {
+    if ( typeof bindContextualizationElement === 'function' ) {
+      bindContextualizationElement( contextualization.id, element );
+    }
+  };
+
+  if ( contextualizer && Component ) {
     return (
       <span
-        className={ `inline-contextualization-container ${ contextualizer.type}` }
-        id={ `contextualization-${containerId}-${assetId}` }
+        className={ `${'InlineAssetWrapper ' + 'inline-'}${ contextualizer.type }${active ? ' active' : ''}` }
+        id={ assetId }
+        ref={ bindRef }
+        onClick={ handleMainClick }
       >
+        <StructuredCOinS resource={ resource } />
         <Component
           contextualization={ contextualization }
           contextualizer={ contextualizer }
+
           resource={ resource }
-          renderingMode={ 'paged' }
+          renderingMode={ 'screen' }
         >
           {children}
         </Component>
+        {renderingMode === 'screened' &&
+          <sup
+            className={ 'link mention-context-pointer' }
+            onClick={ onClick }
+          >
+            ◈
+          </sup>
+        }
       </span>
     );
   }
@@ -71,7 +101,11 @@ InlineAssetWrapper.propTypes = {
 InlineAssetWrapper.contextTypes = {
   production: PropTypes.object,
   contextualizers: PropTypes.object,
-  containerId: PropTypes.string,
+  onAssetContextRequest: PropTypes.func,
+  openedContextualizationId: PropTypes.string,
+  openAsideContextualization: PropTypes.func,
+  bindContextualizationElement: PropTypes.func,
+  renderingMode: PropTypes.string,
 };
 
 export default InlineAssetWrapper;

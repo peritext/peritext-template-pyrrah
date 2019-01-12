@@ -13,6 +13,8 @@ var _Glossary = _interopRequireDefault(require("./components/Glossary"));
 
 var _EndNotes = _interopRequireDefault(require("./components/EndNotes"));
 
+var _Renderer = _interopRequireDefault(require("./components/Renderer"));
+
 var _defaultStyle = _interopRequireDefault(require("./defaultStyle"));
 
 var _meta = _interopRequireDefault(require("./meta"));
@@ -23,7 +25,8 @@ const components = {
   Edition: _Wrapper.default,
   EndNotes: _EndNotes.default,
   References: _References.default,
-  Glossary: _Glossary.default
+  Glossary: _Glossary.default,
+  Renderer: _Renderer.default
 };
 var _default = {
   meta: _meta.default,

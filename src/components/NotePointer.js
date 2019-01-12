@@ -1,13 +1,13 @@
 /**
  * This module exports a stateless reusable note pointer component
  * ============
- * @module quinoa-production-player/components/NotePointer
+ * @module peritext-template-deucalion/components/NotePointer
  */
 import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * Renders a note pointer as a pure component
+ * Renders a not pointer as a pure component
  * @param {object} props
  * @param {array} props.children - children elements of the component
  * @param {array} props.noteId - the id of the note to point to
@@ -16,29 +16,23 @@ import PropTypes from 'prop-types';
  */
 const NotePointer = ( {
   children,
-  noteId = ''
+  noteId = '',
 }, context ) => {
   const notes = context.notes;
-  const NoteLinkComponent = context.NoteLinkComponent;
+  const onNoteContentPointerClick = () => {
+    return typeof context.onNoteContentPointerClick === 'function' && context.onNoteContentPointerClick( noteId );
+  };
   if ( notes ) {
     const note = notes[noteId];
     if ( note ) {
       return (
         <sup
-          className={ 'note-pointer' }
-          id={ `note-pointer-${noteId}` }
+          onClick={ onNoteContentPointerClick }
+          className={ 'note-content-pointer link' }
+          id={ `note-content-pointer-${ noteId}` }
         >
-          {NoteLinkComponent ?
-            <NoteLinkComponent href={ `#note-content-${noteId}` }>
-              {note.order}
-              {children}
-            </NoteLinkComponent>
-          :
-            <a href={ `#note-content-${noteId}` }>
-              {note.order}
-              {children}
-            </a>
-          }
+          {note.order}
+          {children}
         </sup>
       );
     }
@@ -77,8 +71,6 @@ NotePointer.contextTypes = {
    * Triggers a callback upstream when the pointer is clicked
    */
   onNoteContentPointerClick: PropTypes.func,
-
-  NoteLinkComponent: PropTypes.func,
 };
 
 export default NotePointer;
