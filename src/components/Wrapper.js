@@ -1,579 +1,447 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { HashRouter, BrowserRouter, Route, Switch } from 'react-router-dom';
 
-const isBrowser = new Function( 'try {return this===window;}catch(e){ return false;}' );/* eslint no-new-func : 0 */
-const inBrowser = isBrowser();
+import { buildCitations } from 'peritext-utils';
+
+import FrontCover from './FrontCover';
+import TitlePage from './TitlePage';
+import BackCover from './BackCover';
+import Colophon from './Colophon';
+import References from './References';
+import Glossary from './Glossary';
+import EndNotes from './EndNotes';
+import DefaultLinkComponent from './DefaultLinkComponent';
+import DefaultMentionComponent from './DefaultMentionComponent';
+import DefaultSectionLinkComponent from './DefaultSectionLinkComponent';
+import MarkdownPlayer from './MarkdownPlayer';
+import TableOfContents from './TableOfContents';
 
 import Section from './Section';
-import SectionHead from './SectionHead';
-import ProductionHead from './ProductionHead';
-import Layout from './Layout';
-import CustomPage from './CustomPage';
-import Landing from './Landing';
-import ResourceSheet from './ResourceSheet';
-import Glossary from './Glossary';
-import Places from './Places';
-import Events from './Events';
-import References from './References';
-import ResourcesMap from './ResourcesMap';
-import PreviewLink from './PreviewLink';
-import RouterLink from './RouterLink';
 
-export const getAdditionalRoutes = () => {
-  return [ {
-    routeClass: 'resourceSheet',
-    routeParams: {}
-  } ];
-};
+import templateStyle from '../defaultStyle';
 
-export const buildNav = ( { production, edition = {}, locale = {} } ) => {
-    const { data = {} } = edition;
-    const { plan = {} } = data;
-    const { summary = [] } = plan;
-    return summary.reduce( ( result, element, index ) => {
+const EmptyPage = () => (
+  <div className={ 'composition-block empty-page' } />
+);
 
-      switch ( element.type ) {
-        case 'landing':
-          return [
-            ...result,
-            {
-              routeClass: 'landing',
-              level: 0,
-              title: production.metadata.title,
-              routeParams: {},
-              options: element.data,
-              viewId: element.id,
-            }
-          ];
-        case 'customPage':
-          return [
-            ...result,
-            {
-              routeClass: 'customPage',
-              level: 0,
-              title: element.data.title,
-              routeParams: {
-                routeSlug: element.data.routeSlug || index
-              },
-              options: element.data,
-              viewId: element.id,
-            }
-          ];
-        case 'sections':
-          const { data: sectionData = {} } = element;
-          const { customSummary = {} } = sectionData;
-          let sections;
-          if ( customSummary.active ) {
-            const { summary: sectionsSummary } = customSummary;
-            sections = sectionsSummary.map( ( { id: sectionId, sectionLevel: level }, thatIndex ) => ( {
-              routeClass: 'sections',
-              level,
-              title: production.sections[sectionId].metadata.title,
-              routeParams: {
-                sectionId
-              },
-              options: element.data,
-              viewId: `${element.id}-${thatIndex}`,
-            } ) );
-          }
-          else {
-            sections = production.sectionsOrder.map( ( sectionId, thatIndex ) => ( {
-              routeClass: 'sections',
-              level: production.sections[sectionId].metadata.level,
-              title: production.sections[sectionId].metadata.title,
-              options: element.data,
-              viewId: `${element.id}-${thatIndex}`,
-              routeParams: {
-                sectionId
-              }
-            } ) );
-          }
-          return [ ...result, ...sections ];
-        default:
-          const { data: elementData = {} } = element;
-          return [
-            ...result,
-            {
-              routeClass: element.type,
-              level: 0,
-              title: elementData.customTitle || locale[element.type] || element.type,
-              options: element.data,
-              viewId: element.id,
-              routeParams: {}
-            }
-          ];
-      }
+const updateStyles = ( props ) => {
+    const {
+      edition: {
+        data = {}
+      },
+      contextualizers = {},
+    } = props;
 
-    }, [] );
+    const {
+          style: {
+            css = '',
+            mode = 'merge',
+          } = { css: '' }
+    } = data;
+
+    const contextualizersStyles = Object.keys( contextualizers )
+        .map( ( type ) => contextualizers[type] && contextualizers[type].defaultCss || '' )
+        .join( '\n' );
+    if ( mode === 'merge' ) {
+
+      return [
+        templateStyle,
+        // templateStylesheet,
+        contextualizersStyles,
+        css
+      ]
+      .join( '\n' );
+    }
+    else { // styleMode === 'replace'
+      return [
+        // templateStylesheet,
+        contextualizersStyles,
+        css
+      ]
+      .join( '\n' );
+    }
+
   };
-export const routeItemToUrl = ( item, index ) => {
 
-  /*
-   * if nav index specified
-   * and nav index is 0 then this is the landing page
-   */
-  if ( index !== undefined && index === 0 ) {
-    return '/';
-  }
-  switch ( item.routeClass ) {
-    case 'landing':
-      return '/';
-    case 'sections':
-      return `/sections/${item.viewId}${item.routeParams.contextualizationId ? `?contextualizationId=${item.routeParams.contextualizationId}` : ''}`;
-    case 'customPage':
-      return `/c/${item.viewId}/${item.routeParams.routeSlug}`;
-    case 'resourceSheet':
-      return `/resource?resourceId=${item.routeParams.resourceId}`;
-    default:
-      return `/${item.routeClass}/${item.viewId}`;
-  }
+/**
+ * @todo externalize
+ */
+const buildToc = ( production, edition, translate ) => {
+  const summary = edition.data.plan.summary;
+  // returns [{level, title, href}]
+  return summary.reduce( ( res, element ) => {
+    const {
+      data = {}
+    } = element;
+    switch ( element.type ) {
+      case 'customPage':
+        const { title, displayInTableOfContents } = data;
+        if ( displayInTableOfContents ) {
+          return [
+            ...res,
+            {
+              title,
+              level: 0,
+              href: `custom-block-${element.id}`
+            }
+          ];
+        }
+        return res;
+      case 'sections':
+        const { id } = element;
+        const { customSummary = { active: false } } = data;
+        if ( customSummary.active ) {
+          const { summary: thatCustomSummary } = customSummary;
+          return [
+            ...res,
+            ...thatCustomSummary.map( ( el ) => {
+              const thatSection = production.sections[el.id];
+              return {
+                title: thatSection && thatSection.metadata.title,
+                level: el.level,
+                href: `section-${id}-${el.id}`
+              };
+            } )
+            .filter( ( s ) => s )
+          ];
+        }
+        return [
+          ...res,
+          ...production.sectionsOrder.map( ( sectionId ) => {
+            const thatSection = production.sections[sectionId];
+            return {
+              title: thatSection && thatSection.metadata.title,
+              level: thatSection && thatSection.metadata.level || 0,
+              href: `section-${id}-${sectionId}`
+            };
+          } )
+        ];
+      case 'glossary':
+        return [
+          ...res,
+          {
+            title: data.customTitle || translate( 'Glossary list' ),
+            level: 0,
+            href: `glossary-block-${element.id}`
+          }
+        ];
+      case 'references':
+        return [
+          ...res,
+          {
+            level: 0,
+            title: data.customTitle || translate( 'References' ),
+            href: `reference-block-${element.id}`
+          }
+        ];
+      default:
+        return res;
+    }
+  }, [] );
 };
 
-export const renderHeadFromRouteItem = ( { item, production, edition } ) => {
-    switch ( item.routeClass ) {
+const buildSectionBlockSummary = ( sectionBlock, production ) => {
+  if ( sectionBlock.customSummary && sectionBlock.customSummary.active ) {
+    return sectionBlock.customSummary.summary.map( ( el ) => el.id );
+  }
+  return production.sectionsOrder;
+};
+
+const Sections = ( {
+  production,
+  edition,
+  translate,
+  data = {},
+  citations,
+  citationStyle,
+  citationLocale,
+  publicationTitle,
+  publicationSubtitle,
+  id,
+} ) => {
+  const summary = edition.data.plan.summary;
+  const notesPosition = data.notesPosition || 'footnotes';
+
+  const sectionsBlocks = summary.filter( ( s ) => s.type === 'sections' );
+
+  const sectionsIds = sectionsBlocks.reduce( ( res, sectionBlock ) => {
+    // @todo handle custom sections order
+    return [
+      ...res,
+      ...buildSectionBlockSummary( sectionBlock, production )
+    ];
+  }, [] );
+
+  return [
+    ...sectionsIds.map( ( sectionId, index ) => {
+      const section = production.sections[sectionId];
+      return (
+        <Section
+          section={ section }
+          notesPosition={ notesPosition }
+          key={ `${index}-${sectionId}` }
+          production={ production }
+          containerId={ id }
+          translate={ translate }
+          citations={ citations }
+          citationStyle={ citationStyle }
+          citationLocale={ citationLocale }
+          publicationTitle={ publicationTitle }
+          publicationSubtitle={ publicationSubtitle }
+        />
+      );
+    } ),
+    // @todo endnotes relative to sections and not to production sectionsOrder
+    notesPosition === 'endOfContents' ?
+      <EndNotes
+        key={ 'endnotes' }
+        sectionsIds={ sectionsIds }
+        production={ production }
+
+        translate={ translate }
+        citations={ citations }
+        citationStyle={ citationStyle }
+        citationLocale={ citationLocale }
+        publicationTitle={ publicationTitle }
+        publicationSubtitle={ publicationSubtitle }
+      /> : null
+  ];
+};
+
+const renderSummary = ( {
+  production,
+  edition,
+  translate,
+  citations,
+} ) => {
+  const summary = edition.data.plan.summary;
+  const citationStyle = edition.data.citationStyle.data;
+  const citationLocale = edition.data.citationLocale.data;
+
+  const {
+    data: editionData = {}
+  } = edition;
+  const {
+    metadata
+  } = production;
+
+  const finalTitle = editionData.publicationTitle || metadata.title;
+  const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+
+  return summary.map( ( element, index ) => {
+    switch ( element.type ) {
+      case 'frontCover':
+        return (
+          <FrontCover
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            { ...element }
+          />
+        );
+      case 'titlePage':
+        return (
+          <TitlePage
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            { ...element }
+          />
+        );
+      case 'colophon':
+        return (
+          <Colophon
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            { ...element }
+          />
+        );
+      case 'backCover':
+        return (
+          <BackCover
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            { ...element }
+          />
+        );
+      case 'emptyPage':
+        return <EmptyPage key={ index } />;
+      case 'tableOfContents':
+        const toc = buildToc( production, edition, translate );
+        return (
+          <TableOfContents
+            key={ index }
+            data={ element.data }
+            tableOfContents={ toc }
+            translate={ translate }
+            id={ element.id }
+          />
+        );
+
+      case 'customPage':
+        return (
+          <div
+            id={ element.data.customCssId || element.id }
+            key={ index }
+            className={ `composition-block custom-page ${element.data.displayPageNumber ? 'has-page-number' : ''}` }
+          >
+            {element.data.title &&
+              <h1
+                id={ `custom-block-${element.id}` }
+                className={ 'composition-block-title peritext-block-title' }
+              >
+                {element.data.title}
+              </h1>
+            }
+            {element.data.markdownContents &&
+              <MarkdownPlayer src={ element.data.markdownContents } />
+            }
+          </div>
+        );
       case 'sections':
         return (
-          <SectionHead
+          <Sections
+            key={ index }
             production={ production }
             edition={ edition }
-            section={ production.sections[item.routeParams.sectionId] }
+            translate={ translate }
+            citations={ citations }
+            citationStyle={ citationStyle }
+            citationLocale={ citationLocale }
+            publicationTitle={ finalTitle }
+            publicationSubtitle={ finalSubtitle }
+            { ...element }
+          />
+        );
+      case 'glossary':
+        return (
+          <Glossary
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            citations={ citations }
+            citationStyle={ citationStyle }
+            citationLocale={ citationLocale }
+            { ...element }
+          />
+        );
+      case 'references':
+        return (
+          <References
+            key={ index }
+            production={ production }
+            edition={ edition }
+            translate={ translate }
+            citations={ citations }
+            citationStyle={ citationStyle }
+            citationLocale={ citationLocale }
+            { ...element }
           />
         );
 
-      case 'landing':
-      case 'customPage':
-      case 'resourceSheet':
       default:
         return (
-          <ProductionHead
-            production={ production }
-            edition={ edition }
-            pageName={ `${production.metadata.title} - ${item.title}` }
-          />
+          <div
+            id={ element.id }
+            className={ 'composition-block' }
+            key={ index }
+          >
+            {element.type}
+          </div>
         );
     }
-  };
+  } );
+};
 
-export default class Wrapper extends Component {
-  static childContextTypes = {
-    activeViewId: PropTypes.string,
-    activeViewParams: PropTypes.object,
-    navigateTo: PropTypes.func,
-    LinkComponent: PropTypes.func,
-    production: PropTypes.object,
-    edition: PropTypes.object,
-    contextualizers: PropTypes.object,
-    productionAssets: PropTypes.object,
-    routeItemToUrl: PropTypes.func,
-    usedDocument: PropTypes.object,
-    translate: PropTypes.func,
-    getViewIdForSectionId: PropTypes.func,
-  }
-
-  static propTypes = {
-    contextualizers: PropTypes.object,
-    locale: PropTypes.object,
-    production: PropTypes.object,
-  }
-
+export default class Template extends Component {
   constructor( props ) {
     super( props );
-    const { production, edition, locale } = props;
-    const summary = buildNav( { production, edition, locale } );
-    const firstEl = summary.length && summary[0];
-    this.state = {
-      viewClass: props.viewClass || ( firstEl && firstEl.routeClass ) || 'landing',
-      viewId: props.viewId || ( firstEl && firstEl.viewId ),
-      viewParams: props.viewParams || ( firstEl && firstEl.routeParams ) || {},
-      viewNavSummaryIndex: 0,
-      navSummary: summary,
+  }
+
+  getChildContext() {
+    return {
+      LinkComponent: this.props.LinkComponent || DefaultLinkComponent,
+      MentionComponent: this.props.MentionComponent || DefaultMentionComponent,
+      SectionLinkComponent: this.props.SectionLinkComponent || DefaultSectionLinkComponent,
+      production: this.props.production,
+      productionAssets: this.props.production.assets,
+
+      contextualizers: this.props.contextualizers,
+      translate: this.translate,
     };
   }
 
-  getChildContext = () => ( {
-    LinkComponent: this.props.previewMode ? PreviewLink : RouterLink,
-    activeViewId: this.state.viewId,
-    activeViewParams: this.state.viewParams,
-    contextualizers: this.props.contextualizers,
-    edition: this.props.edition,
-    translate: this.translate,
-    navigateTo: this.navigateTo,
-    routeItemToUrl,
-    production: this.props.production,
-    productionAssets: this.props.production.assets,
-    usedDocument: this.props.usedDocument,
-    getViewIdForSectionId: this.getViewIdForSectionId,
-  } )
-
-  componentWillReceiveProps( nextProps ) {
-    if (
-      this.props.production !== nextProps.production
-      || this.props.contextualizers !== nextProps.contextualizers
-      || this.props.edition !== nextProps.edition
-    ) {
-      const { production, edition, locale } = nextProps;
-      const summary = buildNav( { production, edition, locale } );
-      const firstEl = summary.length && summary[0];
-      this.setState( {
-        viewClass: ( firstEl && firstEl.routeClass ) || 'landing',
-        viewParams: ( firstEl && firstEl.routeParams ) || {},
-        viewNavSummaryIndex: 0,
-        navSummary: summary
-
-      } );
-    }
-  }
+  shouldComponentUpdate = () => true;
 
   translate = ( key ) => {
     const { locale = {} } = this.props;
     return locale[key] || key;
   }
 
-  identifyView = ( viewType, params1, params2 ) => {
-    switch ( viewType ) {
-      case 'sections':
-        return params1.sectionId === params2.sectionId;
-      case 'customPage':
-        return params1.routeSlug === params2.routeSlug;
-      default:
-        return true;
-    }
-  }
-
-  getSummaryIndex = ( { viewId, routeClass, routeParams } ) => {
-    let index;
-    this.state.navSummary.find( ( item, thatIndex ) => {
-      if ( item.viewId === viewId/* ||  item.routeClass === routeClass && this.identifyView( routeClass, routeParams, item.routeParams )
-        */ ) {
-        index = thatIndex;
-        return true;
-      }
-    } );
-    if ( !index ) {
-      this.state.navSummary.find( ( item, thatIndex ) => {
-        if ( item.routeClass === routeClass && this.identifyView( routeClass, routeParams, item.routeParams )
-           ) {
-          index = thatIndex;
-          return true;
-        }
-      } );
-
-    }
-    return index;
-  }
-
-  navigateTo = ( { routeClass, routeParams, viewNavSummaryIndex, viewId } ) => {
-    let index = viewNavSummaryIndex;
-    let finalViewId = viewId;
-    if ( !index ) {
-      index = this.getSummaryIndex( { routeClass, routeParams, viewId } );
-      if ( !finalViewId && index ) {
-        finalViewId = this.state.navSummary[index].viewId;
-      }
-    }
-    if ( !index ) {
-      this.state.navSummary.some( ( item, thatIndex ) => {
-        if ( item.routeClass === routeClass ) {
-          index = thatIndex;
-          finalViewId = item.viewId;
-          return true;
-        }
-      } );
-    }
-    this.setState( {
-      viewClass: routeClass,
-      viewParams: routeParams,
-      viewNavSummaryIndex: index,
-      viewId: finalViewId
-    } );
-  }
-
-  getViewIdForSectionId = ( sectionId ) => {
-
-    /*
-     * gets the first section nav item that matches a specific section
-     * (explanations: there can be several times the same section)
-     */
-    const { navSummary } = this.state;
-    const firstMatch = navSummary.find( ( item ) => item.routeClass === 'sections' && item.routeParams.sectionId === sectionId );
-    if ( firstMatch ) {
-      return firstMatch.viewId;
-    }
-  }
-
-  renderView = ( { viewClass, viewParams, navSummary, viewNavSummaryIndex } ) => {
-    switch ( viewClass ) {
-      case 'sections':
-        let previousSection;
-        let nextSection;
-        if ( viewNavSummaryIndex > 0 && navSummary[viewNavSummaryIndex - 1].routeClass === 'sections' ) {
-          previousSection = navSummary[viewNavSummaryIndex - 1];
-        }
-        if ( viewNavSummaryIndex < navSummary.length - 1 && navSummary[viewNavSummaryIndex + 1].routeClass === 'sections' ) {
-          nextSection = navSummary[viewNavSummaryIndex + 1];
-        }
-
-        return (
-          <Section
-            production={ this.props.production }
-            edition={ this.props.edition }
-            previousSection={ previousSection }
-            nextSection={ nextSection }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-          );
-      case 'landing':
-        const nextNavItem = viewNavSummaryIndex < navSummary.length - 1 && navSummary[viewNavSummaryIndex + 1];
-        return (
-          <Landing
-            production={ this.props.production }
-            edition={ this.props.edition }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            nextNavItem={ nextNavItem }
-            options={ viewNavSummaryIndex < navSummary.length && navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'customPage':
-        return (
-          <CustomPage
-            production={ this.props.production }
-            edition={ this.props.edition }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'glossary':
-        return (
-          <Glossary
-            production={ this.props.production }
-            edition={ this.props.edition }
-            title={ navSummary[viewNavSummaryIndex].title }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'places':
-        return (
-          <Places
-            production={ this.props.production }
-            edition={ this.props.edition }
-            title={ navSummary[viewNavSummaryIndex].title }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'events':
-        return (
-          <Events
-            production={ this.props.production }
-            edition={ this.props.edition }
-            title={ navSummary[viewNavSummaryIndex].title }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'references':
-        return (
-          <References
-            production={ this.props.production }
-            edition={ this.props.edition }
-            title={ navSummary[viewNavSummaryIndex].title }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-            options={ navSummary[viewNavSummaryIndex].options }
-          />
-        );
-      case 'resourceSheet':
-        return (
-          <ResourceSheet
-            production={ this.props.production }
-            edition={ this.props.edition }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-          />
-        );
-      case 'resourcesMap':
-        return (
-          <ResourcesMap
-            production={ this.props.production }
-            edition={ this.props.edition }
-            activeViewClass={ viewClass }
-            activeViewParams={ viewParams }
-          />
-        );
-      default:
-        return (
-          <div>
-            <p>view id: {viewClass}</p>
-            <pre>
-            route params: {JSON.stringify( viewParams, null, 2 )}
-            </pre>
-          </div>
-          );
-    }
-  }
-
-  render() {
+  render () {
     const {
-
-       props: {
-         production,
-         edition,
-         previewMode,
-         useBrowserRouter = false,
-       },
-       state: {
-        viewId,
-        viewClass,
-        viewParams,
-        navSummary,
-        viewNavSummaryIndex
-       },
-       renderView,
+      props: {
+        production,
+        edition,
+        contextualizers,
+        renderAdditionalHTML = false,
+      },
+      translate,
     } = this;
 
-    const Router = useBrowserRouter ? BrowserRouter : HashRouter;
+    const {
+      data = {},
+    } = edition;
+    const {
+      additionalHTML = '',
+    } = data;
 
-    if ( previewMode || !inBrowser ) {
-      return (
-        <Layout
-          summary={ navSummary }
-          production={ production }
-          edition={ edition }
-          viewId={ viewId }
-          viewClass={ viewClass }
-        >
-          {renderView( { viewId, viewClass, viewParams, navSummary, viewNavSummaryIndex } )}
-        </Layout>
-      );
-    }
-
-    let routerSummary = navSummary;
+    const citations = buildCitations( production );
+    const finalStyles = updateStyles( { edition, contextualizers } );
 
     /**
-     * If first view is not landing
-     * then we double it to allow internal links
+     * We render an array
+     * to have our sections as a flat collection
+     * which facilitates @paged rules about pages breaks
      */
-    if ( routerSummary.length && routerSummary[0].routeClass !== 'landing' ) {
-      routerSummary = [ routerSummary[0], ...routerSummary ];
-    }
-
-    return (
-      <Router>
-        <div>
-          <Switch>
-            {
-            routerSummary.map( ( element, index ) => {
-              const url = routeItemToUrl( element, index );
-
-              const summaryIndex = this.getSummaryIndex( { routeClass: element.routeClass, routeParams: element.routeParams, viewId: element.viewId } );
-              return (
-                <Route
-                  exact
-                  path={ url }
-                  key={ index }
-                  component={ ( props ) => {
-                    let additionalRouteParams = {};
-                    if ( props.location.search ) {
-                      additionalRouteParams = props.location.search.slice( 1 )
-                        .split( '&' )
-                        .map( ( item ) => item.split( '=' ) )
-                        .map( ( tuple ) => ( {
-                          [tuple[0]]: tuple[1]
-                        } ) )
-                        .reduce( ( result, mini ) => ( {
-                          ...result,
-                          ...mini
-                        } ), {} );
-                    }
-                    return (
-                      <Layout
-                        summary={ navSummary }
-                        production={ production }
-                        edition={ edition }
-                        viewId={ viewId }
-                        viewClass={ element.routeClass }
-                      >
-                        {renderView( {
-                          viewClass: element.routeClass,
-                          viewParams: {
-                            ...element.routeParams,
-                            ...additionalRouteParams,
-                          },
-                          navSummary,
-                          viewNavSummaryIndex: summaryIndex
-                        } )}
-                      </Layout>
-                    );
-                  } }
-                />
-              );
-            } )
-          }
-            <Route
-              path={ '/resource' }
-              component={ ( props ) => {
-                const search = props.history.location.search || '';
-                const searchParams = search.slice( 1 ).split( '&' ).map( ( str ) => str.split( '=' ) ).reduce( ( result, tuple ) => ( {
-                  ...result,
-                  [tuple[0]]: tuple[1],
-                } ), {} );
-                const { resourceId } = searchParams;
-                return (
-                  <Layout
-                    summary={ navSummary }
-                    production={ production }
-                    edition={ edition }
-                    viewId={ 'resource' }
-                    viewClass={ 'resource' }
-                  >
-                    {renderView( { viewClass: 'resourceSheet', viewParams: { resourceId }, navSummary, viewNavSummaryIndex } )}
-                  </Layout>
-
-                );
-            } }
-            />
-            <Route
-              component={ () => {
-              return (
-                <Layout
-                  summary={ navSummary }
-                  production={ production }
-                  edition={ edition }
-                  viewId={ '404' }
-                  viewClass={ '404' }
-                >
-                  <Layout
-                    summary={ navSummary }
-                    production={ production }
-                    edition={ edition }
-                    viewId={ 'resource' }
-                    viewClass={ 'resource' }
-                  >
-                    <div className={ 'main-contents-container' }>
-                      <div className={ 'main-column' }>
-                        <h1>{this.translate( 'Nothing to see here!' )}</h1>
-                        <h2>{this.translate( 'There is not content to display for this URL.' )}</h2>
-                      </div>
-                    </div>
-                  </Layout>
-                </Layout>
-
-              );
-            } }
-            />
-          </Switch>
-        </div>
-      </Router>
-    );
+    return [
+      ...renderSummary( {
+        production,
+        edition,
+        translate,
+        citations,
+      } ),
+      <style
+        key={ 'styles' }
+        dangerouslySetInnerHTML={ { __html: finalStyles/* eslint react/no-danger : 0 */
+         } }
+      />,
+      renderAdditionalHTML ?
+        <div
+          id={ 'additional-html' }
+          key={ 'additional-html' }
+          dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
+          __html: `${additionalHTML } `
+        } }
+        /> : null
+    ].filter( ( s ) => s );
 
   }
 }
+
+Template.childContextTypes = {
+  LinkComponent: PropTypes.func,
+  MentionComponent: PropTypes.func,
+  SectionLinkComponent: PropTypes.func,
+  translate: PropTypes.func,
+  production: PropTypes.object,
+  productionAssets: PropTypes.object,
+  contextualizers: PropTypes.object,
+};

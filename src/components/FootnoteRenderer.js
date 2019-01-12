@@ -11,19 +11,21 @@ import { constants } from 'peritext-schemas';
 import Link from './Link';
 import BlockAssetWrapper from './BlockAssetWrapper';
 import InlineAssetWrapper from './InlineAssetWrapper';
-import NotePointer from './NotePointer';
-import Footnote from './Footnote';
 import InternalLink from './InternalLink';
+
+/*
+ * import NotePointer from './NotePointer';
+ * import Footnote from './Footnote';
+ */
 const {
   LINK,
   BLOCK_ASSET,
   INLINE_ASSET,
   SECTION_POINTER,
-  NOTE_POINTER,
 } = constants.draftEntitiesNames;
 
 // just a helper to add a <br /> after each block
-const addBreaklines = ( children ) => children.map( ( child, index ) => [ child, <br key={ index } /> ] );
+const addBreaklines = ( children ) => children.map( ( child, index ) => [ child, <br key={ index + 1 } /> ] );
 
 /**
  * Define the renderers
@@ -46,94 +48,114 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': ( children ) => children.map( ( child, index ) =>
-      (
-        <div
-          className={ 'unstyled' }
-          key={ index }
-        >
-          {child}
-        </div>
-      ) ),
-    'blockquote': ( children, index ) => <blockquote key={ index } >{addBreaklines( children )}</blockquote>,
+    'unstyled': ( children ) => children.map( ( child, index ) => (
+      <span
+        key={ index }
+        className={ 'footnote-p' }
+      >
+        {child}
+      </span>
+    ) ),
+    'blockquote': ( children ) => <span className={ 'footnote-blockquote' } >{addBreaklines( children )}</span>,
     'header-one': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h1
+      <span
+        className={ 'footnote-h1' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h1>
+      </span>
     ) ),
     'header-two': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h2
+      <span
+        className={ 'footnote-h2' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h2>
+      </span>
     ) ),
     'header-three': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h3
+      <span
+        className={ 'footnote-h3' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h3>
+      </span>
     ) ),
     'header-four': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h4
+      <span
+        className={ 'footnote-h4' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h4>
+      </span>
     ) ),
     'header-five': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h5
+      <span
+        className={ 'footnote-h5' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h5>
+      </span>
     ) ),
     'header-six': ( children, { keys } ) => children.map( ( child, index ) => (
-      <h6
+      <span
+        className={ 'footnote-h6' }
         key={ index }
         id={ keys[index] }
       >
         {child}
-      </h6>
+      </span>
     ) ),
 
     // You can also access the original keys of the blocks
-    'code-block': ( children, { keys } ) =>
-      <pre key={ keys[0] } >{addBreaklines( children )}</pre>,
+    'code-block': ( children, { keys } ) => (
+      <span
+        className={ 'footnote-pre' }
+        key={ keys[0] }
+      >
+        {addBreaklines( children )}
+      </span>
+    ),
     // or depth for nested lists
     'unordered-list-item': ( children, { depth, keys } ) => (
-      <ul
+      <span
+        // className={ 'footnote-ul' }
         key={ keys[keys.length - 1] }
         className={ `ul-level-${depth}` }
       >
         {
-          children.map(
-            ( child, index ) =>
-              <li key={ index }>{child}</li>
-          )
-        }
-      </ul>
-    ),
+        children.map( ( child, index ) => (
+          <span
+            className={ 'footnote-li' }
+            key={ index }
+          >
+            {child}
+          </span>
+        ) )
+      }
+      </span> ),
     'ordered-list-item': ( children, { depth, keys } ) => (
-      <ol
+      <span
+        // className={ 'footnote-ol' }
         key={ keys.join( '|' ) }
         className={ `ol-level-${depth}` }
       >
         {
-          children.map(
-            ( child, index ) =>
-              <li key={ keys[index] }>{child}</li>
-          )
-        }
-      </ol>
+        children.map( ( child, index ) => (
+          <span
+            className={ 'footnote-li' }
+            key={ keys[index] }
+          >
+            {child}
+          </span>
+        ) )
+      }
+      </span>
     ),
 
     /*
@@ -184,15 +206,6 @@ const renderers = {
         </InternalLink>
       );
     },
-    [NOTE_POINTER]: ( children, data, { key } ) => {
-      return (
-        <NotePointer
-          key={ key }
-          children={ children }
-          noteId={ data.noteId }
-        />
-      );
-    }
   },
 };
 
@@ -209,10 +222,6 @@ class Renderer extends Component {
     super( props );
   }
 
-  getChildContext = () => ( {
-    containerId: this.props.containerId,
-  } )
-
   /**
    * Determines whether to update the component or not
    * @param {object} nextProps - the future properties of the component
@@ -220,6 +229,7 @@ class Renderer extends Component {
    */
   shouldComponentUpdate( ) {
     return true;
+    // return this.props.raw !== nextProps.raw;
   }
 
   /**
@@ -237,22 +247,9 @@ class Renderer extends Component {
   render() {
     const {
       raw,
-      notesPosition,
     } = this.props;
     if ( !raw ) {
       return this.renderWarning();
-    }
-    if ( notesPosition === 'footnotes' || notesPosition === 'sidenotes' ) {
-      renderers.entities.NOTE_POINTER = ( children, data, { key } ) => {
-        return (
-          <Footnote
-            key={ key }
-            children={ children }
-            noteId={ data.noteId }
-            notesPosition={ notesPosition }
-          />
-        );
-      };
     }
     const rendered = redraft( raw, renderers );
     // redraft can return a null if there's nothing to render
@@ -260,9 +257,9 @@ class Renderer extends Component {
       return this.renderWarning();
     }
     return (
-      <div className={ 'rendered-content' }>
+      <span>
         {rendered}
-      </div>
+      </span>
     );
   }
 }
@@ -277,10 +274,6 @@ Renderer.propTypes = {
    * see https://draftjs.org/docs/api-reference-data-conversion.html
    */
   raw: PropTypes.object
-};
-
-Renderer.childContextTypes = {
-  containerId: PropTypes.string,
 };
 
 export default Renderer;

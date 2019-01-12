@@ -19,28 +19,31 @@ var _BlockAssetWrapper = _interopRequireDefault(require("./BlockAssetWrapper"));
 
 var _InlineAssetWrapper = _interopRequireDefault(require("./InlineAssetWrapper"));
 
-var _NotePointer = _interopRequireDefault(require("./NotePointer"));
-
-var _Footnote = _interopRequireDefault(require("./Footnote"));
-
 var _InternalLink = _interopRequireDefault(require("./InternalLink"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/**
+ * This module exports a statefull reusable draft-js raw-to-react renderer component
+ * It wrapps around the redraft engine that converts draft-s raw to a react representation,
+ * providing it specific settings and callbacks.
+ */
 
+/*
+ * import NotePointer from './NotePointer';
+ * import Footnote from './Footnote';
+ */
 const {
   LINK,
   BLOCK_ASSET,
   INLINE_ASSET,
-  SECTION_POINTER,
-  NOTE_POINTER
+  SECTION_POINTER
 } = _peritextSchemas.constants.draftEntitiesNames; // just a helper to add a <br /> after each block
 
 const addBreaklines = children => children.map((child, index) => [child, _react.default.createElement("br", {
-  key: index
+  key: index + 1
 })]);
 /**
  * Define the renderers
@@ -80,72 +83,83 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': children => children.map((child, index) => _react.default.createElement("div", {
-      className: 'unstyled',
-      key: index
+    'unstyled': children => children.map((child, index) => _react.default.createElement("span", {
+      key: index,
+      className: 'footnote-p'
     }, child)),
-    'blockquote': (children, index) => _react.default.createElement("blockquote", {
-      key: index
+    'blockquote': children => _react.default.createElement("span", {
+      className: 'footnote-blockquote'
     }, addBreaklines(children)),
     'header-one': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h1", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h1',
       key: index,
       id: keys[index]
     }, child)),
     'header-two': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h2", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h2',
       key: index,
       id: keys[index]
     }, child)),
     'header-three': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h3", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h3',
       key: index,
       id: keys[index]
     }, child)),
     'header-four': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h4", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h4',
       key: index,
       id: keys[index]
     }, child)),
     'header-five': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h5", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h5',
       key: index,
       id: keys[index]
     }, child)),
     'header-six': (children, {
       keys
-    }) => children.map((child, index) => _react.default.createElement("h6", {
+    }) => children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-h6',
       key: index,
       id: keys[index]
     }, child)),
     // You can also access the original keys of the blocks
     'code-block': (children, {
       keys
-    }) => _react.default.createElement("pre", {
+    }) => _react.default.createElement("span", {
+      className: 'footnote-pre',
       key: keys[0]
     }, addBreaklines(children)),
     // or depth for nested lists
     'unordered-list-item': (children, {
       depth,
       keys
-    }) => _react.default.createElement("ul", {
+    }) => _react.default.createElement("span", {
+      // className={ 'footnote-ul' }
       key: keys[keys.length - 1],
       className: `ul-level-${depth}`
-    }, children.map((child, index) => _react.default.createElement("li", {
+    }, children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-li',
       key: index
     }, child))),
     'ordered-list-item': (children, {
       depth,
       keys
-    }) => _react.default.createElement("ol", {
+    }) => _react.default.createElement("span", {
+      // className={ 'footnote-ol' }
       key: keys.join('|'),
       className: `ol-level-${depth}`
-    }, children.map((child, index) => _react.default.createElement("li", {
+    }, children.map((child, index) => _react.default.createElement("span", {
+      className: 'footnote-li',
       key: keys[index]
     }, child)))
     /*
@@ -189,15 +203,6 @@ const renderers = {
         key: key,
         sectionId: data.sectionId
       }, children);
-    },
-    [NOTE_POINTER]: (children, data, {
-      key
-    }) => {
-      return _react.default.createElement(_NotePointer.default, {
-        key: key,
-        children: children,
-        noteId: data.noteId
-      });
     }
   }
 };
@@ -212,19 +217,16 @@ class Renderer extends _react.Component {
    */
   constructor(props) {
     super(props);
-
-    _defineProperty(this, "getChildContext", () => ({
-      containerId: this.props.containerId
-    }));
   }
-
   /**
    * Determines whether to update the component or not
    * @param {object} nextProps - the future properties of the component
    * @return {boolean} shouldUpdate - yes or no
    */
+
+
   shouldComponentUpdate() {
-    return true;
+    return true; // return this.props.raw !== nextProps.raw;
   }
   /**
    * Displays something when no suitable content state is provided to the renderer
@@ -243,25 +245,11 @@ class Renderer extends _react.Component {
 
   render() {
     const {
-      raw,
-      notesPosition
+      raw
     } = this.props;
 
     if (!raw) {
       return this.renderWarning();
-    }
-
-    if (notesPosition === 'footnotes' || notesPosition === 'sidenotes') {
-      renderers.entities.NOTE_POINTER = (children, data, {
-        key
-      }) => {
-        return _react.default.createElement(_Footnote.default, {
-          key: key,
-          children: children,
-          noteId: data.noteId,
-          notesPosition: notesPosition
-        });
-      };
     }
 
     const rendered = (0, _redraft.default)(raw, renderers); // redraft can return a null if there's nothing to render
@@ -270,9 +258,7 @@ class Renderer extends _react.Component {
       return this.renderWarning();
     }
 
-    return _react.default.createElement("div", {
-      className: 'rendered-content'
-    }, rendered);
+    return _react.default.createElement("span", null, rendered);
   }
 
 }
@@ -287,9 +273,6 @@ Renderer.propTypes = {
    * see https://draftjs.org/docs/api-reference-data-conversion.html
    */
   raw: _propTypes.default.object
-};
-Renderer.childContextTypes = {
-  containerId: _propTypes.default.string
 };
 var _default = Renderer;
 exports.default = _default;

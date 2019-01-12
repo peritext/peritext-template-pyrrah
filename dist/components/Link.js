@@ -29,7 +29,8 @@ const Link = ({
   children
 }) => _react.default.createElement("a", {
   href: to,
-  target: 'blank'
+  target: 'blank',
+  rel: 'noopener'
 }, children);
 /**
  * Component's properties types

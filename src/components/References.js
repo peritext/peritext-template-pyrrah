@@ -1,14 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import RelatedContexts from './RelatedContexts';
-import Aside from './Aside';
-import { buildContextContent, buildCitations, getContextualizationsFromEdition, resourceToCslJSON } from 'peritext-utils';
-import { makeBibliography } from 'react-citeproc';
-import uniq from 'lodash/uniq';
+import { uniq } from 'lodash';
+import { ReferencesManager, makeBibliography } from 'react-citeproc';
+
+import {
+  buildContextContent,
+  getContextualizationsFromEdition,
+  resourceToCslJSON
+} from 'peritext-utils';
 
 /**
- * Computes interactive bibliography materials
- * @return {array} items - list of context-loaded items
+ * Builds an interactive bibliography for a given edition
+ * @returns {ReactMarkup}
  */
 function buildBibliography ( {
     production,
@@ -22,6 +25,11 @@ function buildBibliography ( {
 } ) {
 
   const {
+
+    /*
+     * contextualizations,
+     * contextualizers,
+     */
     resources
   } = production;
 
@@ -88,7 +96,6 @@ function buildBibliography ( {
       citationKey,
       title,
       item: citations.citationItems[citationKey] || cit[0],
-      resourceId,
       mentions: mentions.map( ( mention ) => ( {
         ...mention,
         contextContent: buildContextContent( production, mention.id )
@@ -132,22 +139,22 @@ function buildBibliography ( {
         else {
           return 0;
         }
-      case 'authors':
-        if ( a.item.author && b.item.author ) {
-          const authorsA = a.item.author && a.item.author.map( ( author ) => `${author.family}-${author.given}`.toLowerCase() ).join( '' );
-          const authorsB = b.item.author && b.item.author.map( ( author ) => `${author.family}-${author.given}`.toLowerCase() ).join( '' );
-          if ( authorsA > authorsB ) {
+        case 'authors':
+          if ( a.item.author && b.item.author ) {
+            const authorsA = a.item.author && a.item.author.map( ( author ) => `${author.family}-${author.given}`.toLowerCase() ).join( '' );
+            const authorsB = b.item.author && b.item.author.map( ( author ) => `${author.family}-${author.given}`.toLowerCase() ).join( '' );
+            if ( authorsA > authorsB ) {
+              return 1;
+            }
+            else return -1;
+          }
+          else if ( !b.item.author ) {
+            return -1;
+          }
+          else if ( !a.item.author ) {
             return 1;
           }
-          else return -1;
-        }
-        else if ( !b.item.author ) {
-          return -1;
-        }
-        else if ( !a.item.author ) {
-          return 1;
-        }
-        else return 0;
+          else return 0;
       case 'title':
         if ( a.item.title.toLowerCase() > b.item.title.toLowerCase() ) {
           return 1;
@@ -164,128 +171,144 @@ function buildBibliography ( {
   return items;
 }
 
-export default class References extends Component {
+const References = ( {
+  production,
+  edition,
+  translate,
+  data = {
+    showMentions: true,
+    showUncitedReferences: false,
+    resourceTypes: [ 'bib' ],
+    sortingKey: 'authors',
+    sortingAscending: true,
+  },
 
-  static contextTypes = {
-    translate: PropTypes.func,
-    asideVisible: PropTypes.bool,
-    toggleAsideVisible: PropTypes.func,
-  }
-  constructor( props ) {
-    super( props );
-    this.state = {
-      openResourceId: undefined
-    };
-  }
-  openResource = ( id ) => {
-    if ( !this.context.asideVisible ) {
-      this.context.toggleAsideVisible();
-    }
-    this.setState( {
-      openResourceId: id
-    } );
-  }
-  toggleOpenedResource = ( id ) => {
-    this.context.toggleAsideVisible();
-    this.setState( {
-      openResourceId: this.state.openResourceId ? undefined : id
-    } );
-  }
+  citations,
+  citationStyle,
+  citationLocale,
 
-  render = () => {
-    const {
-      props: {
-        production,
-        edition,
-        options = {},
-        title,
-      },
-      state: {
-        openResourceId
-      },
-      context: {
-        translate,
-      },
-      toggleOpenedResource,
-      openResource,
-    } = this;
+  id,
+  // LinkComponent: propLinkComponent,
+  MentionComponent: propMentionComponent,
+}, {
+  // LinkComponent: contextLinkComponent,
+  MentionComponent: contextMentionComponent,
+} ) => {
+  const {
+    showMentions,
+    showUncitedReferences,
+    resourceTypes,
+    sortingKey,
+    sortingAscending,
+    customTitle,
+  } = data;
+  // const LinkComponent = propLinkComponent || contextLinkComponent;
+  const MentionComponent = propMentionComponent || contextMentionComponent;
 
-    const {
-      showUncitedReferences = false,
-      resourceTypes = [ 'bib' ],
-      sortingKey = 'authors',
-      sortingAscending = true,
-    } = options;
-
-    /**
-     * @todo compute citations based on edition
-     */
-    const citations = buildCitations( production );
-    const contextualizations = getContextualizationsFromEdition( production, edition );
-    const references = buildBibliography( {
-      production,
-      edition,
-      citations,
-      contextualizations,
-      showUncitedReferences,
-      resourceTypes,
-      sortingKey,
-      sortingAscending,
-    } );
-    return (
-      <div className={ 'main-contents-container references-player' }>
-        <div className={ 'main-column' }>
-          <h1 className={ 'view-title' }>{title}</h1>
-          {
-            <ul className={ 'big-list-items-container' }>
-              {
-              references.
-              map( ( item, index ) => {
-                const handleClick = () => {
-                  openResource( item.resourceId );
-                };
-                return (
-                  <li
-                    className={ 'big-list-item' }
-                    key={ index }
-                  >
-                    <div className={ 'big-list-item-content' }>
-                      <div
-                        dangerouslySetInnerHTML={ {/* eslint react/no-danger: 0 */
-                          __html: item.title
-                        } }
-                      />
-                    </div>
-                    <div className={ 'big-list-item-actions' }>
-                      <button
-                        className={ 'link' }
-                        onClick={ handleClick }
-                      >
-                        {item.mentions.length} {item.mentions.length === 1 ? translate( 'mention' ) : translate( 'mentions' )}
-                      </button>
-                    </div>
-                  </li>
-                );
-              } )
-            }
-            </ul>
-          }
-        </div>
-        <Aside
-          isActive={ openResourceId !== undefined }
-          title={ translate( 'Mentions of this item' ) }
-          onClose={ toggleOpenedResource }
+  /**
+   * @todo compute citations based on edition
+   */
+  const contextualizations = getContextualizationsFromEdition( production, edition );
+  const references = buildBibliography( {
+    production,
+    edition,
+    citations,
+    contextualizations,
+    showUncitedReferences,
+    resourceTypes,
+    sortingKey,
+    sortingAscending,
+  } );
+  return (
+    <section
+      className={ 'composition-block references' }
+      title={ customTitle || translate( 'References' ) }
+    >
+      <ReferencesManager
+        style={ citationStyle }
+        locale={ citationLocale }
+        items={ citations.citationItems }
+        citations={ citations.citationData }
+        componentClass={ 'references-manager' }
+      >
+        <h2
+          id={ `reference-block-${id}` }
+          className={ 'composition-block-title peritext-block-title' }
         >
+          {customTitle || translate( 'References' )}
+        </h2>
+        <ul className={ 'mentions-container' }>
           {
-            openResourceId &&
-            <RelatedContexts
-              production={ production }
-              edition={ edition }
-              resourceId={ openResourceId }
-            />
-          }
-        </Aside>
-      </div>
-    );
-  }
-}
+          references.map( ( entry, index ) => {
+            const entryName = entry.title;
+            return (
+              <li
+                key={ index }
+                id={ entry.citationKey }
+                className={ 'mention-item' }
+              >
+                <div
+                  className={ 'title' }
+                >
+                  <div dangerouslySetInnerHTML={ {
+                    __html: entryName/* eslint react/no-danger: 0 */
+                  } }
+                  />
+                </div>
+                {
+                  showMentions &&
+                  entry.mentions
+                      .find( ( mention ) => mention && mention.contextContent )
+                    &&
+
+                    <div className={ 'mentions-list' }>
+                      {
+                      entry.mentions
+                      .filter( ( mention ) => mention !== undefined && mention.contextContent )
+                      .map( ( mention, count ) => {
+                        const {
+                            contextContent: {
+
+                              /*
+                               * targetContents,
+                               * contents,
+                               * sectionTitle,
+                               */
+                              sectionId,
+                            },
+                            id: thatId,
+                            containerId,
+                        } = mention;
+                        return (
+                          <MentionComponent
+                            key={ count }
+                            href={ `#contextualization-${containerId}-${thatId}` }
+                            sectionId={ sectionId }
+                          />
+                        );
+                      } )
+                      .reduce( ( prev, curr, thatIndex ) => {
+                        if ( thatIndex === 0 ) {
+                          return [ curr ];
+                        }
+                        return [ prev, ', ', curr ];
+                      }, [] )
+                    }
+                    </div>
+                }
+              </li>
+            );
+          } )
+        }
+        </ul>
+      </ReferencesManager>
+    </section>
+  );
+};
+
+References.contextTypes = {
+  LinkComponent: PropTypes.func,
+  MentionComponent: PropTypes.func,
+};
+
+export default References;

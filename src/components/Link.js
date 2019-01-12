@@ -20,6 +20,7 @@ const Link = ( {
   <a
     href={ to }
     target={ 'blank' }
+    rel={ 'noopener' }
   >
     {children}
   </a>

@@ -9,21 +9,16 @@ var _react = _interopRequireDefault(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _peritextUtils = require("peritext-utils");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const InlineAssetWrapper = ({
   data,
   children
-}, {
-  production,
-  contextualizers,
-  openedContextualizationId,
-  openAsideContextualization,
-  bindContextualizationElement,
-  renderingMode = 'screened'
-}) => {
+}, context) => {
+  const {
+    production,
+    containerId
+  } = context;
   const assetId = data.asset && data.asset.id;
 
   if (!assetId || !production) {
@@ -38,46 +33,27 @@ const InlineAssetWrapper = ({
 
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.resourceId];
+  const contextualizers = context.contextualizers;
   const contextualizerModule = contextualizers[contextualizer.type];
   const Component = contextualizerModule && contextualizerModule.Inline;
 
-  const onClick = () => {
-    if (typeof openAsideContextualization === 'function') {
-      openAsideContextualization(contextualization.id);
-    }
-  };
-
-  const handleMainClick = () => {
-    if (resource.metadata.type === 'glossary') {
-      onClick();
-    }
-  };
-
-  const active = assetId === openedContextualizationId;
-
-  const bindRef = element => {
-    if (typeof bindContextualizationElement === 'function') {
-      bindContextualizationElement(contextualization.id, element);
-    }
-  };
-
   if (contextualizer && Component) {
+    /**
+     * @todo this is a fix for a rendering bug
+     */
+    if (contextualizer.type === 'glossary') {
+      return children;
+    }
+
     return _react.default.createElement("span", {
-      className: `${'InlineAssetWrapper ' + 'inline-'}${contextualizer.type}${active ? ' active' : ''}`,
-      id: assetId,
-      ref: bindRef,
-      onClick: handleMainClick
-    }, _react.default.createElement(_peritextUtils.StructuredCOinS, {
-      resource: resource
-    }), _react.default.createElement(Component, {
+      className: `inline-contextualization-container ${contextualizer.type}`,
+      id: `contextualization-${containerId}-${assetId}`
+    }, _react.default.createElement(Component, {
       contextualization: contextualization,
       contextualizer: contextualizer,
       resource: resource,
-      renderingMode: 'screen'
-    }, children), renderingMode === 'screened' && _react.default.createElement("sup", {
-      className: 'link mention-context-pointer',
-      onClick: onClick
-    }, "\u25C8"));
+      renderingMode: 'paged'
+    }, children));
   }
 
   return null;
@@ -104,11 +80,7 @@ InlineAssetWrapper.propTypes = {
 InlineAssetWrapper.contextTypes = {
   production: _propTypes.default.object,
   contextualizers: _propTypes.default.object,
-  onAssetContextRequest: _propTypes.default.func,
-  openedContextualizationId: _propTypes.default.string,
-  openAsideContextualization: _propTypes.default.func,
-  bindContextualizationElement: _propTypes.default.func,
-  renderingMode: _propTypes.default.string
+  containerId: _propTypes.default.string
 };
 var _default = InlineAssetWrapper;
 exports.default = _default;

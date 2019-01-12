@@ -1,125 +1,205 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import RelatedContexts from './RelatedContexts';
+import { ReferencesManager } from 'react-citeproc';
+
 import MarkdownPlayer from './MarkdownPlayer';
-import Aside from './Aside';
-import { buildGlossary } from '../utils';
 
-export default class Glossary extends Component {
+import {
+  buildContextContent,
+  getContextualizationsFromEdition
+} from 'peritext-utils';
 
-  static contextTypes = {
-    translate: PropTypes.func,
-    asideVisible: PropTypes.bool,
-    toggleAsideVisible: PropTypes.func,
-  }
-  constructor( props ) {
-    super( props );
-    this.state = {
-      openResourceId: undefined
-    };
-  }
-  openResource = ( id ) => {
-    if ( !this.context.asideVisible ) {
-      this.context.toggleAsideVisible();
-    }
-    this.setState( {
-      openResourceId: id
-    } );
-  }
-  toggleOpenedResource = ( id ) => {
-    this.context.toggleAsideVisible();
-    this.setState( {
-      openResourceId: this.state.openResourceId ? undefined : id
-    } );
-  }
+const buildGlossary = ( {
+  production,
+  edition,
+  options
+} ) => {
+  const {
+    contextualizers,
+    resources
+  } = production;
 
-  render = () => {
-    const {
-      props: {
-        production,
-        edition,
-        options = {},
-        title,
-      },
-      state: {
-        openResourceId
-      },
-      context: {
-        translate,
-      },
-      toggleOpenedResource,
-      openResource,
-    } = this;
-
-    const {
-      showMentions = true,
-      showDescription = true,
+  const {
+      showUncited = false,
+      glossaryTypes = [ 'person', 'place', 'event', 'notion', 'other' ]
     } = options;
 
-    const items = buildGlossary( { options, production, edition } );
-    return (
-      <div className={ 'main-contents-container glossary-player' }>
-        <div className={ 'main-column' }>
-          <h1 className={ 'view-title' }>{title}</h1>
-          {
-            <ul className={ 'big-list-items-container' }>
-              {
-              items.
-              map( ( item, index ) => {
-                const handleClick = () => {
-                  openResource( item.resource.id );
-                };
-                return (
-                  <li
-                    className={ 'big-list-item' }
-                    key={ index }
-                  >
-                    <div className={ 'big-list-item-content' }>
-                      <div className={ 'title' }>
-                        <h3>{item.resource.data.name}</h3>
-                      </div>
-                      {
-                        showDescription && item.resource.data.description &&
-                        <div className={ 'description' }>
-                          <MarkdownPlayer src={ item.resource.data.description } />
-                        </div>
-                      }
-                    </div>
-                    <div className={ 'big-list-item-actions' }>
-                      {
-                        showMentions && item.mentions.length > 0 &&
-                        <div>
-                          <button
-                            className={ 'link' }
-                            onClick={ handleClick }
-                          >
-                            {item.mentions.length} {item.mentions.length === 1 ? translate( 'mention' ) : translate( 'mentions' )}
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  </li>
-                );
-              } )
-            }
-            </ul>
-          }
-        </div>
-        <Aside
-          isActive={ openResourceId !== undefined }
-          title={ translate( 'Mentions of this item' ) }
-          onClose={ toggleOpenedResource }
-        >
-          {
-        openResourceId &&
-        <RelatedContexts
-          production={ production }
-          edition={ edition }
-          resourceId={ openResourceId }
-        />
-      }
-        </Aside>
-      </div>
-    );
+  let items;
+  const usedContextualizations = getContextualizationsFromEdition( production, edition );
+  if ( showUncited ) {
+    items = Object.keys( production.resources )
+        .filter( ( resourceId ) => production.resources[resourceId].metadata.type === 'glossary' )
+        .map( ( resourceId ) => production.resources[resourceId] )
+        .map( ( resource ) => {
+          return {
+            resource,
+            mentions: usedContextualizations.filter( ( c ) => c.contextualization.resourceId === resource.id )
+          };
+        } );
   }
-}
+ else {
+    items = usedContextualizations
+      .filter( ( element ) => {
+        const contextualization = element.contextualization;
+        const contextualizerId = contextualization.contextualizerId;
+        const contextualizer = contextualizers[contextualizerId];
+        return contextualizer && contextualizer.type === 'glossary';
+      } )
+      .map( ( element ) => {
+        const contextualization = element.contextualization;
+        return {
+          ...contextualization,
+          contextualizer: contextualizers[contextualization.contextualizerId],
+          resource: resources[contextualization.resourceId],
+          contextContent: buildContextContent( production, contextualization.id ),
+          containerId: element.containerId,
+        };
+      } )
+      .reduce( ( entries, contextualization ) => {
+        return {
+          ...entries,
+          [contextualization.resourceId]: {
+            resource: contextualization.resource,
+            mentions: entries[contextualization.resourceId] ?
+                        entries[contextualization.resourceId].mentions.concat( contextualization )
+                        : [ contextualization ]
+          }
+        };
+      }, {} );
+      items = Object.keys( items ).map( ( resourceId ) => ( {
+        resource: items[resourceId].resource,
+        mentions: items[resourceId].mentions
+      } ) );
+  }
+
+  const glossaryMentions = items
+  .filter( ( item ) => {
+    return glossaryTypes.includes( item.resource.data.entryType );
+  } )
+  .sort( ( a, b ) => {
+    if ( a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase() ) {
+      return 1;
+    }
+    else {
+      return -1;
+    }
+  } );
+
+  return glossaryMentions;
+};
+
+const Glossary = ( {
+  production,
+  edition,
+  translate,
+  citations,
+  citationStyle,
+  citationLocale,
+  id,
+  data = {
+    showMentions: true,
+    showDescriptions: true,
+  },
+  // LinkComponent: propLinkComponent,
+  MentionComponent: propMentionComponent,
+}, {
+  // LinkComponent: contextLinkComponent,
+  MentionComponent: contextMentionComponent,
+} ) => {
+  // const LinkComponent = propLinkComponent || contextLinkComponent;
+  const MentionComponent = propMentionComponent || contextMentionComponent;
+  const {
+    showMentions,
+    customTitle,
+    showDescriptions,
+  } = data;
+  const glossary = buildGlossary( { options: data, production, edition } );
+  return (
+    <section
+      className={ 'composition-block glossary' }
+      title={ customTitle || translate( 'Glossary list' ) }
+    >
+      <ReferencesManager
+        style={ citationStyle }
+        locale={ citationLocale }
+        items={ citations.citationItems }
+        citations={ citations.citationData }
+        componentClass={ 'references-manager' }
+      >
+        <h2
+          className={ 'composition-block-title peritext-block-title' }
+          id={ `glossary-block-${id}` }
+        >{customTitle || translate( 'Glossary list' )}
+        </h2>
+        <ul className={ 'mentions-container' }>
+          {
+          glossary.map( ( entry, index ) => {
+            // const entryName = entry.title;
+            return (
+              <li
+                key={ index }
+                id={ entry.resource.metadata.id }
+                className={ 'mention-item' }
+              >
+                <div
+                  className={ 'title' }
+                >
+                  {entry.resource.data.name}
+                </div>
+                {showDescriptions &&
+                  <div
+                    className={ 'description' }
+                  >
+                    <MarkdownPlayer src={ entry.resource.data.description } />
+                  </div>
+                }
+                {showMentions && entry.mentions.length > 0 &&
+                  <div className={ 'mentions-list' }>
+                    {
+                      entry.mentions
+                      .filter( ( mention ) => mention !== undefined && mention.contextContent )
+                      .map( ( mention, count ) => {
+                        const {
+                            contextContent: {
+
+                              /*
+                               * targetContents,
+                               * contents,
+                               * sectionTitle,
+                               */
+                              sectionId,
+                            },
+                            id: thatId,
+                            containerId,
+                        } = mention;
+
+                        return (
+                          <MentionComponent
+                            key={ count }
+                            href={ `#contextualization-${containerId}-${thatId}` }
+                            sectionId={ sectionId }
+                          />
+                       );
+                      } )
+                      .reduce( ( prev, curr, thatIndex ) => {
+                        return thatIndex > 0 ? [ prev, ', ', curr ] : [ curr ];
+                      }, [] )
+                    }
+                  </div>
+                }
+              </li>
+            );
+          } )
+        }
+        </ul>
+      </ReferencesManager>
+    </section>
+  );
+};
+
+Glossary.contextTypes = {
+  LinkComponent: PropTypes.func,
+  MentionComponent: PropTypes.func,
+};
+
+export default Glossary;

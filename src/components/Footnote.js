@@ -6,39 +6,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Renderer from './FootnoteRenderer';
+
 /**
- * Renders a note pointer as a pure component
+ * Renders a not pointer as a pure component
  * @param {object} props
  * @param {array} props.children - children elements of the component
  * @param {array} props.noteId - the id of the note to point to
  * @param {object} context - the context data of the component
  * @return {ReactElement} component - the component
  */
-const NotePointer = ( {
-  children,
-  noteId = ''
+const Footnote = ( {
+  // children,
+  noteId = '',
+  notesPosition
 }, context ) => {
   const notes = context.notes;
-  const NoteLinkComponent = context.NoteLinkComponent;
   if ( notes ) {
     const note = notes[noteId];
     if ( note ) {
       return (
         <sup
-          className={ 'note-pointer' }
+          className={ notesPosition === 'sidenotes' ? 'sidenote' : 'footnote' }
           id={ `note-pointer-${noteId}` }
+          data-notenumber={ note.order }
         >
-          {NoteLinkComponent ?
-            <NoteLinkComponent href={ `#note-content-${noteId}` }>
-              {note.order}
-              {children}
-            </NoteLinkComponent>
-          :
-            <a href={ `#note-content-${noteId}` }>
-              {note.order}
-              {children}
-            </a>
-          }
+          <span className={ 'footnote-content' }>
+            <Renderer raw={ note.contents } />
+          </span>
         </sup>
       );
     }
@@ -50,7 +45,7 @@ const NotePointer = ( {
 /**
  * Component's properties types
  */
-NotePointer.propTypes = {
+Footnote.propTypes = {
 
   /**
    * Children react components
@@ -66,19 +61,12 @@ NotePointer.propTypes = {
 /**
  * Component's context used properties
  */
-NotePointer.contextTypes = {
+Footnote.contextTypes = {
 
   /**
    * Map of available notes to look into
    */
   notes: PropTypes.object,
-
-  /**
-   * Triggers a callback upstream when the pointer is clicked
-   */
-  onNoteContentPointerClick: PropTypes.func,
-
-  NoteLinkComponent: PropTypes.func,
 };
 
-export default NotePointer;
+export default Footnote;
