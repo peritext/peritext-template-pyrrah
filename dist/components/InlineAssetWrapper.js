@@ -42,7 +42,9 @@ const InlineAssetWrapper = ({
      * @todo this is a fix for a rendering bug
      */
     if (contextualizer.type === 'glossary') {
-      return children;
+      return _react.default.createElement("span", {
+        id: `contextualization-${containerId}-${assetId}`
+      }, children);
     }
 
     return _react.default.createElement("span", {

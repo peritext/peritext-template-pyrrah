@@ -29,7 +29,13 @@ const InlineAssetWrapper = ( {
      * @todo this is a fix for a rendering bug
      */
     if ( contextualizer.type === 'glossary' ) {
-      return children;
+      return (
+        <span
+          id={ `contextualization-${containerId}-${assetId}` }
+        >{children}
+        </span>
+      );
+
     }
     return (
       <span
