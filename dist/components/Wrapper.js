@@ -161,8 +161,8 @@ const buildToc = (production, edition, translate) => {
 };
 
 const buildSectionBlockSummary = (sectionBlock, production) => {
-  if (sectionBlock.customSummary && sectionBlock.customSummary.active) {
-    return sectionBlock.customSummary.summary.map(el => el.id);
+  if (sectionBlock.data.customSummary && sectionBlock.data.customSummary.active) {
+    return sectionBlock.data.customSummary.summary.map(el => el.id);
   }
 
   return production.sectionsOrder;
