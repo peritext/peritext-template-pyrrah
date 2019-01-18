@@ -35,8 +35,8 @@ const {
   LINK,
   BLOCK_ASSET,
   INLINE_ASSET,
-  SECTION_POINTER,
-  NOTE_POINTER
+  SECTION_POINTER // NOTE_POINTER,
+
 } = _peritextSchemas.constants.draftEntitiesNames; // just a helper to add a <br /> after each block
 
 const addBreaklines = children => children.map((child, index) => [child, _react.default.createElement("br", {
@@ -190,7 +190,7 @@ const renderers = {
         sectionId: data.sectionId
       }, children);
     },
-    [NOTE_POINTER]: (children, data, {
+    NOTE_POINTER: (children, data, {
       key
     }) => {
       return _react.default.createElement(_NotePointer.default, {
@@ -251,7 +251,7 @@ class Renderer extends _react.Component {
       return this.renderWarning();
     }
 
-    if (notesPosition === 'footnotes' || notesPosition === 'sidenotes') {
+    if (notesPosition === 'footnotes') {
       renderers.entities.NOTE_POINTER = (children, data, {
         key
       }) => {
@@ -262,7 +262,8 @@ class Renderer extends _react.Component {
           notesPosition: notesPosition
         });
       };
-    }
+    } // console.log( 'notes position', notesPosition, 'renderers for note pointer', renderers.entities.NOTE_POINTER );
+
 
     const rendered = (0, _redraft.default)(raw, renderers); // redraft can return a null if there's nothing to render
 

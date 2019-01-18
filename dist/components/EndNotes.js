@@ -13,6 +13,10 @@ var _reactCiteproc = require("react-citeproc");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var _default = ({
   production: {
     sections
@@ -38,7 +42,9 @@ var _default = ({
   className: 'section-title'
 }, title || translate('Notes')), _react.default.createElement("ol", {
   className: 'end-notes'
-}, sectionsOrder.reduce((results, sectionId) => results.concat(Object.keys(sections[sectionId].notes).map(thatId => sections[sectionId].notes[thatId])), []).map((note, index) => {
+}, sectionsOrder.reduce((results, sectionId) => results.concat(Object.keys(sections[sectionId].notes).map(thatId => _objectSpread({}, sections[sectionId].notes[thatId], {
+  id: thatId
+}))), []).map((note, index) => {
   return _react.default.createElement("li", {
     id: `note-content-${note.id}`,
     key: index

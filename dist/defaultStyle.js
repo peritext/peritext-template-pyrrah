@@ -566,6 +566,25 @@ figure + .unstyled,
   font-size: .8em;
   vertical-align: baseline;
 }
+.end-notes{
+  padding-left: 0;
+}
+.end-notes li{
+  list-style-type: none;
+  margin-left: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+}
+
+.end-notes li .rendered-content{
+  flex: 1;
+  padding-left: 1rem;
+}
+
+.end-notes li .rendered-content .unstyled:first-of-type {
+  text-indent: 0;
+}
   
 .footnote{
   font-size: 80%;

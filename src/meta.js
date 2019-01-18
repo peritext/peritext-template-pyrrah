@@ -178,7 +178,7 @@ module.exports = {
         },
         notesPosition: {
           type: 'string',
-          enum: [ 'footnotes', 'sidenotes', 'endOfSections', 'endOfContents' ]
+          enum: [ 'footnotes', 'endOfSections', 'endOfContents' ]
         },
 
       },

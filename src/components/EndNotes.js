@@ -33,7 +33,7 @@ export default ( {
           sectionsOrder.reduce( ( results, sectionId ) =>
             results.concat(
               Object.keys( sections[sectionId].notes )
-              .map( ( thatId ) => sections[sectionId].notes[thatId] )
+              .map( ( thatId ) => ( { ...sections[sectionId].notes[thatId], id: thatId } ) )
             )
           , [] )
           .map( ( note, index ) => {

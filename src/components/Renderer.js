@@ -19,7 +19,7 @@ const {
   BLOCK_ASSET,
   INLINE_ASSET,
   SECTION_POINTER,
-  NOTE_POINTER,
+  // NOTE_POINTER,
 } = constants.draftEntitiesNames;
 
 // just a helper to add a <br /> after each block
@@ -184,7 +184,7 @@ const renderers = {
         </InternalLink>
       );
     },
-    [NOTE_POINTER]: ( children, data, { key } ) => {
+    NOTE_POINTER: ( children, data, { key } ) => {
       return (
         <NotePointer
           key={ key }
@@ -242,7 +242,7 @@ class Renderer extends Component {
     if ( !raw ) {
       return this.renderWarning();
     }
-    if ( notesPosition === 'footnotes' || notesPosition === 'sidenotes' ) {
+    if ( notesPosition === 'footnotes' ) {
       renderers.entities.NOTE_POINTER = ( children, data, { key } ) => {
         return (
           <Footnote
@@ -254,6 +254,7 @@ class Renderer extends Component {
         );
       };
     }
+    // console.log( 'notes position', notesPosition, 'renderers for note pointer', renderers.entities.NOTE_POINTER );
     const rendered = redraft( raw, renderers );
     // redraft can return a null if there's nothing to render
     if ( !rendered ) {
