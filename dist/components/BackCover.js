@@ -32,6 +32,7 @@ var _default = ({
   } = edition;
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return _react.default.createElement("section", {
     className: `composition-block back-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}`,
     style: {
@@ -47,7 +48,7 @@ var _default = ({
   }, finalSubtitle), metadata.authors && _react.default.createElement("h3", {
     className: 'back-cover-authors'
   }, _react.default.createElement(_Authors.default, {
-    authors: metadata.authors
+    authors: authors
   })), _react.default.createElement("div", {
     className: 'back-cover-text'
   }, useAbstract && _react.default.createElement(_MarkdownPlayer.default, {

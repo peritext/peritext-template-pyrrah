@@ -28,6 +28,7 @@ var _default = ({
   } = edition;
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return _react.default.createElement("section", {
     className: 'composition-block title-page'
   }, _react.default.createElement("div", {
@@ -39,9 +40,9 @@ var _default = ({
     className: 'title-page-subtitle'
   }, finalSubtitle), _react.default.createElement("h3", {
     className: 'title-page-authors'
-  }, metadata.authors && _react.default.createElement(_Authors.default, {
-    authors: metadata.authors
-  }))), customCoverFooter && customCoverFooter.length > 0 && _react.default.createElement("div", {
+  }, authors && authors.length > 0 ? _react.default.createElement(_Authors.default, {
+    authors: authors
+  }) : null)), customCoverFooter && customCoverFooter.length > 0 && _react.default.createElement("div", {
     className: 'title-page-footer'
   }, _react.default.createElement(_MarkdownPlayer.default, {
     src: customCoverFooter

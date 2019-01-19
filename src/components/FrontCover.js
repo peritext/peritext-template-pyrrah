@@ -19,6 +19,7 @@ export default ( {
   } = edition;
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return (
     <section
       id={ 'front-cover' }
@@ -41,7 +42,7 @@ export default ( {
         <h3 className={ 'front-cover-authors' }>
           {
             metadata.authors &&
-            <Authors authors={ metadata.authors } />
+            <Authors authors={ authors } />
           }
         </h3>
       </div>

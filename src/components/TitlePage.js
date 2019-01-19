@@ -19,6 +19,7 @@ export default ( {
 
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return (
     <section
       className={ 'composition-block title-page' }
@@ -36,8 +37,9 @@ export default ( {
         }
         <h3 className={ 'title-page-authors' }>
           {
-            metadata.authors &&
-            <Authors authors={ metadata.authors } />
+            authors && authors.length > 0 ?
+              <Authors authors={ authors } />
+            : null
           }
         </h3>
       </div>

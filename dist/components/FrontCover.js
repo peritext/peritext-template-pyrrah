@@ -30,6 +30,7 @@ var _default = ({
   } = edition;
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return _react.default.createElement("section", {
     id: 'front-cover',
     className: `composition-block front-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}`,
@@ -46,7 +47,7 @@ var _default = ({
   }, finalSubtitle), _react.default.createElement("h3", {
     className: 'front-cover-authors'
   }, metadata.authors && _react.default.createElement(_Authors.default, {
-    authors: metadata.authors
+    authors: authors
   }))), customCoverFooter && customCoverFooter.length > 0 && _react.default.createElement("div", {
     className: 'front-cover-footer'
   }, _react.default.createElement(_MarkdownPlayer.default, {

@@ -21,6 +21,7 @@ export default ( {
   } = edition;
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
+  const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;
   return (
     <section
       className={ `composition-block back-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}` }
@@ -42,7 +43,7 @@ export default ( {
       }
         {metadata.authors &&
         <h3 className={ 'back-cover-authors' }>
-          <Authors authors={ metadata.authors } />
+          <Authors authors={ authors } />
         </h3>
       }
         <div className={ 'back-cover-text' }>
