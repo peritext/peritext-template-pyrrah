@@ -305,8 +305,8 @@ a{
   text-indent: var(--gutter-medium);
   margin-bottom: calc(.4 * var(--gutter-medium));
 }
-.rendered-content > .unstyled {
-  text-indent: none;
+.rendered-content .unstyled:first-of-type {
+  text-indent: 0;
 }
 
 ul + .unstyled,
@@ -370,7 +370,7 @@ figure + .unstyled,
 .block-contextualization-container img
 {
   max-width: 100%;
-  max-height: 4cm;
+  max-height: 14cm;
 }
 .block-contextualization-container iframe
 {
@@ -406,7 +406,7 @@ figure + .unstyled,
 .block-contextualization-container.image .static-images-container{
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
+  justify-content: center;
 }
 .block-contextualization-container.image .static-images-container img{
   display: block;
