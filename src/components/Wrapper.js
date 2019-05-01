@@ -69,6 +69,8 @@ const updateStyles = ( props ) => {
 const buildToc = ( production, edition, translate ) => {
   const summary = edition.data.plan.summary;
   // returns [{level, title, href}]
+  const tocEl = summary.find( ( el ) => el.type === 'tableOfContents' );
+  const level = ( tocEl && +tocEl.data.level ) || 0;
   return summary.reduce( ( res, element ) => {
     const {
       data = {}
@@ -94,27 +96,72 @@ const buildToc = ( production, edition, translate ) => {
           const { summary: thatCustomSummary } = customSummary;
           return [
             ...res,
-            ...thatCustomSummary.map( ( el ) => {
+            ...thatCustomSummary.reduce( ( resLoc, el ) => {
               const thatSection = production.sections[el.id];
-              return {
+              const titlesMap = {
+                'header-one': 1,
+                'header-two': 2,
+                'header-three': 3,
+                'header-four': 4,
+              };
+              const newItems = [ {
                 title: thatSection && thatSection.metadata.title,
                 level: el.level,
                 href: `section-${id}-${el.id}`
-              };
-            } )
+              } ];
+              if ( level > 0 ) {
+                const blocks = thatSection.contents.blocks;
+                blocks.forEach( ( block ) => {
+                  if ( titlesMap[block.type] ) {
+                    newItems.push( {
+                      title: block.text,
+                      level: el.level + titlesMap[block.type],
+                      href: `title-${block.key}`
+                    } );
+                  }
+                } );
+              }
+
+              return [
+                ...resLoc,
+                ...newItems
+              ];
+            }, [] )
             .filter( ( s ) => s )
           ];
         }
         return [
           ...res,
-          ...production.sectionsOrder.map( ( sectionId ) => {
+          ...production.sectionsOrder.reduce( ( resLoc, sectionId ) => {
             const thatSection = production.sections[sectionId];
-            return {
-              title: thatSection && thatSection.metadata.title,
-              level: thatSection && thatSection.metadata.level || 0,
-              href: `section-${id}-${sectionId}`
-            };
-          } )
+              const titlesMap = {
+                'header-one': 1,
+                'header-two': 2,
+                'header-three': 3,
+                'header-four': 4,
+              };
+              const newItems = [ {
+                title: thatSection && thatSection.metadata.title,
+                level: thatSection.metadata.level,
+                href: `section-${id}-${sectionId}`
+              } ];
+              if ( level > 0 ) {
+                const blocks = thatSection.contents.blocks;
+                blocks.forEach( ( block ) => {
+                  if ( titlesMap[block.type] ) {
+                    newItems.push( {
+                      title: block.text,
+                      level: thatSection.metadata.level + titlesMap[block.type],
+                      href: `title-${block.key}`
+                    } );
+                  }
+                } );
+              }
+              return [
+                ...resLoc,
+                ...newItems
+              ];
+          }, [] )
         ];
       case 'glossary':
         return [

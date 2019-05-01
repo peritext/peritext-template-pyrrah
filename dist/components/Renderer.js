@@ -80,9 +80,11 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': children => children.map((child, index) => _react.default.createElement("div", {
+    'unstyled': (children, {
+      keys
+    }) => children.map((child, index) => _react.default.createElement("div", {
       className: 'unstyled',
-      key: index
+      key: keys[index]
     }, child)),
     'blockquote': (children, index) => _react.default.createElement("blockquote", {
       key: index
@@ -90,38 +92,38 @@ const renderers = {
     'header-one': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h1", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     'header-two': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h2", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     'header-three': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h3", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     'header-four': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h4", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     'header-five': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h5", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     'header-six': (children, {
       keys
     }) => children.map((child, index) => _react.default.createElement("h6", {
-      key: index,
-      id: keys[index]
+      key: keys[index],
+      id: `title-${keys[index]}`
     }, child)),
     // You can also access the original keys of the blocks
     'code-block': (children, {

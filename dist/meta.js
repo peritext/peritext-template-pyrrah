@@ -29,7 +29,8 @@ module.exports = {
     }, {
       type: 'tableOfContents',
       data: {
-        displayPageNumber: true
+        displayPageNumber: true,
+        level: 0
       }
     }, {
       type: 'sections',
@@ -135,6 +136,11 @@ module.exports = {
         displayPageNumber: {
           type: 'boolean',
           description: 'whether to display page number'
+        },
+        level: {
+          type: 'number',
+          enum: [0, 1, 2, 3, 4],
+          description: 'level to use for displaying items in the table of contents'
         }
       },
       default: {
