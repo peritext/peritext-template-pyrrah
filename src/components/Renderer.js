@@ -46,11 +46,11 @@ const renderers = {
    * Note that children are an array of blocks with same styling,
    */
   blocks: {
-    'unstyled': ( children ) => children.map( ( child, index ) =>
+    'unstyled': ( children, { keys } ) => children.map( ( child, index ) =>
       (
         <div
           className={ 'unstyled' }
-          key={ index }
+          key={ keys[index] }
         >
           {child}
         </div>
@@ -58,48 +58,48 @@ const renderers = {
     'blockquote': ( children, index ) => <blockquote key={ index } >{addBreaklines( children )}</blockquote>,
     'header-one': ( children, { keys } ) => children.map( ( child, index ) => (
       <h1
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h1>
     ) ),
     'header-two': ( children, { keys } ) => children.map( ( child, index ) => (
       <h2
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h2>
     ) ),
     'header-three': ( children, { keys } ) => children.map( ( child, index ) => (
       <h3
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h3>
     ) ),
     'header-four': ( children, { keys } ) => children.map( ( child, index ) => (
       <h4
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h4>
     ) ),
     'header-five': ( children, { keys } ) => children.map( ( child, index ) => (
       <h5
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h5>
     ) ),
     'header-six': ( children, { keys } ) => children.map( ( child, index ) => (
       <h6
-        key={ index }
-        id={ keys[index] }
+        key={ keys[index] }
+        id={ `title-${keys[index]}` }
       >
         {child}
       </h6>

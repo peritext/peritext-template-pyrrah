@@ -530,7 +530,10 @@ figure + .unstyled,
 {
    position: relative;
    top: .25em;
-   min-width: 20px;
+   min-width: 50px;
+}
+.table-of-contents .table-of-contents-element .page-link{
+  text-align: right;
 }
 .table-of-contents .table-of-contents-element.level-0{
 }
