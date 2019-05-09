@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _lodash = require("lodash");
+var _uniq = _interopRequireDefault(require("lodash/uniq"));
 
 var _reactCiteproc = require("react-citeproc");
 
@@ -22,8 +22,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * Builds an interactive bibliography for a given edition
- * @returns {ReactMarkup}
+ * Computes interactive bibliography materials
+ * @return {array} items - list of context-loaded items
  */
 function buildBibliography({
   production,
@@ -36,10 +36,6 @@ function buildBibliography({
   sortingAscending
 }) {
   const {
-    /*
-     * contextualizations,
-     * contextualizers,
-     */
     resources
   } = production;
   /**
@@ -47,7 +43,7 @@ function buildBibliography({
    */
   // filter cited references only
 
-  let citedResourcesIds = showUncitedReferences ? Object.keys(resources) : (0, _lodash.uniq)(contextualizations.map(element => {
+  let citedResourcesIds = showUncitedReferences ? Object.keys(resources) : (0, _uniq.default)(contextualizations.map(element => {
     const contextualization = element.contextualization;
     return contextualization.resourceId;
   })); // filter by type of resource
@@ -56,53 +52,50 @@ function buildBibliography({
     const type = resources[resourceId].metadata.type;
     return resourceTypes.includes(type);
   });
-  let items = citedResourcesIds.map(resourceId => {
-    const cit = (0, _peritextUtils.resourceToCslJSON)(resources[resourceId]);
-    const citationKey = cit && cit[0] && cit[0].id;
-    const mentions = contextualizations.map(element => {
-      if (element.contextualization.resourceId === resourceId) {
-        return _objectSpread({}, element, {
-          id: element.contextualization.id
-        });
-      }
-    }).filter(s => s);
-    let biblio;
+  const resourcesMap = citedResourcesIds.reduce((res, resourceId) => {
+    const mentions = contextualizations.filter(c => c.contextualization.resourceId === resourceId).map(c => _objectSpread({}, c, {
+      id: c.contextualization.id,
+      contextContent: (0, _peritextUtils.buildContextContent)(production, c.contextualization.id)
+    }));
+    const citation = (0, _peritextUtils.resourceToCslJSON)(resources[resourceId])[0];
 
-    if (citations.citationItems[citationKey]) {
-      biblio = (0, _reactCiteproc.makeBibliography)(citations.citationItems, edition.data.citationStyle.data, edition.data.citationLocale.data, {
-        select: [{
-          field: 'id',
-          value: citationKey
-        }]
-      });
-    } else {
-      biblio = (0, _reactCiteproc.makeBibliography)({
-        [resourceId]: _objectSpread({}, cit[0], {
-          id: resourceId
+    if (resources[resourceId].metadata.type === 'bib') {
+      return _objectSpread({}, res, {
+        [resources[resourceId].data[0].id]: _objectSpread({}, resources[resourceId], {
+          citation,
+          mentions
         })
-      }, edition.data.citationStyle.data, edition.data.citationLocale.data, {
-        select: [{
-          field: 'id',
-          value: resourceId
-        }]
       });
     }
 
-    const title = biblio && biblio[1] && biblio[1][0];
-    return {
-      citationKey,
-      title,
-      item: citations.citationItems[citationKey] || cit[0],
-      mentions: mentions.map(mention => _objectSpread({}, mention, {
-        contextContent: (0, _peritextUtils.buildContextContent)(production, mention.id)
-      }))
-    };
-  });
+    return _objectSpread({}, res, {
+      [resourceId]: _objectSpread({}, resources[resourceId], {
+        mentions,
+        citation
+      })
+    });
+  }, {});
+  const bibliographyData = (0, _reactCiteproc.makeBibliography)(citations.citationItems, edition.data.citationStyle.data, edition.data.citationLocale.data);
+  const ids = bibliographyData[0].entry_ids.map(group => group[0]);
+  let items = ids // .filter( ( id ) => resourcesMap[id] )
+  .map((id, index) => ({
+    id,
+    resource: resourcesMap[id],
+    citation: resourcesMap[id] && resourcesMap[id].citation,
+    html: bibliographyData[1][index]
+  })).filter(i => i.citation);
   items = items.sort((a, b) => {
     switch (sortingKey) {
+      case 'mentions':
+        if (a.resource.mentions.length > b.resource.mentions.length) {
+          return -1;
+        }
+
+        return 1;
+
       case 'date':
-        const datePartsA = a.item.issued && a.item.issued['date-parts'];
-        const datePartsB = b.item.issued && b.item.issued['date-parts'];
+        const datePartsA = a.citation.issued && a.citation.issued['date-parts'];
+        const datePartsB = b.citation.issued && b.citation.issued['date-parts'];
 
         if (datePartsA && datePartsB && datePartsA.length && datePartsB.length) {
           if (datePartsA[0] > datePartsB[0]) {
@@ -127,21 +120,21 @@ function buildBibliography({
         }
 
       case 'authors':
-        if (a.item.author && b.item.author) {
-          const authorsA = a.item.author && a.item.author.map(author => `${author.family}-${author.given}`.toLowerCase()).join('');
-          const authorsB = b.item.author && b.item.author.map(author => `${author.family}-${author.given}`.toLowerCase()).join('');
+        if (a.citation.author && b.citation.author) {
+          const authorsA = a.citation.author && a.citation.author.map(author => `${author.family}-${author.given}`.toLowerCase()).join('');
+          const authorsB = b.citation.author && b.citation.author.map(author => `${author.family}-${author.given}`.toLowerCase()).join('');
 
           if (authorsA > authorsB) {
             return 1;
           } else return -1;
-        } else if (!b.item.author) {
+        } else if (!b.citation.author) {
           return -1;
-        } else if (!a.item.author) {
+        } else if (!a.citation.author) {
           return 1;
         } else return 0;
 
       case 'title':
-        if (a.item.title.toLowerCase() > b.item.title.toLowerCase()) {
+        if (a.citation.title.toLowerCase() > b.citation.title.toLowerCase()) {
           return 1;
         }
 
@@ -170,7 +163,7 @@ const References = ({
     sortingKey: 'authors',
     sortingAscending: true
   },
-  citations,
+  // citations,
   citationStyle,
   citationLocale,
   id,
@@ -190,11 +183,8 @@ const References = ({
   } = data; // const LinkComponent = propLinkComponent || contextLinkComponent;
 
   const MentionComponent = propMentionComponent || contextMentionComponent;
-  /**
-   * @todo compute citations based on edition
-   */
-
   const contextualizations = (0, _peritextUtils.getContextualizationsFromEdition)(production, edition);
+  const citations = (0, _peritextUtils.buildCitations)(production);
   const references = buildBibliography({
     production,
     edition,
@@ -220,7 +210,7 @@ const References = ({
   }, customTitle || translate('References')), _react.default.createElement("ul", {
     className: 'mentions-container'
   }, references.map((entry, index) => {
-    const entryName = entry.title;
+    // const entryName = entry.title;
     return _react.default.createElement("li", {
       key: index,
       id: entry.citationKey,
@@ -229,11 +219,11 @@ const References = ({
       className: 'title'
     }, _react.default.createElement("div", {
       dangerouslySetInnerHTML: {
-        __html: entryName
+        __html: entry.html
         /* eslint react/no-danger: 0 */
 
       }
-    })), showMentions && entry.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
+    })), showMentions && entry.mentions && entry.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
       className: 'mentions-list'
     }, entry.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
       const {
