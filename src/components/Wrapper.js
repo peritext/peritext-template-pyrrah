@@ -450,7 +450,7 @@ export default class Template extends Component {
       additionalHTML = '',
     } = data;
 
-    const citations = buildCitations( production );
+    const citations = buildCitations( { production, edition } );
     const finalStyles = updateStyles( { edition, contextualizers } );
 
     /**

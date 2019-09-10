@@ -184,7 +184,10 @@ const References = ({
 
   const MentionComponent = propMentionComponent || contextMentionComponent;
   const contextualizations = (0, _peritextUtils.getContextualizationsFromEdition)(production, edition);
-  const citations = (0, _peritextUtils.buildCitations)(production);
+  const citations = (0, _peritextUtils.buildCitations)({
+    production,
+    edition
+  });
   const references = buildBibliography({
     production,
     edition,

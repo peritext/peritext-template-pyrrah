@@ -201,7 +201,7 @@ const References = ( {
   const MentionComponent = propMentionComponent || contextMentionComponent;
 
   const contextualizations = getContextualizationsFromEdition( production, edition );
-  const citations = buildCitations( production );
+  const citations = buildCitations( { production, edition } );
 
   const references = buildBibliography( {
     production,

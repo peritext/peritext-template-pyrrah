@@ -425,7 +425,10 @@ class Template extends _react.Component {
     const {
       additionalHTML = ''
     } = data;
-    const citations = (0, _peritextUtils.buildCitations)(production);
+    const citations = (0, _peritextUtils.buildCitations)({
+      production,
+      edition
+    });
     const finalStyles = updateStyles({
       edition,
       contextualizers
