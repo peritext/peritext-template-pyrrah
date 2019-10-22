@@ -478,6 +478,14 @@ figure + .unstyled,
 .title-page .title-page-footer{
   font-style: italic;
 }
+.front-cover svg {
+  // position: relative;
+  // left: 0;
+  // top: 0;
+  // width: 100%;
+  // height: 100%;
+  // transform: scale(1.1);
+}
 /* colophon components */
 .colophon-content{
   position: absolute;

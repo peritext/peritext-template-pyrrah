@@ -21,10 +21,21 @@ var _default = ({
   data: {
     backgroundColor,
     customCoverFooter,
-    animatedBackground
+    animatedBackground,
+    svgData
   } = {},
   id
 }) => {
+  if (svgData) {
+    return _react.default.createElement("section", {
+      id: 'front-cover',
+      className: `composition-block front-cover`,
+      dangerouslySetInnerHTML: {
+        __html: svgData
+      }
+    });
+  }
+
   const {
     data: editionData = {}
   } = edition;

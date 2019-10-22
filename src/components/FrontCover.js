@@ -11,9 +11,21 @@ export default ( {
     backgroundColor,
     customCoverFooter,
     animatedBackground,
+    svgData
   } = {},
   id
 } ) => {
+  if (svgData) {
+    return (
+      <section
+        id={ 'front-cover' }
+        className={ `composition-block front-cover`}
+        dangerouslySetInnerHTML = {{
+          __html: svgData
+        }}
+      />
+    )
+  }
   const {
     data: editionData = {}
   } = edition;
