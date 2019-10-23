@@ -38,7 +38,7 @@ const BlockAssetWrapper = ({
   const containerId = context.containerId;
   const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
-  const resource = production.resources[contextualization.resourceId];
+  const resource = production.resources[contextualization.sourceId];
   const dimensions = context.dimensions || {};
   const fixedPresentationId = context.fixedPresentationId; // const onPresentationExit = context.onPresentationExit;
 

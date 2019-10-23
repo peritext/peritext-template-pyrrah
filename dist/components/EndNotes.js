@@ -42,7 +42,7 @@ var _default = ({
   className: 'section-title'
 }, title || translate('Notes')), _react.default.createElement("ol", {
   className: 'end-notes'
-}, sectionsOrder.reduce((results, sectionId) => results.concat(Object.keys(sections[sectionId].notes).map(thatId => _objectSpread({}, sections[sectionId].notes[thatId], {
+}, sectionsOrder.reduce((results, sectionId) => results.concat(Object.keys(sections[sectionId].data.contents.notes).map(thatId => _objectSpread({}, sections[sectionId].data.contents.notes[thatId], {
   id: thatId
 }))), []).map((note, index) => {
   return _react.default.createElement("li", {

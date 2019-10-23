@@ -39,7 +39,7 @@ function buildBibliography ( {
     uniq(
       contextualizations.map( ( element ) => {
         const contextualization = element.contextualization;
-        return contextualization.resourceId;
+        return contextualization.sourceId;
       } )
     );
 
@@ -49,7 +49,7 @@ function buildBibliography ( {
     return resourceTypes.includes( type );
   } );
   const resourcesMap = citedResourcesIds.reduce( ( res, resourceId ) => {
-    const mentions = contextualizations.filter( ( c ) => c.contextualization.resourceId === resourceId )
+    const mentions = contextualizations.filter( ( c ) => c.contextualization.sourceId === resourceId )
     .map( ( c ) => ( {
       ...c,
       id: c.contextualization.id,

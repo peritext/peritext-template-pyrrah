@@ -12,7 +12,7 @@ class Section extends Component {
   }
 
   getChildContext = () => ( {
-    notes: this.props.section.notes
+    notes: this.props.section.data.contents.notes
   } )
 
   render = () => {

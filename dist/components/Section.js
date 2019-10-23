@@ -28,7 +28,7 @@ class Section extends _react.Component {
     super(props);
 
     _defineProperty(this, "getChildContext", () => ({
-      notes: this.props.section.notes
+      notes: this.props.section.data.contents.notes
     }));
 
     _defineProperty(this, "render", () => {
