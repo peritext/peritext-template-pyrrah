@@ -83,8 +83,7 @@ const updateStyles = props => {
 
 
 const buildToc = (production, edition, translate) => {
-  const summary = edition.data.plan.summary; // returns [{level, title, href}]
-
+  const summary = edition.data.plan.summary;
   const tocEl = summary.find(el => el.type === 'tableOfContents');
   const level = tocEl && +tocEl.data.level || 0;
   return summary.reduce((res, element) => {
@@ -123,8 +122,11 @@ const buildToc = (production, edition, translate) => {
           const {
             summary: thatCustomSummary
           } = customSummary;
-          return [...res, ...thatCustomSummary.reduce((resLoc, el) => {
-            const thatSection = production.sections[el.id];
+          return [...res, ...thatCustomSummary.reduce((resLoc, {
+            resourceId,
+            level: thatLevel
+          }) => {
+            const thatSection = production.resources[resourceId];
             const titlesMap = {
               'header-one': 1,
               'header-two': 2,
@@ -133,17 +135,17 @@ const buildToc = (production, edition, translate) => {
             };
             const newItems = [{
               title: thatSection && thatSection.metadata.title,
-              level: el.level,
-              href: `section-${id}-${el.id}`
+              level: thatLevel,
+              href: `section-${id}-${resourceId}`
             }];
 
             if (level > 0) {
-              const blocks = thatSection.contents.blocks;
+              const blocks = thatSection.data.contents.contents.blocks;
               blocks.forEach(block => {
                 if (titlesMap[block.type]) {
                   newItems.push({
                     title: block.text,
-                    level: el.level + titlesMap[block.type],
+                    level: thatLevel + titlesMap[block.type],
                     href: `title-${block.key}`
                   });
                 }
@@ -154,8 +156,11 @@ const buildToc = (production, edition, translate) => {
           }, []).filter(s => s)];
         }
 
-        return [...res, ...production.sectionsOrder.reduce((resLoc, sectionId) => {
-          const thatSection = production.sections[sectionId];
+        return [...res, ...production.sectionsOrder.reduce((resLoc, {
+          resourceId,
+          level: thatLevel
+        }) => {
+          const thatSection = production.resources[resourceId];
           const titlesMap = {
             'header-one': 1,
             'header-two': 2,
@@ -164,17 +169,17 @@ const buildToc = (production, edition, translate) => {
           };
           const newItems = [{
             title: thatSection && thatSection.metadata.title,
-            level: thatSection.metadata.level,
-            href: `section-${id}-${sectionId}`
+            level: thatLevel,
+            href: `section-${id}-${resourceId}`
           }];
 
           if (level > 0) {
-            const blocks = thatSection.contents.blocks;
+            const blocks = thatSection.data.contents.contents.blocks;
             blocks.forEach(block => {
               if (titlesMap[block.type]) {
                 newItems.push({
                   title: block.text,
-                  level: thatSection.metadata.level + titlesMap[block.type],
+                  level: thatLevel + titlesMap[block.type],
                   href: `title-${block.key}`
                 });
               }
@@ -206,7 +211,7 @@ const buildToc = (production, edition, translate) => {
 
 const buildSectionBlockSummary = (sectionBlock, production) => {
   if (sectionBlock.data.customSummary && sectionBlock.data.customSummary.active) {
-    return sectionBlock.data.customSummary.summary.map(el => el.id);
+    return sectionBlock.data.customSummary.summary;
   }
 
   return production.sectionsOrder;
@@ -231,12 +236,14 @@ const Sections = ({
     // @todo handle custom sections order
     return [...res, ...buildSectionBlockSummary(sectionBlock, production)];
   }, []);
-  return [...sectionsIds.map((sectionId, index) => {
-    const section = production.sections[sectionId];
+  return [...sectionsIds.map(({
+    resourceId
+  }, index) => {
+    const section = production.resources[resourceId];
     return _react.default.createElement(_Section.default, {
       section: section,
       notesPosition: notesPosition,
-      key: `${index}-${sectionId}`,
+      key: `${index}-${resourceId}`,
       production: production,
       containerId: id,
       translate: translate,

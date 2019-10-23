@@ -27,7 +27,11 @@ class Section extends Component {
           subtitle,
           authors = [],
         },
-        contents,
+        data: {
+          contents: {
+            contents
+          }
+        },
       },
       containerId,
       notesPosition,

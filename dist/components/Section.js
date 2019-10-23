@@ -43,7 +43,11 @@ class Section extends _react.Component {
             subtitle,
             authors = []
           },
-          contents
+          data: {
+            contents: {
+              contents
+            }
+          }
         },
         containerId,
         notesPosition,

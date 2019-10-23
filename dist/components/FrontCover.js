@@ -29,8 +29,9 @@ var _default = ({
   if (svgData) {
     return _react.default.createElement("section", {
       id: 'front-cover',
-      className: `composition-block front-cover`,
+      className: 'composition-block front-cover',
       dangerouslySetInnerHTML: {
+        /* eslint react/no-danger : 0 */
         __html: svgData
       }
     });

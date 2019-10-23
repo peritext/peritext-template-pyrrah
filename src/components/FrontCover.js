@@ -15,16 +15,16 @@ export default ( {
   } = {},
   id
 } ) => {
-  if (svgData) {
+  if ( svgData ) {
     return (
       <section
         id={ 'front-cover' }
-        className={ `composition-block front-cover`}
-        dangerouslySetInnerHTML = {{
+        className={ 'composition-block front-cover' }
+        dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
           __html: svgData
-        }}
+        } }
       />
-    )
+    );
   }
   const {
     data: editionData = {}
