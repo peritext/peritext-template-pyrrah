@@ -60,7 +60,7 @@ function buildBibliography ( {
     if ( resources[resourceId].metadata.type === 'bib' ) {
       return {
         ...res,
-        [resources[resourceId].data[0].id]: {
+        [resources[resourceId].data.citations[0].id]: {
           ...resources[resourceId],
           citation,
           mentions,
@@ -252,14 +252,14 @@ const References = ( {
                 </div>
                 {
                   showMentions &&
-                  entry.mentions &&
-                  entry.mentions
+                  entry.resource.mentions &&
+                  entry.resource.mentions
                       .find( ( mention ) => mention && mention.contextContent )
                     &&
 
                     <div className={ 'mentions-list' }>
                       {
-                      entry.mentions
+                      entry.resource.mentions
                       .filter( ( mention ) => mention !== undefined && mention.contextContent )
                       .map( ( mention, count ) => {
                         const {

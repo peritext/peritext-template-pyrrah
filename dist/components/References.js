@@ -61,7 +61,7 @@ function buildBibliography({
 
     if (resources[resourceId].metadata.type === 'bib') {
       return _objectSpread({}, res, {
-        [resources[resourceId].data[0].id]: _objectSpread({}, resources[resourceId], {
+        [resources[resourceId].data.citations[0].id]: _objectSpread({}, resources[resourceId], {
           citation,
           mentions
         })
@@ -226,9 +226,9 @@ const References = ({
         /* eslint react/no-danger: 0 */
 
       }
-    })), showMentions && entry.mentions && entry.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
+    })), showMentions && entry.resource.mentions && entry.resource.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
       className: 'mentions-list'
-    }, entry.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
+    }, entry.resource.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
       const {
         contextContent: {
           /*
