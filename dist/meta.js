@@ -152,7 +152,7 @@ module.exports = {
       properties: {
         customSummary: {
           type: 'object',
-          uiType: 'customSummary',
+          uiType: 'customSectionsSummary',
           properties: {
             active: {
               type: 'boolean'
@@ -222,7 +222,7 @@ module.exports = {
       type: 'object',
       default: {
         showUncitedReferences: false,
-        showMentions: false,
+        showMentions: true,
         resourceTypes: ['bib'],
         sortingKey: 'date',
         sortingAscending: true
@@ -253,6 +253,59 @@ module.exports = {
         sortingAscending: {
           type: 'boolean',
           description: 'whether to sort references in ascending order'
+        }
+      }
+    },
+    resourceSections: {
+      type: 'object',
+      default: {
+        resourceTypes: ['glossary'],
+        customSummary: {
+          active: false,
+          summary: []
+        },
+        notesPosition: 'footnotes',
+        level: 0
+      },
+      properties: {
+        level: {
+          type: 'number'
+        },
+        resourceTypes: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: ['bib', 'image', 'table', 'video', 'embed', 'webpage', 'glossary']
+          },
+          uiType: 'select',
+          description: 'which types of resources to show as references'
+        },
+        customSummary: {
+          type: 'object',
+          uiType: 'customResourcesSummary',
+          properties: {
+            active: {
+              type: 'boolean'
+            },
+            summary: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  resourceId: {
+                    type: 'string'
+                  },
+                  level: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
+          }
+        },
+        notesPosition: {
+          type: 'string',
+          enum: ['footnotes', 'endOfSections']
         }
       }
     },

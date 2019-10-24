@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { buildCitations } from 'peritext-utils';
+import { buildCitations, resourceHasContents, defaultSortResourceSections, getResourceTitle } from 'peritext-utils';
 
 import FrontCover from './FrontCover';
 import TitlePage from './TitlePage';
@@ -15,6 +15,7 @@ import DefaultMentionComponent from './DefaultMentionComponent';
 import DefaultSectionLinkComponent from './DefaultSectionLinkComponent';
 import MarkdownPlayer from './MarkdownPlayer';
 import TableOfContents from './TableOfContents';
+import ResourceSections from './ResourceSections';
 
 import Section from './Section';
 
@@ -91,8 +92,9 @@ const buildToc = ( production, edition, translate ) => {
         }
         return res;
       case 'sections':
+      case 'resourceSections':
         const { id } = element;
-        const { customSummary = { active: false } } = data;
+        const { customSummary = { active: false }, level: blockLevel = 0 } = data;
         if ( customSummary.active ) {
           const { summary: thatCustomSummary } = customSummary;
           return [
@@ -106,8 +108,8 @@ const buildToc = ( production, edition, translate ) => {
                 'header-four': 4,
               };
               const newItems = [ {
-                title: thatSection && thatSection.metadata.title,
-                level: thatLevel,
+                title: getResourceTitle( thatSection ),
+                level: blockLevel + thatLevel,
                 href: `section-${id}-${resourceId}`
               } ];
               if ( level > 0 ) {
@@ -116,7 +118,7 @@ const buildToc = ( production, edition, translate ) => {
                   if ( titlesMap[block.type] ) {
                     newItems.push( {
                       title: block.text,
-                      level: thatLevel + titlesMap[block.type],
+                      level: blockLevel + thatLevel + titlesMap[block.type],
                       href: `title-${block.key}`
                     } );
                   }
@@ -131,6 +133,48 @@ const buildToc = ( production, edition, translate ) => {
             .filter( ( s ) => s )
           ];
         }
+        else if ( element.type === 'resourceSections' ) {
+          return [
+            ...res,
+            ...Object.keys( production.resources )
+            .filter( ( resourceId ) => {
+              const resource = production.resources[resourceId];
+              return data.resourceTypes.includes( resource.metadata.type ) && resourceHasContents( resource );
+            } )
+            .sort( defaultSortResourceSections )
+            .reduce( ( resLoc, resourceId ) => {
+                const thatSection = production.resources[resourceId];
+                const thatLevel = 0;
+                const titlesMap = {
+                  'header-one': 1,
+                  'header-two': 2,
+                  'header-three': 3,
+                  'header-four': 4,
+                };
+                const newItems = [ {
+                  title: getResourceTitle( thatSection ),
+                  level: blockLevel + thatLevel,
+                  href: `section-${id}-${resourceId}`
+                } ];
+                if ( level > 0 ) {
+                  const blocks = thatSection.data.contents.contents.blocks;
+                  blocks.forEach( ( block ) => {
+                    if ( titlesMap[block.type] ) {
+                      newItems.push( {
+                        title: block.text,
+                        level: blockLevel + thatLevel + titlesMap[block.type],
+                        href: `title-${block.key}`
+                      } );
+                    }
+                  } );
+                }
+                return [
+                  ...resLoc,
+                  ...newItems
+                ];
+            }, [] )
+          ];
+        }
         return [
           ...res,
           ...production.sectionsOrder.reduce( ( resLoc, { resourceId, level: thatLevel } ) => {
@@ -142,8 +186,8 @@ const buildToc = ( production, edition, translate ) => {
                 'header-four': 4,
               };
               const newItems = [ {
-                title: thatSection && thatSection.metadata.title,
-                level: thatLevel,
+                title: getResourceTitle( thatSection ),
+                level: blockLevel + thatLevel,
                 href: `section-${id}-${resourceId}`
               } ];
               if ( level > 0 ) {
@@ -152,7 +196,7 @@ const buildToc = ( production, edition, translate ) => {
                   if ( titlesMap[block.type] ) {
                     newItems.push( {
                       title: block.text,
-                      level: thatLevel + titlesMap[block.type],
+                      level: blockLevel + thatLevel + titlesMap[block.type],
                       href: `title-${block.key}`
                     } );
                   }
@@ -393,6 +437,21 @@ const renderSummary = ( {
             { ...element }
           />
         );
+        case 'resourceSections':
+            return (
+              <ResourceSections
+                key={ index }
+                production={ production }
+                edition={ edition }
+                translate={ translate }
+                citations={ citations }
+                citationStyle={ citationStyle }
+                citationLocale={ citationLocale }
+                publicationTitle={ finalTitle }
+                publicationSubtitle={ finalSubtitle }
+                { ...element }
+              />
+            );
 
       default:
         return (

@@ -7,6 +7,7 @@ import {
   buildContextContent,
   getContextualizationsFromEdition,
   resourceToCslJSON,
+  getContextualizationMentions,
   buildCitations,
 } from 'peritext-utils';
 
@@ -37,7 +38,7 @@ function buildBibliography ( {
     Object.keys( resources )
     :
     uniq(
-      contextualizations.map( ( element ) => {
+      getContextualizationsFromEdition( production, edition ).map( ( element ) => {
         const contextualization = element.contextualization;
         return contextualization.sourceId;
       } )
@@ -50,11 +51,18 @@ function buildBibliography ( {
   } );
   const resourcesMap = citedResourcesIds.reduce( ( res, resourceId ) => {
     const mentions = contextualizations.filter( ( c ) => c.contextualization.sourceId === resourceId )
-    .map( ( c ) => ( {
-      ...c,
-      id: c.contextualization.id,
-      contextContent: buildContextContent( production, c.contextualization.id )
-    } ) );
+    .map( ( c ) => c.contextualization.id ) // contextualizations.filter( ( c ) => c.contextualization.sourceId === resourceId )
+    .map( ( contextualizationId ) => getContextualizationMentions( { contextualizationId, production, edition } ) )
+
+    .reduce( ( res2, contextualizationMentions ) => [
+      ...res2,
+      ...contextualizationMentions.map( ( { containerId, contextualizationId } ) => ( {
+        id: contextualizationId,
+        containerId,
+        contextContent: buildContextContent( production, contextualizationId )
+      } ) )
+
+    ], [] );
 
     const citation = resourceToCslJSON( resources[resourceId] )[0];
     if ( resources[resourceId].metadata.type === 'bib' ) {

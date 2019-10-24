@@ -4,6 +4,7 @@ import Renderer from './Renderer';
 import EndNotes from './EndNotes';
 import Authors from './Authors';
 import { ReferencesManager } from 'react-citeproc';
+import { getResourceTitle } from 'peritext-utils';
 
 class Section extends Component {
   constructor( props ) {
@@ -20,10 +21,11 @@ class Section extends Component {
       citations,
       citationStyle,
       citationLocale,
+      className = '',
       section: {
         id,
         metadata: {
-          title,
+          // title,
           subtitle,
           authors = [],
         },
@@ -39,10 +41,12 @@ class Section extends Component {
       translate,
       publicationTitle,
       publicationSubtitle,
+      level = 0,
     } = this.props;
+    const title = getResourceTitle( this.props.section );
     return (
       <section
-        className={ `section has-notes-position-${notesPosition}` }
+        className={ `section has-notes-position-${notesPosition} level-${level} ${className}` }
         title={ title }
         id={ `section-${containerId}-${id}` }
       >

@@ -17,6 +17,8 @@ var _Authors = _interopRequireDefault(require("./Authors"));
 
 var _reactCiteproc = require("react-citeproc");
 
+var _peritextUtils = require("peritext-utils");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
@@ -36,10 +38,11 @@ class Section extends _react.Component {
         citations,
         citationStyle,
         citationLocale,
+        className = '',
         section: {
           id,
           metadata: {
-            title,
+            // title,
             subtitle,
             authors = []
           },
@@ -54,10 +57,12 @@ class Section extends _react.Component {
         production,
         translate,
         publicationTitle,
-        publicationSubtitle
+        publicationSubtitle,
+        level = 0
       } = this.props;
+      const title = (0, _peritextUtils.getResourceTitle)(this.props.section);
       return _react.default.createElement("section", {
-        className: `section has-notes-position-${notesPosition}`,
+        className: `section has-notes-position-${notesPosition} level-${level} ${className}`,
         title: title,
         id: `section-${containerId}-${id}`
       }, _react.default.createElement(_reactCiteproc.ReferencesManager, {

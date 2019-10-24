@@ -212,6 +212,9 @@ const style = `
   page: section;
   page-break-before: right;
 }
+.section.resource-section{
+  page-break-before: never;
+}
 
 .glossary{
   page: peritext;
@@ -605,6 +608,9 @@ figure + .unstyled,
 
 .section-title{
   margin-top: 50%;
+}
+.resource-section .section-title{
+  margin-top: 0;
 }
 
 /* front cover and back cover */

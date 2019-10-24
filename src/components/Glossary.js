@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ReferencesManager } from 'react-citeproc';
+import { uniq } from 'lodash';
 
 import MarkdownPlayer from './MarkdownPlayer';
 
 import {
   buildContextContent,
-  getContextualizationsFromEdition
+  getContextualizationsFromEdition,
+  getContextualizationMentions
 } from 'peritext-utils';
 
 const buildGlossary = ( {
@@ -15,7 +17,6 @@ const buildGlossary = ( {
   options
 } ) => {
   const {
-    contextualizers,
     resources
   } = production;
 
@@ -24,60 +25,20 @@ const buildGlossary = ( {
       glossaryTypes = [ 'person', 'place', 'event', 'notion', 'other' ]
     } = options;
 
-  let items;
+  // let items;
   const usedContextualizations = getContextualizationsFromEdition( production, edition );
-  if ( showUncited ) {
-    items = Object.keys( production.resources )
-        .filter( ( resourceId ) => production.resources[resourceId].metadata.type === 'glossary' )
-        .map( ( resourceId ) => production.resources[resourceId] )
-        .map( ( resource ) => {
-          return {
-            resource,
-            mentions: usedContextualizations.filter( ( c ) => c.contextualization.sourceId === resource.id )
-          };
-        } );
-  }
- else {
-    items = usedContextualizations
-      .filter( ( element ) => {
-        const contextualization = element.contextualization;
-        const contextualizerId = contextualization.contextualizerId;
-        const contextualizer = contextualizers[contextualizerId];
-        return contextualizer && contextualizer.type === 'glossary';
-      } )
-      .map( ( element ) => {
-        const contextualization = element.contextualization;
-        return {
-          ...contextualization,
-          contextualizer: contextualizers[contextualization.contextualizerId],
-          resource: resources[contextualization.sourceId],
-          contextContent: buildContextContent( production, contextualization.id ),
-          containerId: element.containerId,
-        };
-      } )
-      .reduce( ( entries, contextualization ) => {
-        return {
-          ...entries,
-          [contextualization.sourceId]: {
-            resource: contextualization.resource,
-            mentions: entries[contextualization.sourceId] ?
-                        entries[contextualization.sourceId].mentions.concat( contextualization )
-                        : [ contextualization ]
-          }
-        };
-      }, {} );
-      items = Object.keys( items ).map( ( resourceId ) => ( {
-        resource: items[resourceId].resource,
-        mentions: items[resourceId].mentions
-      } ) );
-  }
-
-  const glossaryMentions = items
-  .filter( ( item ) => {
-    return glossaryTypes.includes( item.resource.data.entryType );
+  const citedResourcesIds = (
+    showUncited ?
+      Object.keys( resources )
+      .filter( ( resourceId ) => resources[resourceId].metadata.type === 'glossary' )
+      :
+      uniq( usedContextualizations.filter( ( c ) => resources[c.contextualization.sourceId].metadata.type === 'glossary' ).map( ( c ) => c.contextualization.sourceId ) )
+  )
+  .filter( ( resourceId ) => {
+    return glossaryTypes.includes( resources[resourceId].data.entryType );
   } )
   .sort( ( a, b ) => {
-    if ( a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase() ) {
+    if ( resources[a].data.name.toLowerCase() > resources[b].data.name.toLowerCase() ) {
       return 1;
     }
     else {
@@ -85,7 +46,92 @@ const buildGlossary = ( {
     }
   } );
 
-  return glossaryMentions;
+  const items = citedResourcesIds.map( ( resourceId ) => {
+    const mentions = usedContextualizations.filter( ( c ) => c.contextualization.sourceId === resourceId )
+    .map( ( c ) => c.contextualization.id )
+    .map( ( contextualizationId ) => getContextualizationMentions( { contextualizationId, production, edition } ) )
+    .reduce( ( res2, contextualizationMentions ) => [
+      ...res2,
+      ...contextualizationMentions.map( ( { containerId, contextualizationId } ) => ( {
+        id: contextualizationId,
+        containerId,
+        contextContent: buildContextContent( production, contextualizationId )
+      } ) )
+
+    ], [] );
+    return {
+      resourceId,
+      resource: production.resources[resourceId],
+      mentions
+    };
+
+  } );
+
+  return items;
+
+  /*
+   * if ( showUncited ) {
+   *   items = Object.keys( production.resources )
+   *       .filter( ( resourceId ) => production.resources[resourceId].metadata.type === 'glossary' )
+   *       .map( ( resourceId ) => production.resources[resourceId] )
+   *       .map( ( resource ) => {
+   *         return {
+   *           resource,
+   *           mentions: usedContextualizations.filter( ( c ) => c.contextualization.sourceId === resource.id )
+   *         };
+   *       } );
+   * } else {
+   *   items = usedContextualizations
+   *     .filter( ( element ) => {
+   *       const contextualization = element.contextualization;
+   *       const contextualizerId = contextualization.contextualizerId;
+   *       const contextualizer = contextualizers[contextualizerId];
+   *       return contextualizer && contextualizer.type === 'glossary';
+   *     } )
+   *     .map( ( element ) => {
+   *       const contextualization = element.contextualization;
+   *       return {
+   *         ...contextualization,
+   *         contextualizer: contextualizers[contextualization.contextualizerId],
+   *         resource: resources[contextualization.sourceId],
+   *         contextContent: buildContextContent( production, contextualization.id ),
+   *         containerId: element.containerId,
+   *       };
+   *     } )
+   *     .reduce( ( entries, contextualization ) => {
+   *       return {
+   *         ...entries,
+   *         [contextualization.sourceId]: {
+   *           resource: contextualization.resource,
+   *           mentions: entries[contextualization.sourceId] ?
+   *                       entries[contextualization.sourceId].mentions.concat( contextualization )
+   *                       : [ contextualization ]
+   *         }
+   *       };
+   *     }, {} );
+   *     items = Object.keys( items ).map( ( resourceId ) => ( {
+   *       resource: items[resourceId].resource,
+   *       mentions: items[resourceId].mentions
+   *     } ) );
+   * }
+   */
+
+  /*
+   * const glossaryMentions = items
+   * .filter( ( item ) => {
+   *   return glossaryTypes.includes( item.resource.data.entryType );
+   * } )
+   * .sort( ( a, b ) => {
+   *   if ( a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase() ) {
+   *     return 1;
+   *   }
+   *   else {
+   *     return -1;
+   *   }
+   * } );
+   */
+
+  // return glossaryMentions;
 };
 
 const Glossary = ( {

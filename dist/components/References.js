@@ -43,7 +43,7 @@ function buildBibliography({
    */
   // filter cited references only
 
-  let citedResourcesIds = showUncitedReferences ? Object.keys(resources) : (0, _uniq.default)(contextualizations.map(element => {
+  let citedResourcesIds = showUncitedReferences ? Object.keys(resources) : (0, _uniq.default)((0, _peritextUtils.getContextualizationsFromEdition)(production, edition).map(element => {
     const contextualization = element.contextualization;
     return contextualization.sourceId;
   })); // filter by type of resource
@@ -53,10 +53,19 @@ function buildBibliography({
     return resourceTypes.includes(type);
   });
   const resourcesMap = citedResourcesIds.reduce((res, resourceId) => {
-    const mentions = contextualizations.filter(c => c.contextualization.sourceId === resourceId).map(c => _objectSpread({}, c, {
-      id: c.contextualization.id,
-      contextContent: (0, _peritextUtils.buildContextContent)(production, c.contextualization.id)
-    }));
+    const mentions = contextualizations.filter(c => c.contextualization.sourceId === resourceId).map(c => c.contextualization.id) // contextualizations.filter( ( c ) => c.contextualization.sourceId === resourceId )
+    .map(contextualizationId => (0, _peritextUtils.getContextualizationMentions)({
+      contextualizationId,
+      production,
+      edition
+    })).reduce((res2, contextualizationMentions) => [...res2, ...contextualizationMentions.map(({
+      containerId,
+      contextualizationId
+    }) => ({
+      id: contextualizationId,
+      containerId,
+      contextContent: (0, _peritextUtils.buildContextContent)(production, contextualizationId)
+    }))], []);
     const citation = (0, _peritextUtils.resourceToCslJSON)(resources[resourceId])[0];
 
     if (resources[resourceId].metadata.type === 'bib') {

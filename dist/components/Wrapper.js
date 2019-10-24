@@ -35,6 +35,8 @@ var _MarkdownPlayer = _interopRequireDefault(require("./MarkdownPlayer"));
 
 var _TableOfContents = _interopRequireDefault(require("./TableOfContents"));
 
+var _ResourceSections = _interopRequireDefault(require("./ResourceSections"));
+
 var _Section = _interopRequireDefault(require("./Section"));
 
 var _defaultStyle = _interopRequireDefault(require("../defaultStyle"));
@@ -109,13 +111,15 @@ const buildToc = (production, edition, translate) => {
         return res;
 
       case 'sections':
+      case 'resourceSections':
         const {
           id
         } = element;
         const {
           customSummary = {
             active: false
-          }
+          },
+          level: blockLevel = 0
         } = data;
 
         if (customSummary.active) {
@@ -134,8 +138,8 @@ const buildToc = (production, edition, translate) => {
               'header-four': 4
             };
             const newItems = [{
-              title: thatSection && thatSection.metadata.title,
-              level: thatLevel,
+              title: (0, _peritextUtils.getResourceTitle)(thatSection),
+              level: blockLevel + thatLevel,
               href: `section-${id}-${resourceId}`
             }];
 
@@ -145,7 +149,7 @@ const buildToc = (production, edition, translate) => {
                 if (titlesMap[block.type]) {
                   newItems.push({
                     title: block.text,
-                    level: thatLevel + titlesMap[block.type],
+                    level: blockLevel + thatLevel + titlesMap[block.type],
                     href: `title-${block.key}`
                   });
                 }
@@ -154,6 +158,40 @@ const buildToc = (production, edition, translate) => {
 
             return [...resLoc, ...newItems];
           }, []).filter(s => s)];
+        } else if (element.type === 'resourceSections') {
+          return [...res, ...Object.keys(production.resources).filter(resourceId => {
+            const resource = production.resources[resourceId];
+            return data.resourceTypes.includes(resource.metadata.type) && (0, _peritextUtils.resourceHasContents)(resource);
+          }).sort(_peritextUtils.defaultSortResourceSections).reduce((resLoc, resourceId) => {
+            const thatSection = production.resources[resourceId];
+            const thatLevel = 0;
+            const titlesMap = {
+              'header-one': 1,
+              'header-two': 2,
+              'header-three': 3,
+              'header-four': 4
+            };
+            const newItems = [{
+              title: (0, _peritextUtils.getResourceTitle)(thatSection),
+              level: blockLevel + thatLevel,
+              href: `section-${id}-${resourceId}`
+            }];
+
+            if (level > 0) {
+              const blocks = thatSection.data.contents.contents.blocks;
+              blocks.forEach(block => {
+                if (titlesMap[block.type]) {
+                  newItems.push({
+                    title: block.text,
+                    level: blockLevel + thatLevel + titlesMap[block.type],
+                    href: `title-${block.key}`
+                  });
+                }
+              });
+            }
+
+            return [...resLoc, ...newItems];
+          }, [])];
         }
 
         return [...res, ...production.sectionsOrder.reduce((resLoc, {
@@ -168,8 +206,8 @@ const buildToc = (production, edition, translate) => {
             'header-four': 4
           };
           const newItems = [{
-            title: thatSection && thatSection.metadata.title,
-            level: thatLevel,
+            title: (0, _peritextUtils.getResourceTitle)(thatSection),
+            level: blockLevel + thatLevel,
             href: `section-${id}-${resourceId}`
           }];
 
@@ -179,7 +217,7 @@ const buildToc = (production, edition, translate) => {
               if (titlesMap[block.type]) {
                 newItems.push({
                   title: block.text,
-                  level: thatLevel + titlesMap[block.type],
+                  level: blockLevel + thatLevel + titlesMap[block.type],
                   href: `title-${block.key}`
                 });
               }
@@ -378,6 +416,19 @@ const renderSummary = ({
           citations: citations,
           citationStyle: citationStyle,
           citationLocale: citationLocale
+        }, element));
+
+      case 'resourceSections':
+        return _react.default.createElement(_ResourceSections.default, _extends({
+          key: index,
+          production: production,
+          edition: edition,
+          translate: translate,
+          citations: citations,
+          citationStyle: citationStyle,
+          citationLocale: citationLocale,
+          publicationTitle: finalTitle,
+          publicationSubtitle: finalSubtitle
         }, element));
 
       default:
