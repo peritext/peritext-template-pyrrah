@@ -422,6 +422,13 @@ figure + .unstyled,
   padding: calc(.5 * var(--gutter-medium));
   padding-left: 0;
 }
+
+.inline-images-container img {
+  max-width: 2rem;
+  max-height: 1rem;
+  padding-right: .3rem;
+}
+
 /* vegaLite visualizations */
 .block-contextualization-container.vegaLite .vegaLite > div {
   display: flex;

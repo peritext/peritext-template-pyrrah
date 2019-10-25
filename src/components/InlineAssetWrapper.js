@@ -15,6 +15,8 @@ const InlineAssetWrapper = ( {
   if ( !contextualization ) {
     return null;
   }
+  const assets = context.productionAssets || {};
+
 
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.sourceId];
@@ -47,6 +49,7 @@ const InlineAssetWrapper = ( {
           contextualizer={ contextualizer }
           resource={ resource }
           renderingMode={ 'paged' }
+          assets={assets}
         >
           {children}
         </Component>
@@ -78,6 +81,7 @@ InlineAssetWrapper.contextTypes = {
   production: PropTypes.object,
   contextualizers: PropTypes.object,
   containerId: PropTypes.string,
+  productionAssets: PropTypes.object,
 };
 
 export default InlineAssetWrapper;

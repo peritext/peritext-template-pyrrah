@@ -31,6 +31,7 @@ const InlineAssetWrapper = ({
     return null;
   }
 
+  const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.sourceId];
   const contextualizers = context.contextualizers;
@@ -54,7 +55,8 @@ const InlineAssetWrapper = ({
       contextualization: contextualization,
       contextualizer: contextualizer,
       resource: resource,
-      renderingMode: 'paged'
+      renderingMode: 'paged',
+      assets: assets
     }, children));
   }
 
@@ -82,7 +84,8 @@ InlineAssetWrapper.propTypes = {
 InlineAssetWrapper.contextTypes = {
   production: _propTypes.default.object,
   contextualizers: _propTypes.default.object,
-  containerId: _propTypes.default.string
+  containerId: _propTypes.default.string,
+  productionAssets: _propTypes.default.object
 };
 var _default = InlineAssetWrapper;
 exports.default = _default;
