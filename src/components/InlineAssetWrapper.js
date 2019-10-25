@@ -17,7 +17,6 @@ const InlineAssetWrapper = ( {
   }
   const assets = context.productionAssets || {};
 
-
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.sourceId];
 
@@ -49,7 +48,7 @@ const InlineAssetWrapper = ( {
           contextualizer={ contextualizer }
           resource={ resource }
           renderingMode={ 'paged' }
-          assets={assets}
+          assets={ assets }
         >
           {children}
         </Component>
