@@ -49,32 +49,28 @@ const ResourceSections = ({
    */
 }) => {
   const {
-    // showMentions,
-    resourceTypes,
+    /*
+     * showMentions,
+     * resourceTypes,
+     */
     notesPosition,
-    customSummary,
-    level: inputLevel
-  } = data;
-  const blockLevel = !isNaN(inputLevel);
+
+    /*
+     * customSummary,
+     * level: inputLevel,
+     */
+    displayHeader = false
+  } = data; // const blockLevel = !isNaN( inputLevel );
+
   /*
    * const LinkComponent = propLinkComponent || contextLinkComponent;
    * const MentionComponent = propMentionComponent || contextMentionComponent;
    */
 
-  let summary;
-
-  if (customSummary && customSummary.active) {
-    summary = customSummary.summary;
-  } else {
-    summary = Object.keys(production.resources).filter(resourceId => {
-      const resource = production.resources[resourceId];
-      return resourceTypes.includes(resource.metadata.type) && (0, _peritextUtils.resourceHasContents)(resource);
-    }).map(resourceId => ({
-      resourceId,
-      level: blockLevel
-    })).sort(_peritextUtils.defaultSortResourceSections);
-  }
-
+  const summary = (0, _peritextUtils.buildResourceSectionsSummary)({
+    production,
+    options: data
+  });
   const citations = (0, _peritextUtils.buildCitations)({
     production
     /*edition*/
@@ -98,7 +94,8 @@ const ResourceSections = ({
       citationStyle: citationStyle,
       citationLocale: citationLocale,
       publicationTitle: publicationTitle,
-      publicationSubtitle: publicationSubtitle
+      publicationSubtitle: publicationSubtitle,
+      displayHeader: displayHeader
     });
   }), // @todo endnotes relative to sections and not to production sectionsOrder
   notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {

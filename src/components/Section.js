@@ -6,6 +6,8 @@ import Authors from './Authors';
 import { ReferencesManager } from 'react-citeproc';
 import { getResourceTitle } from 'peritext-utils';
 
+import ResourcePreview from './ResourcePreview';
+
 class Section extends Component {
   constructor( props ) {
     super( props );
@@ -41,6 +43,7 @@ class Section extends Component {
       translate,
       publicationTitle,
       publicationSubtitle,
+      displayHeader,
       level = 0,
     } = this.props;
     const title = getResourceTitle( this.props.section );
@@ -60,6 +63,11 @@ class Section extends Component {
           <h2 className={ 'composition-block-title section-title' }>{title}</h2>
           <em className={ 'section-title-running' }>{title}</em>
           <em className={ 'publication-title-running' }>{publicationTitle}</em>
+
+          {
+            displayHeader &&
+            <ResourcePreview resource={ this.props.section } />
+          }
 
           {subtitle && <h2 className={ 'section-subtitle' }>{subtitle}</h2>}
           {

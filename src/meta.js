@@ -283,7 +283,9 @@ module.exports = {
       },
       properties: {
         level: {
-          type: 'number'
+          type: 'number',
+          uiType: 'select',
+          enum: [ 0, 1, 2, 3, 4, 5, 6 ]
         },
         resourceTypes: {
           type: 'array',
@@ -292,7 +294,7 @@ module.exports = {
             enum: [ 'bib', 'image', 'table', 'video', 'embed', 'webpage', 'glossary' ]
           },
           uiType: 'select',
-          description: 'which types of resources to show as references'
+          description: 'which types of resources to show'
         },
         customSummary: {
           type: 'object',
@@ -316,6 +318,14 @@ module.exports = {
               }
             }
           }
+        },
+        hideEmptyResources: {
+          type: 'boolean',
+          description: 'whether to hide resources with no contents'
+        },
+        displayHeader: {
+          type: 'boolean',
+          description: 'whether to display resources headers in their views'
         },
         notesPosition: {
           type: 'string',

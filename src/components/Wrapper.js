@@ -134,12 +134,24 @@ const buildToc = ( production, edition, translate ) => {
           ];
         }
         else if ( element.type === 'resourceSections' ) {
+          const {
+            data: {
+              hideEmptyResources = false
+            }
+          } = element;
           return [
             ...res,
             ...Object.keys( production.resources )
             .filter( ( resourceId ) => {
               const resource = production.resources[resourceId];
-              return data.resourceTypes.includes( resource.metadata.type ) && resourceHasContents( resource );
+              return data.resourceTypes.includes( resource.metadata.type );
+            } )
+            .filter( ( resourceId ) => {
+              if ( hideEmptyResources ) {
+                const resource = production.resources[resourceId];
+                return resourceHasContents( resource );
+              }
+              return true;
             } )
             .sort( defaultSortResourceSections )
             .reduce( ( resLoc, resourceId ) => {
@@ -252,7 +264,10 @@ const Sections = ( {
   id,
 } ) => {
   const summary = edition.data.plan.summary;
-  const notesPosition = data.notesPosition || 'footnotes';
+  const {
+    notesPosition = 'footnotes',
+    displayHeader = false
+  } = data;
 
   const sectionsBlocks = summary.filter( ( s ) => s.type === 'sections' );
 
@@ -272,6 +287,7 @@ const Sections = ( {
           section={ section }
           notesPosition={ notesPosition }
           key={ `${index}-${resourceId}` }
+          displayHeader={ displayHeader }
           production={ production }
           containerId={ id }
           translate={ translate }

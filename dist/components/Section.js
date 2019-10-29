@@ -19,6 +19,8 @@ var _reactCiteproc = require("react-citeproc");
 
 var _peritextUtils = require("peritext-utils");
 
+var _ResourcePreview = _interopRequireDefault(require("./ResourcePreview"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
@@ -58,6 +60,7 @@ class Section extends _react.Component {
         translate,
         publicationTitle,
         publicationSubtitle,
+        displayHeader,
         level = 0
       } = this.props;
       const title = (0, _peritextUtils.getResourceTitle)(this.props.section);
@@ -77,7 +80,9 @@ class Section extends _react.Component {
         className: 'section-title-running'
       }, title), _react.default.createElement("em", {
         className: 'publication-title-running'
-      }, publicationTitle), subtitle && _react.default.createElement("h2", {
+      }, publicationTitle), displayHeader && _react.default.createElement(_ResourcePreview.default, {
+        resource: this.props.section
+      }), subtitle && _react.default.createElement("h2", {
         className: 'section-subtitle'
       }, subtitle), authors.length > 0 && _react.default.createElement("h3", {
         className: 'section-authors'

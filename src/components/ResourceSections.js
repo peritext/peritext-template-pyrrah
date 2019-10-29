@@ -5,8 +5,7 @@ import EndNotes from './EndNotes';
 
 import {
   buildCitations,
-  resourceHasContents,
-  defaultSortResourceSections,
+  buildResourceSectionsSummary,
 } from 'peritext-utils';
 
 const ResourceSections = ( {
@@ -44,36 +43,28 @@ const ResourceSections = ( {
    */
 } ) => {
   const {
-    // showMentions,
-    resourceTypes,
+
+    /*
+     * showMentions,
+     * resourceTypes,
+     */
     notesPosition,
-    customSummary,
-    level: inputLevel,
+
+    /*
+     * customSummary,
+     * level: inputLevel,
+     */
+    displayHeader = false
   } = data;
 
-  const blockLevel = !isNaN( inputLevel );
+  // const blockLevel = !isNaN( inputLevel );
 
   /*
    * const LinkComponent = propLinkComponent || contextLinkComponent;
    * const MentionComponent = propMentionComponent || contextMentionComponent;
    */
 
-  let summary;
-  if ( customSummary && customSummary.active ) {
-    summary = customSummary.summary;
-  }
- else {
-    summary = Object.keys( production.resources )
-    .filter( ( resourceId ) => {
-      const resource = production.resources[resourceId];
-      return resourceTypes.includes( resource.metadata.type ) && resourceHasContents( resource );
-    } )
-    .map( ( resourceId ) => ( {
-      resourceId,
-      level: blockLevel
-    } ) )
-    .sort( defaultSortResourceSections );
-  }
+  const summary = buildResourceSectionsSummary( { production, options: data } );
 
   const citations = buildCitations( { production, /*edition*/ } );
 
@@ -96,6 +87,7 @@ const ResourceSections = ( {
               citationLocale={ citationLocale }
               publicationTitle={ publicationTitle }
               publicationSubtitle={ publicationSubtitle }
+              displayHeader={ displayHeader }
             />
           );
         } ),

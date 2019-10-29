@@ -159,9 +159,21 @@ const buildToc = (production, edition, translate) => {
             return [...resLoc, ...newItems];
           }, []).filter(s => s)];
         } else if (element.type === 'resourceSections') {
+          const {
+            data: {
+              hideEmptyResources = false
+            }
+          } = element;
           return [...res, ...Object.keys(production.resources).filter(resourceId => {
             const resource = production.resources[resourceId];
-            return data.resourceTypes.includes(resource.metadata.type) && (0, _peritextUtils.resourceHasContents)(resource);
+            return data.resourceTypes.includes(resource.metadata.type);
+          }).filter(resourceId => {
+            if (hideEmptyResources) {
+              const resource = production.resources[resourceId];
+              return (0, _peritextUtils.resourceHasContents)(resource);
+            }
+
+            return true;
           }).sort(_peritextUtils.defaultSortResourceSections).reduce((resLoc, resourceId) => {
             const thatSection = production.resources[resourceId];
             const thatLevel = 0;
@@ -268,7 +280,10 @@ const Sections = ({
   id
 }) => {
   const summary = edition.data.plan.summary;
-  const notesPosition = data.notesPosition || 'footnotes';
+  const {
+    notesPosition = 'footnotes',
+    displayHeader = false
+  } = data;
   const sectionsBlocks = summary.filter(s => s.type === 'sections');
   const sectionsIds = sectionsBlocks.reduce((res, sectionBlock) => {
     // @todo handle custom sections order
@@ -282,6 +297,7 @@ const Sections = ({
       section: section,
       notesPosition: notesPosition,
       key: `${index}-${resourceId}`,
+      displayHeader: displayHeader,
       production: production,
       containerId: id,
       translate: translate,
