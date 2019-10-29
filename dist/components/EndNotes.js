@@ -19,41 +19,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var _default = ({
   production: {
-    sections
+    resources
   },
-  sectionsIds: sectionsOrder,
+  sectionsIds = [],
   translate,
   title,
   citations,
   citationStyle,
   citationLocale,
   id
-}) => _react.default.createElement("section", {
-  className: 'end-notes',
-  title: title,
-  id: id
-}, _react.default.createElement(_reactCiteproc.ReferencesManager, {
-  style: citationStyle,
-  locale: citationLocale,
-  items: citations.citationItems,
-  citations: citations.citationData,
-  componentClass: 'references-manager'
-}, _react.default.createElement("h1", {
-  className: 'section-title'
-}, title || translate('Notes')), _react.default.createElement("ol", {
-  className: 'end-notes'
-}, sectionsOrder.reduce((results, sectionId) => results.concat(Object.keys(sections[sectionId].data.contents.notes).map(thatId => _objectSpread({}, sections[sectionId].data.contents.notes[thatId], {
-  id: thatId
-}))), []).map((note, index) => {
-  return _react.default.createElement("li", {
-    id: `note-content-${note.id}`,
-    key: index
-  }, _react.default.createElement("a", {
-    href: `#note-pointer-${note.id}`,
-    className: 'note-number'
-  }, index + 1), _react.default.createElement(_Renderer.default, {
-    raw: note.contents
-  }));
-}))));
+}) => {
+  const notes = sectionsIds.reduce((results, resourceId) => results.concat(Object.keys(resources[resourceId].data.contents.notes).map(thatId => _objectSpread({}, resources[resourceId].data.contents.notes[thatId], {
+    id: thatId
+  }))), []);
+  return _react.default.createElement("section", {
+    className: 'end-notes',
+    title: title,
+    id: id
+  }, _react.default.createElement(_reactCiteproc.ReferencesManager, {
+    style: citationStyle,
+    locale: citationLocale,
+    items: citations.citationItems,
+    citations: citations.citationData,
+    componentClass: 'references-manager'
+  }, notes.length > 0 ? _react.default.createElement("h1", {
+    className: 'section-title'
+  }, title || translate('Notes')) : null, _react.default.createElement("ol", {
+    className: 'end-notes'
+  }, notes.map((note, index) => {
+    return _react.default.createElement("li", {
+      id: `note-content-${note.id}`,
+      key: index
+    }, _react.default.createElement("a", {
+      href: `#note-pointer-${note.id}`,
+      className: 'note-number'
+    }, index + 1), _react.default.createElement(_Renderer.default, {
+      raw: note.contents
+    }));
+  }))));
+};
 
 exports.default = _default;
