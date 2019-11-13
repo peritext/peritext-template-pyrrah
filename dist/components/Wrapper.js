@@ -273,8 +273,6 @@ const Sections = ({
   translate,
   data = {},
   citations,
-  citationStyle,
-  citationLocale,
   publicationTitle,
   publicationSubtitle,
   id
@@ -302,8 +300,6 @@ const Sections = ({
       containerId: id,
       translate: translate,
       citations: citations,
-      citationStyle: citationStyle,
-      citationLocale: citationLocale,
       publicationTitle: publicationTitle,
       publicationSubtitle: publicationSubtitle
     });
@@ -314,8 +310,6 @@ const Sections = ({
     production: production,
     translate: translate,
     citations: citations,
-    citationStyle: citationStyle,
-    citationLocale: citationLocale,
     publicationTitle: publicationTitle,
     publicationSubtitle: publicationSubtitle
   }) : null];
@@ -328,8 +322,6 @@ const renderSummary = ({
   citations
 }) => {
   const summary = edition.data.plan.summary;
-  const citationStyle = edition.data.citationStyle.data;
-  const citationLocale = edition.data.citationLocale.data;
   const {
     data: editionData = {}
   } = edition;
@@ -406,8 +398,6 @@ const renderSummary = ({
           edition: edition,
           translate: translate,
           citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale,
           publicationTitle: finalTitle,
           publicationSubtitle: finalSubtitle
         }, element));
@@ -418,9 +408,7 @@ const renderSummary = ({
           production: production,
           edition: edition,
           translate: translate,
-          citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale
+          citations: citations
         }, element));
 
       case 'references':
@@ -429,9 +417,7 @@ const renderSummary = ({
           production: production,
           edition: edition,
           translate: translate,
-          citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale
+          citations: citations
         }, element));
 
       case 'resourceSections':
@@ -441,8 +427,6 @@ const renderSummary = ({
           edition: edition,
           translate: translate,
           citations: citations,
-          citationStyle: citationStyle,
-          citationLocale: citationLocale,
           publicationTitle: finalTitle,
           publicationSubtitle: finalSubtitle
         }, element));
@@ -478,6 +462,7 @@ class Template extends _react.Component {
       SectionLinkComponent: this.props.SectionLinkComponent || _DefaultSectionLinkComponent.default,
       production: this.props.production,
       productionAssets: this.props.production.assets,
+      preprocessedData: this.props.preprocessedData,
       contextualizers: this.props.contextualizers,
       translate: this.translate
     };
@@ -489,7 +474,8 @@ class Template extends _react.Component {
         production,
         edition,
         contextualizers,
-        renderAdditionalHTML = false
+        renderAdditionalHTML = false,
+        preprocessedData
       },
       translate
     } = this;
@@ -499,10 +485,10 @@ class Template extends _react.Component {
     const {
       additionalHTML = ''
     } = data;
-    const citations = (0, _peritextUtils.buildCitations)({
+    const citations = preprocessedData && preprocessedData.global && preprocessedData.global.citations ? preprocessedData.global.citations : (0, _peritextUtils.buildCitations)({
       production,
       edition
-    });
+    }, true);
     const finalStyles = updateStyles({
       edition,
       contextualizers
@@ -545,5 +531,6 @@ Template.childContextTypes = {
   translate: _propTypes.default.func,
   production: _propTypes.default.object,
   productionAssets: _propTypes.default.object,
-  contextualizers: _propTypes.default.object
+  contextualizers: _propTypes.default.object,
+  preprocessedData: _propTypes.default.object
 };

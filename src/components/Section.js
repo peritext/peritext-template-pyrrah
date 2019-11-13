@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Renderer from './Renderer';
 import EndNotes from './EndNotes';
 import Authors from './Authors';
-import { ReferencesManager } from 'react-citeproc';
+import CitationsProvider from './CitationsProvider';
 import { getResourceTitle } from 'peritext-utils';
 
 import ResourcePreview from './ResourcePreview';
@@ -21,8 +21,6 @@ class Section extends Component {
   render = () => {
     const {
       citations,
-      citationStyle,
-      citationLocale,
       className = '',
       section: {
         id,
@@ -53,12 +51,8 @@ class Section extends Component {
         title={ title }
         id={ `section-${containerId}-${id}` }
       >
-        <ReferencesManager
-          style={ citationStyle }
-          locale={ citationLocale }
-          items={ citations.citationItems }
-          citations={ citations.citationData }
-          componentClass={ 'references-manager' }
+        <CitationsProvider
+          citations={ citations }
         >
           <h2 className={ 'composition-block-title section-title' }>{title}</h2>
           <em className={ 'section-title-running' }>{title}</em>
@@ -89,13 +83,11 @@ class Section extends Component {
 
               translate={ translate }
               citations={ citations }
-              citationStyle={ citationStyle }
-              citationLocale={ citationLocale }
               publicationTitle={ publicationTitle }
               publicationSubtitle={ publicationSubtitle }
             />
           }
-        </ReferencesManager>
+        </CitationsProvider>
       </section>
     );
   }

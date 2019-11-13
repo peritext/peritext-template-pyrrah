@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Renderer from './Renderer';
-import { ReferencesManager } from 'react-citeproc';
+import CitationsProvider from './CitationsProvider';
 
 export default ( {
   production: {
@@ -11,8 +11,6 @@ export default ( {
   translate,
   title,
   citations,
-  citationStyle,
-  citationLocale,
   id,
 } ) => {
   const notes = sectionsIds.reduce( ( results, resourceId ) =>
@@ -27,12 +25,8 @@ export default ( {
       title={ title }
       id={ id }
     >
-      <ReferencesManager
-        style={ citationStyle }
-        locale={ citationLocale }
-        items={ citations.citationItems }
-        citations={ citations.citationData }
-        componentClass={ 'references-manager' }
+      <CitationsProvider
+        citations={ citations }
       >
         {notes.length > 0 ? <h1 className={ 'section-title' }>{title || translate( 'Notes' )}</h1> : null }
         <ol className={ 'end-notes' }>
@@ -56,7 +50,7 @@ export default ( {
             } )
           }
         </ol>
-      </ReferencesManager>
+      </CitationsProvider>
     </section>
   );
 };

@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _Renderer = _interopRequireDefault(require("./Renderer"));
 
-var _reactCiteproc = require("react-citeproc");
+var _CitationsProvider = _interopRequireDefault(require("./CitationsProvider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,8 +25,6 @@ var _default = ({
   translate,
   title,
   citations,
-  citationStyle,
-  citationLocale,
   id
 }) => {
   const notes = sectionsIds.reduce((results, resourceId) => results.concat(Object.keys(resources[resourceId].data.contents.notes).map(thatId => _objectSpread({}, resources[resourceId].data.contents.notes[thatId], {
@@ -36,12 +34,8 @@ var _default = ({
     className: 'end-notes',
     title: title,
     id: id
-  }, _react.default.createElement(_reactCiteproc.ReferencesManager, {
-    style: citationStyle,
-    locale: citationLocale,
-    items: citations.citationItems,
-    citations: citations.citationData,
-    componentClass: 'references-manager'
+  }, _react.default.createElement(_CitationsProvider.default, {
+    citations: citations
   }, notes.length > 0 ? _react.default.createElement("h1", {
     className: 'section-title'
   }, title || translate('Notes')) : null, _react.default.createElement("ol", {

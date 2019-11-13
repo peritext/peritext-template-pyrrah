@@ -257,8 +257,6 @@ const Sections = ( {
   translate,
   data = {},
   citations,
-  citationStyle,
-  citationLocale,
   publicationTitle,
   publicationSubtitle,
   id,
@@ -292,8 +290,6 @@ const Sections = ( {
           containerId={ id }
           translate={ translate }
           citations={ citations }
-          citationStyle={ citationStyle }
-          citationLocale={ citationLocale }
           publicationTitle={ publicationTitle }
           publicationSubtitle={ publicationSubtitle }
         />
@@ -308,8 +304,6 @@ const Sections = ( {
 
         translate={ translate }
         citations={ citations }
-        citationStyle={ citationStyle }
-        citationLocale={ citationLocale }
         publicationTitle={ publicationTitle }
         publicationSubtitle={ publicationSubtitle }
       /> : null
@@ -323,8 +317,6 @@ const renderSummary = ( {
   citations,
 } ) => {
   const summary = edition.data.plan.summary;
-  const citationStyle = edition.data.citationStyle.data;
-  const citationLocale = edition.data.citationLocale.data;
 
   const {
     data: editionData = {}
@@ -420,8 +412,6 @@ const renderSummary = ( {
             edition={ edition }
             translate={ translate }
             citations={ citations }
-            citationStyle={ citationStyle }
-            citationLocale={ citationLocale }
             publicationTitle={ finalTitle }
             publicationSubtitle={ finalSubtitle }
             { ...element }
@@ -435,8 +425,6 @@ const renderSummary = ( {
             edition={ edition }
             translate={ translate }
             citations={ citations }
-            citationStyle={ citationStyle }
-            citationLocale={ citationLocale }
             { ...element }
           />
         );
@@ -448,8 +436,6 @@ const renderSummary = ( {
             edition={ edition }
             translate={ translate }
             citations={ citations }
-            citationStyle={ citationStyle }
-            citationLocale={ citationLocale }
             { ...element }
           />
         );
@@ -461,8 +447,6 @@ const renderSummary = ( {
                 edition={ edition }
                 translate={ translate }
                 citations={ citations }
-                citationStyle={ citationStyle }
-                citationLocale={ citationLocale }
                 publicationTitle={ finalTitle }
                 publicationSubtitle={ finalSubtitle }
                 { ...element }
@@ -495,6 +479,7 @@ export default class Template extends Component {
       SectionLinkComponent: this.props.SectionLinkComponent || DefaultSectionLinkComponent,
       production: this.props.production,
       productionAssets: this.props.production.assets,
+      preprocessedData: this.props.preprocessedData,
 
       contextualizers: this.props.contextualizers,
       translate: this.translate,
@@ -515,6 +500,7 @@ export default class Template extends Component {
         edition,
         contextualizers,
         renderAdditionalHTML = false,
+        preprocessedData,
       },
       translate,
     } = this;
@@ -526,7 +512,7 @@ export default class Template extends Component {
       additionalHTML = '',
     } = data;
 
-    const citations = buildCitations( { production, edition } );
+    const citations = preprocessedData && preprocessedData.global && preprocessedData.global.citations ? preprocessedData.global.citations : buildCitations( { production, edition }, true );
     const finalStyles = updateStyles( { edition, contextualizers } );
 
     /**
@@ -567,4 +553,5 @@ Template.childContextTypes = {
   production: PropTypes.object,
   productionAssets: PropTypes.object,
   contextualizers: PropTypes.object,
+  preprocessedData: PropTypes.object,
 };

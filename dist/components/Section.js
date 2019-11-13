@@ -15,7 +15,7 @@ var _EndNotes = _interopRequireDefault(require("./EndNotes"));
 
 var _Authors = _interopRequireDefault(require("./Authors"));
 
-var _reactCiteproc = require("react-citeproc");
+var _CitationsProvider = _interopRequireDefault(require("./CitationsProvider"));
 
 var _peritextUtils = require("peritext-utils");
 
@@ -38,8 +38,6 @@ class Section extends _react.Component {
     _defineProperty(this, "render", () => {
       const {
         citations,
-        citationStyle,
-        citationLocale,
         className = '',
         section: {
           id,
@@ -68,12 +66,8 @@ class Section extends _react.Component {
         className: `section has-notes-position-${notesPosition} level-${level} ${className}`,
         title: title,
         id: `section-${containerId}-${id}`
-      }, _react.default.createElement(_reactCiteproc.ReferencesManager, {
-        style: citationStyle,
-        locale: citationLocale,
-        items: citations.citationItems,
-        citations: citations.citationData,
-        componentClass: 'references-manager'
+      }, _react.default.createElement(_CitationsProvider.default, {
+        citations: citations
       }, _react.default.createElement("h2", {
         className: 'composition-block-title section-title'
       }, title), _react.default.createElement("em", {
@@ -97,8 +91,6 @@ class Section extends _react.Component {
         production: production,
         translate: translate,
         citations: citations,
-        citationStyle: citationStyle,
-        citationLocale: citationLocale,
         publicationTitle: publicationTitle,
         publicationSubtitle: publicationSubtitle
       })));
