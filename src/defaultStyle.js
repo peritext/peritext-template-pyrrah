@@ -58,13 +58,13 @@ const style = `
 @page table-of-contents {
 }
 @page table-of-contents-wpnumber:left {
-  @top-left-corner {
+  @right-middle {
     content: counter(page);
     text-align: center;
   }
 }
 @page table-of-contents-wpnumber:right {
-  @top-right-corner {
+  @left-middle {
     content: counter(page);
     text-align: center;
   }
@@ -72,13 +72,13 @@ const style = `
 @page custom-page {
 }
 @page custom-page-wpnumber:left {
-  @top-left-corner {
+  @right-middle {
     content: counter(page);
     text-align: center;
   }
 }
 @page custom-page-wpnumber:right {
-  @top-right-corner {
+  @left-middle {
     content: counter(page);
     text-align: center;
   }
@@ -93,10 +93,10 @@ const style = `
   margin-bottom: 64.8mm;
   margin-left: 45.8mm;
   margin-right: 23.3mm;
-  @top-left{
+  @top-center{
     content: element(publicationTitle);
   }
-  @top-left-corner {
+  @right-middle {
     content: counter(page);
     text-align: center;
   }
@@ -107,11 +107,11 @@ const style = `
   margin-bottom: 64.8mm;
   margin-right: 45.8mm;
   margin-left: 23.3mm;
-  @top-right-corner {
+  @left-middle{
     content: counter(page);
     text-align: center;
   }
-  @top-right {
+  @top-center {
      content: element(sectionTitle);
   }
 }
@@ -128,7 +128,7 @@ const style = `
   @top-left{
     content: element(publicationTitle);
   }
-  @top-left-corner {
+  @right-middle {
     content: counter(page);
     text-align: center;
   }
@@ -139,7 +139,7 @@ const style = `
   margin-bottom: 64.8mm;
   margin-right: 45.8mm;
   margin-left: 23.3mm;
-  @top-right-corner {
+  @left-middle {
     content: counter(page);
     text-align: center;
   }
@@ -147,7 +147,7 @@ const style = `
   }
 }
 @page section:first{
-  @top-right {
+  @top-center {
      content: none;
   }
 }
@@ -256,9 +256,13 @@ a,
 }
 .publication-title-running{
   position: running(publicationTitle); 
+  font-style: normal;
+  font-variant: small-caps;
 }
 .section-title-running{
   position: running(sectionTitle); 
+  font-style: normal;
+  font-variant: small-caps;
 }
 
 .composition-block-title{
@@ -405,6 +409,10 @@ figure + .unstyled,
 .block-contextualization-container.bib .figure-caption{
   display: none;
 }
+cite{
+  font-style: inherit;
+}
+
 /* images */
 .block-contextualization-container.image .static-images-container{
   display: flex;
@@ -614,7 +622,7 @@ figure + .unstyled,
 
 
 .section-title{
-  margin-top: 50%;
+  // margin-top: 50%;
 }
 .resource-section .section-title{
   margin-top: 0;
