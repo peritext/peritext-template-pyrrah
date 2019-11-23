@@ -1,6 +1,6 @@
 {
   "name": "peritext-template-pyrrah",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": " a web template designed dedicated to long reading experiences and context explorations, for the peritext ecosystem",
   "main": "dist/index.js",
   "scripts": {
@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/peritext/peritext-template-pyrrah#readme",
   "peerDependencies": {
-    "react": "^16.7.0-alpha",
-    "react-dom": "^16.7.0-alpha",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "lodash": "^4.17",
     "peritext-utils": "^0.2.1"
   },
@@ -56,20 +56,20 @@
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-react": "^7.5.1",
     "lodash": "^4.17.11",
-    "peritext-contextualizer-bib": "^0.2.0",
-    "peritext-contextualizer-embed": "^0.1.0",
+    "peritext-contextualizer-bib": "^0.2.3",
+    "peritext-contextualizer-embed": "^0.1.2",
     "peritext-contextualizer-glossary": "^0.1.0",
-    "peritext-contextualizer-image": "^0.1.0",
+    "peritext-contextualizer-image": "^0.2.1",
     "peritext-contextualizer-source-code": "^0.1.0",
-    "peritext-contextualizer-table": "^0.1.1",
+    "peritext-contextualizer-table": "^0.1.2",
     "peritext-contextualizer-vegalite": "^0.1.0",
-    "peritext-contextualizer-video": "^0.1.0",
+    "peritext-contextualizer-video": "^0.2.1",
     "peritext-contextualizer-webpage": "^0.1.0",
-    "peritext-utils": "^0.2.1",
+    "peritext-utils": "^0.2.7",
     "pre-commit": "^1.2.2",
     "raw-loader": "^2.0.0",
-    "react": "^16.7.0-alpha",
-    "react-dom": "^16.7.0-alpha",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "react-frame-component": "^4.1.0"
   },
   "babel": {
