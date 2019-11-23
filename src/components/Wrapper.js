@@ -274,7 +274,6 @@ const Sections = ( {
   const sectionsBlocks = summary.filter( ( s ) => s.type === 'sections' );
 
   const sectionsIds = sectionsBlocks.reduce( ( res, sectionBlock ) => {
-    // @todo handle custom sections order
     return [
       ...res,
       ...buildSectionBlockSummary( sectionBlock, production )
@@ -303,7 +302,6 @@ const Sections = ( {
         />
       );
     } ),
-    // @todo endnotes relative to sections and not to production sectionsOrder
     notesPosition === 'endOfContents' ?
       <EndNotes
         key={ 'endnotes' }

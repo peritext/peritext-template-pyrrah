@@ -97,8 +97,7 @@ const ResourceSections = ({
       publicationSubtitle: publicationSubtitle,
       displayHeader: displayHeader
     });
-  }), // @todo endnotes relative to sections and not to production sectionsOrder
-  notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {
+  }), notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {
     key: 'endnotes',
     sectionsIds: summary.map(({
       resourceId

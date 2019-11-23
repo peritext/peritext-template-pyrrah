@@ -291,7 +291,6 @@ const Sections = ({
   } = data;
   const sectionsBlocks = summary.filter(s => s.type === 'sections');
   const sectionsIds = sectionsBlocks.reduce((res, sectionBlock) => {
-    // @todo handle custom sections order
     return [...res, ...buildSectionBlockSummary(sectionBlock, production)];
   }, []);
   const {
@@ -321,8 +320,7 @@ const Sections = ({
       publicationTitle: publicationTitle,
       publicationSubtitle: publicationSubtitle
     });
-  }), // @todo endnotes relative to sections and not to production sectionsOrder
-  notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {
+  }), notesPosition === 'endOfContents' ? _react.default.createElement(_EndNotes.default, {
     key: 'endnotes',
     sectionsIds: sectionsIds,
     production: production,

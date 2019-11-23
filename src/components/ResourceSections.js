@@ -91,8 +91,6 @@ const ResourceSections = ( {
             />
           );
         } ),
-
-        // @todo endnotes relative to sections and not to production sectionsOrder
         notesPosition === 'endOfContents' ?
           <EndNotes
             key={ 'endnotes' }

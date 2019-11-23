@@ -450,8 +450,14 @@ right: -4cm;
   max-width: 3cm;
 }
 
+.section.has-figures-position-endOfSections .section-contents-container .block-contextualization-container .specific-image-container:not(:first-of-type),
+.section.has-figures-position-endOfContents .section-contents-container .block-contextualization-container .specific-image-container:not(:first-of-type)
+{
+  display: none
+}
+
 .block-contextualization-placeholder{
-  background: grey;
+  background: lightgrey;
   width: 3cm;
   height: 2cm;
 }
