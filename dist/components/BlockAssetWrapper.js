@@ -75,13 +75,18 @@ const BlockAssetWrapper = ({
       className: 'figure-caption'
     }, figuresPosition === 'inBody' ? _react.default.createElement("div", null, _react.default.createElement("h4", {
       className: 'figure-title'
-    }, displayFigureNumber && _react.default.createElement("span", null, "Figure ", figuresNumberMap[contextualization.id], ". "), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
+    }, displayFigureNumber && _react.default.createElement("span", null, _react.default.createElement("span", null, "Figure ", figuresNumberMap[contextualization.id], " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
+      className: 'page-link',
+      href: `#figure-pointer-${contextualization.id}`
+    }, "p.")), _react.default.createElement("span", null, ").")), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
       className: 'figure-legend'
     }, _react.default.createElement(_MarkdownPlayer.default, {
       src: contextualization.legend
     }))) : _react.default.createElement("div", null, _react.default.createElement("h4", {
       className: 'figure-title'
-    }, _react.default.createElement("span", null, "fig. ", figuresNumberMap[contextualization.id]), _react.default.createElement("span", null, " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
+    }, _react.default.createElement("span", {
+      id: `figure-pointer-${contextualization.id}`
+    }, "fig. ", figuresNumberMap[contextualization.id]), _react.default.createElement("span", null, " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
       className: 'page-link',
       href: `#end-figure-container-${contextualization.id}`
     }, "p.")), _react.default.createElement("span", null, ")")))));

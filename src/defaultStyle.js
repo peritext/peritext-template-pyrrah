@@ -9,6 +9,13 @@ const style = `
 
   font-family:'Source serif pro', serif;
   --gutter-medium: .5cm;
+
+  --margin-bottom: 64.8mm;
+  /*--margin-bottom: 33mm;*/
+  --margin-top: 33mm;
+  --margin-outside: 45.8mm;
+  --margin-inside: 23.3mm;
+
 }
 
 /**
@@ -31,10 +38,10 @@ const style = `
 @page front-cover{
 }
 @page colophon:left {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-left: 45.8mm;
-  margin-right: 23.3mm;
+  margin-right: var(--margin-inside);
   
   @top-left{
   }
@@ -44,10 +51,10 @@ const style = `
 }
 
 @page colophon:right {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-right: 45.8mm;
-  margin-left: 23.3mm;
+  margin-left: var(--margin-inside);
   @top-right-corner {
   }
   @top-right {
@@ -89,10 +96,10 @@ const style = `
 }
 
 @page section:left {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-left: 45.8mm;
-  margin-right: 23.3mm;
+  margin-right: var(--margin-inside);
   @top-center{
     content: element(publicationTitle);
   }
@@ -103,10 +110,10 @@ const style = `
 }
 
 @page section:right {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-right: 45.8mm;
-  margin-left: 23.3mm;
+  margin-left: var(--margin-inside);
   @left-middle{
     content: counter(page);
     text-align: center;
@@ -121,10 +128,10 @@ const style = `
 }
 
 @page peritext:left {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-left: 45.8mm;
-  margin-right: 23.3mm;
+  margin-right: var(--margin-inside);
   @top-left{
     content: element(publicationTitle);
   }
@@ -135,10 +142,10 @@ const style = `
 }
 
 @page peritext:right {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-right: 45.8mm;
-  margin-left: 23.3mm;
+  margin-left: var(--margin-inside);
   @left-middle {
     content: counter(page);
     text-align: center;
@@ -153,10 +160,10 @@ const style = `
 }
 
 @page end-figures:left {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-left: 45.8mm;
-  margin-right: 23.3mm;
+  margin-right: var(--margin-inside);
   background: whitesmoke;
   @top-left{
     content: element(publicationTitle);
@@ -168,10 +175,10 @@ const style = `
 }
 
 @page end-figures:right {
-  margin-top: 33mm;
-  margin-bottom: 64.8mm;
+  margin-top: var(--margin-top);
+  margin-bottom: 33mm;;
   margin-right: 45.8mm;
-  margin-left: 23.3mm;
+  margin-left: var(--margin-inside);
   background: whitesmoke;
   @left-middle {
     content: counter(page);
@@ -381,6 +388,7 @@ figure + .unstyled,
 {
   padding: 0;
   margin: 0;
+  page-break-inside: avoid;
 }
 .block-contextualization-container .figure-caption{
   padding-top: calc(.5 * var(--gutter-medium));
@@ -410,7 +418,7 @@ figure + .unstyled,
 .block-contextualization-container img
 {
   max-width: 100%;
-  max-height: 14cm;
+  max-height: 10cm;
 }
 .block-contextualization-container iframe
 {
@@ -501,7 +509,7 @@ cite{
 .block-contextualization-container.image .static-images-container{
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
+  // justify-content: center;
 }
 .block-contextualization-container.image .static-images-container img{
   display: block;

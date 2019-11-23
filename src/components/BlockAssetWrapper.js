@@ -68,7 +68,18 @@ const BlockAssetWrapper = ( {
                 <h4 className={ 'figure-title' }>
                   {
                     displayFigureNumber &&
-                    <span>Figure {figuresNumberMap[contextualization.id]}. </span>
+                    <span>
+                      <span>Figure {figuresNumberMap[contextualization.id]} (</span>
+                      <span>
+                        <a
+                          className={ 'page-link' }
+                          href={ `#figure-pointer-${contextualization.id}` }
+                        >
+                          p.
+                        </a>
+                      </span>
+                      <span>).</span>
+                    </span>
                   }
                   <span>{contextualization.title || resource.metadata.title}</span>
                 </h4>
@@ -81,7 +92,7 @@ const BlockAssetWrapper = ( {
             :
               <div>
                 <h4 className={ 'figure-title' }>
-                  <span>
+                  <span id={ `figure-pointer-${contextualization.id}` }>
                     fig. {figuresNumberMap[contextualization.id]}
                   </span>
                   <span> (</span>
