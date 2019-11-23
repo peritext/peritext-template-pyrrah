@@ -7,14 +7,12 @@ const InternalLink = ( { sectionId, children }, { containerId } ) => (
     className={ 'internal-link' }
   >
     {children}
-    {'('}
+    <span>(p. </span>
     <span
+      className={ 'page-link' }
       href={ `#section-${containerId}-${sectionId}` }
-      className={ ' page-link' }
-    >
-      {'p'}
-    </span>
-    {')'}
+    />
+    <span>)</span>
   </a>
 );
 

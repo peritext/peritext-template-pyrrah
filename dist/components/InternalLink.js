@@ -19,10 +19,10 @@ const InternalLink = ({
 }) => _react.default.createElement("a", {
   href: `#section-${containerId}-${sectionId}`,
   className: 'internal-link'
-}, children, '(', _react.default.createElement("span", {
-  href: `#section-${containerId}-${sectionId}`,
-  className: ' page-link'
-}, 'p'), ')');
+}, children, _react.default.createElement("span", null, "(p. "), _react.default.createElement("span", {
+  className: 'page-link',
+  href: `#section-${containerId}-${sectionId}`
+}), _react.default.createElement("span", null, ")"));
 
 InternalLink.contextTypes = {
   containerId: _propTypes.default.string

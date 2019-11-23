@@ -35,7 +35,12 @@ module.exports = {
     }, {
       type: 'sections',
       data: {
-        notesPosition: 'footnotes'
+        notesPosition: 'footnotes',
+        figuresPosition: 'endOfSections',
+        customSummary: {
+          active: false,
+          summary: []
+        }
       }
     }, {
       type: 'backCover',
@@ -176,6 +181,10 @@ module.exports = {
         notesPosition: {
           type: 'string',
           enum: ['footnotes', 'endOfSections', 'endOfContents']
+        },
+        figuresPosition: {
+          type: 'string',
+          enum: ['inBody', 'endOfSections', 'endOfContents']
         }
       },
       default: {

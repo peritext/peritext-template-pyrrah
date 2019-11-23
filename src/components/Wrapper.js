@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import { buildCitations, resourceHasContents, defaultSortResourceSections, getResourceTitle } from 'peritext-utils';
 
+import { buildFiguresNumberMap } from '../helpers';
+
 import FrontCover from './FrontCover';
 import TitlePage from './TitlePage';
 import BackCover from './BackCover';
@@ -20,6 +22,7 @@ import ResourceSections from './ResourceSections';
 import Section from './Section';
 
 import templateStyle from '../defaultStyle';
+import Figures from './Figures';
 
 const EmptyPage = () => (
   <div className={ 'composition-block empty-page' } />
@@ -264,6 +267,7 @@ const Sections = ( {
   const summary = edition.data.plan.summary;
   const {
     notesPosition = 'footnotes',
+    figuresPosition = 'endOfSections',
     displayHeader = false
   } = data;
 
@@ -277,6 +281,7 @@ const Sections = ( {
     ];
   }, [] );
 
+  const { figuresNumberMap, figures } = buildFiguresNumberMap( { production, sectionsIds, figuresPosition } );
   return [
     ...sectionsIds.map( ( { resourceId }, index ) => {
       const section = production.resources[resourceId];
@@ -284,6 +289,9 @@ const Sections = ( {
         <Section
           section={ section }
           notesPosition={ notesPosition }
+          figuresPosition={ figuresPosition }
+          figuresNumberMap={ figuresNumberMap }
+          figures={ figuresPosition === 'endOfSections' ? figures[resourceId] : undefined }
           key={ `${index}-${resourceId}` }
           displayHeader={ displayHeader }
           production={ production }
@@ -306,6 +314,14 @@ const Sections = ( {
         citations={ citations }
         publicationTitle={ publicationTitle }
         publicationSubtitle={ publicationSubtitle }
+      /> : null,
+    figuresPosition === 'endOfContents' ?
+      <Figures
+        production={ production }
+
+        translate={ translate }
+        figures={ figures }
+        figuresNumberMap={ figuresNumberMap }
       /> : null
   ];
 };

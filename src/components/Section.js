@@ -7,6 +7,7 @@ import CitationsProvider from './CitationsProvider';
 import { getResourceTitle } from 'peritext-utils';
 
 import ResourcePreview from './ResourcePreview';
+import Figures from './Figures';
 
 class Section extends Component {
   constructor( props ) {
@@ -15,7 +16,9 @@ class Section extends Component {
   }
 
   getChildContext = () => ( {
-    notes: this.props.section.data.contents.notes
+    notes: this.props.section.data.contents.notes,
+    figuresPosition: this.props.figuresPosition,
+    figuresNumberMap: this.props.figuresNumberMap,
   } )
 
   render = () => {
@@ -35,8 +38,11 @@ class Section extends Component {
           }
         },
       },
+      figuresNumberMap,
       containerId,
       notesPosition,
+      figuresPosition = 'endOfSections',
+      figures,
       production,
       translate,
       publicationTitle,
@@ -47,7 +53,7 @@ class Section extends Component {
     const title = getResourceTitle( this.props.section );
     return (
       <section
-        className={ `section has-notes-position-${notesPosition} level-${level} ${className}` }
+        className={ `section has-notes-position-${notesPosition} has-figures-position-${figuresPosition} level-${level} ${className}` }
         title={ title }
         id={ `section-${containerId}-${id}` }
       >
@@ -70,11 +76,13 @@ class Section extends Component {
               <Authors authors={ authors } />
             </h3>
           }
-          <Renderer
-            raw={ contents }
-            notesPosition={ notesPosition }
-            containerId={ containerId }
-          />
+          <div className={ 'section-contents-container' }>
+            <Renderer
+              raw={ contents }
+              notesPosition={ notesPosition }
+              containerId={ containerId }
+            />
+          </div>
           {
             notesPosition === 'endOfSections' &&
             <EndNotes
@@ -87,6 +95,14 @@ class Section extends Component {
               publicationSubtitle={ publicationSubtitle }
             />
           }
+          {
+            figuresPosition === 'endOfSections' &&
+            <Figures
+              figures={ figures }
+              production={ production }
+              figuresNumberMap={ figuresNumberMap }
+            />
+          }
         </CitationsProvider>
       </section>
     );
@@ -97,4 +113,6 @@ export default Section;
 
 Section.childContextTypes = {
   notes: PropTypes.object,
+  figuresPosition: PropTypes.object,
+  figuresNumberMap: PropTypes.object,
 };

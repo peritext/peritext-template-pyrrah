@@ -22,9 +22,9 @@ var _default = ({
   className: `page-link ${className}`,
   id: id,
   style: style
-}, children, "( p. ", _react.default.createElement("span", {
+}, children, _react.default.createElement("span", null, "(p. "), _react.default.createElement("span", {
   className: 'page-link',
   href: `#section-${sectionId}`
-}), ")");
+}), _react.default.createElement("span", null, ")"));
 
 exports.default = _default;

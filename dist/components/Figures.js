@@ -9,6 +9,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
+var _BlockAssetWrapper = _interopRequireDefault(require("./BlockAssetWrapper"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -17,26 +19,49 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class CitationsProvider extends _react.Component {
+class Figures extends _react.Component {
   constructor(...args) {
     super(...args);
 
     _defineProperty(this, "getChildContext", () => ({
-      citations: this.props.citations ? this.props.citations.citationComponents : {}
+      figuresPosition: 'inBody',
+      production: this.props.production,
+      figuresNumberMap: this.props.figuresNumberMap
     }));
 
     _defineProperty(this, "render", () => {
       const {
-        children
+        figures = []
       } = this.props;
-      return children;
+      return figures.length ? _react.default.createElement("section", {
+        className: 'end-figures'
+      }, _react.default.createElement("h2", null, "Figures"), _react.default.createElement("ul", {
+        className: 'figures-list'
+      }, figures.map(({
+        contextualizationId
+      }, index) => {
+        return _react.default.createElement("li", {
+          id: `end-figure-container-${contextualizationId}`,
+          className: 'end-figure-container',
+          key: index
+        }, _react.default.createElement(_BlockAssetWrapper.default, {
+          data: {
+            asset: {
+              id: contextualizationId
+            }
+          },
+          displayFigureNumber: true
+        }));
+      }))) : null;
     });
   }
 
 }
 
-exports.default = CitationsProvider;
+exports.default = Figures;
 
-_defineProperty(CitationsProvider, "childContextTypes", {
-  citations: _propTypes.default.object
+_defineProperty(Figures, "childContextTypes", {
+  figuresPosition: _propTypes.default.object,
+  production: _propTypes.default.object,
+  figuresNumberMap: _propTypes.default.object
 });

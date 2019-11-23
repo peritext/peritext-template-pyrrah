@@ -19,8 +19,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * ============
  */
 const BlockAssetWrapper = ({
-  data
+  data,
+  displayFigureNumber
 }, context) => {
+  const {
+    figuresPosition = 'endOfSections',
+    figuresNumberMap = {}
+  } = context;
   const assetId = data.asset.id;
   const contextualization = context.production && context.production.contextualizations && context.production.contextualizations[assetId];
 
@@ -38,23 +43,25 @@ const BlockAssetWrapper = ({
   const containerId = context.containerId;
   const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
-  const resource = production.resources[contextualization.sourceId];
-  const dimensions = context.dimensions || {};
+  const resource = production.resources[contextualization.sourceId]; // const dimensions = context.dimensions || {};
+
   const fixedPresentationId = context.fixedPresentationId; // const onPresentationExit = context.onPresentationExit;
 
   const inNote = context.inNote;
   const contextualizers = context.contextualizers;
   const contextualizerModule = contextualizers[contextualizer.type];
-  const Component = contextualizerModule && contextualizerModule.Block;
+  let Component = contextualizerModule && contextualizerModule.Block;
+
+  if (figuresPosition !== 'inBody' && ['table'].includes(contextualizer.type)) {
+    Component = () => _react.default.createElement("div", {
+      className: 'block-contextualization-placeholder'
+    });
+  }
 
   if (contextualization && Component) {
     const hide = !visibility.paged;
     return hide ? null : _react.default.createElement("figure", {
       className: `block-contextualization-container ${contextualizer.type}`,
-      style: {
-        position: 'relative',
-        minHeight: contextualizer.type === 'data-presentation' ? dimensions.height : '20px'
-      },
       id: `contextualization-${containerId}-${assetId}`
     }, _react.default.createElement(Component, {
       resource: resource,
@@ -66,13 +73,18 @@ const BlockAssetWrapper = ({
       allowInteractions: inNote || fixedPresentationId === assetId
     }), _react.default.createElement("figcaption", {
       className: 'figure-caption'
-    }, _react.default.createElement("h4", {
+    }, figuresPosition === 'inBody' ? _react.default.createElement("div", null, _react.default.createElement("h4", {
       className: 'figure-title'
-    }, _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
+    }, displayFigureNumber && _react.default.createElement("span", null, "Figure ", figuresNumberMap[contextualization.id], ". "), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
       className: 'figure-legend'
     }, _react.default.createElement(_MarkdownPlayer.default, {
       src: contextualization.legend
-    }))));
+    }))) : _react.default.createElement("div", null, _react.default.createElement("h4", {
+      className: 'figure-title'
+    }, _react.default.createElement("span", null, "fig. ", figuresNumberMap[contextualization.id]), _react.default.createElement("span", null, " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
+      className: 'page-link',
+      href: `#end-figure-container-${contextualization.id}`
+    }, "p.")), _react.default.createElement("span", null, ")")))));
   } else {
     return null;
   }
@@ -105,12 +117,7 @@ BlockAssetWrapper.contextTypes = {
   /**
    * Dimensions of the wrapping element
    */
-  dimensions: _propTypes.default.object,
-
-  /**
-   * Id of the presentation being displayed full screen if any
-   */
-  fixedPresentationId: _propTypes.default.string,
+  // dimensions: PropTypes.object,
 
   /**
    * Whether the block asset is displayed in a note (and not in main content)
@@ -118,7 +125,9 @@ BlockAssetWrapper.contextTypes = {
   inNote: _propTypes.default.bool,
   contextualizers: _propTypes.default.object,
   productionAssets: _propTypes.default.object,
-  containerId: _propTypes.default.string
+  containerId: _propTypes.default.string,
+  figuresPosition: _propTypes.default.string,
+  figuresNumberMap: _propTypes.default.object
 };
 var _default = BlockAssetWrapper;
 exports.default = _default;

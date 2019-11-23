@@ -8,8 +8,13 @@ import PropTypes from 'prop-types';
 import MarkdownPlayer from './MarkdownPlayer';
 
 const BlockAssetWrapper = ( {
-  data
+  data,
+  displayFigureNumber
 }, context ) => {
+  const {
+    figuresPosition = 'endOfSections',
+    figuresNumberMap = {},
+  } = context;
   const assetId = data.asset.id;
   const contextualization = context.production && context.production.contextualizations && context.production.contextualizations[assetId];
   if ( !contextualization ) {
@@ -26,24 +31,24 @@ const BlockAssetWrapper = ( {
   const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.sourceId];
-  const dimensions = context.dimensions || {};
+  // const dimensions = context.dimensions || {};
   const fixedPresentationId = context.fixedPresentationId;
   // const onPresentationExit = context.onPresentationExit;
   const inNote = context.inNote;
   const contextualizers = context.contextualizers;
   const contextualizerModule = contextualizers[contextualizer.type];
 
-  const Component = contextualizerModule && contextualizerModule.Block;
+  let Component = contextualizerModule && contextualizerModule.Block;
+
+  if ( figuresPosition !== 'inBody' && [ 'table' ].includes( contextualizer.type ) ) {
+    Component = () => <div className={ 'block-contextualization-placeholder' } />;
+  }
 
   if ( contextualization && Component ) {
     const hide = !visibility.paged;
     return hide ? null : (
       <figure
         className={ `block-contextualization-container ${ contextualizer.type}` }
-        style={ {
-          position: 'relative',
-          minHeight: contextualizer.type === 'data-presentation' ? dimensions.height : '20px'
-        } }
         id={ `contextualization-${containerId}-${assetId}` }
       >
         <Component
@@ -58,14 +63,38 @@ const BlockAssetWrapper = ( {
         />
         <figcaption className={ 'figure-caption' }>
           {
-            <h4 className={ 'figure-title' }>
-              <span>{contextualization.title || resource.metadata.title}</span>
-            </h4>
-          }
-          {contextualization.legend &&
-            <div className={ 'figure-legend' }>
-              <MarkdownPlayer src={ contextualization.legend } />
-            </div>
+            figuresPosition === 'inBody' ?
+              <div>
+                <h4 className={ 'figure-title' }>
+                  {
+                    displayFigureNumber &&
+                    <span>Figure {figuresNumberMap[contextualization.id]}. </span>
+                  }
+                  <span>{contextualization.title || resource.metadata.title}</span>
+                </h4>
+                {contextualization.legend &&
+                  <div className={ 'figure-legend' }>
+                    <MarkdownPlayer src={ contextualization.legend } />
+                  </div>
+                }
+              </div>
+            :
+              <div>
+                <h4 className={ 'figure-title' }>
+                  <span>
+                    fig. {figuresNumberMap[contextualization.id]}
+                  </span>
+                  <span> (</span>
+                  <span>
+                    <a
+                      className={ 'page-link' }
+                      href={ `#end-figure-container-${contextualization.id}` }
+                    >p.
+                    </a>
+                  </span>
+                  <span>)</span>
+                </h4>
+              </div>
           }
 
         </figcaption>
@@ -105,12 +134,7 @@ BlockAssetWrapper.contextTypes = {
   /**
    * Dimensions of the wrapping element
    */
-  dimensions: PropTypes.object,
-
-  /**
-   * Id of the presentation being displayed full screen if any
-   */
-  fixedPresentationId: PropTypes.string,
+  // dimensions: PropTypes.object,
 
   /**
    * Whether the block asset is displayed in a note (and not in main content)
@@ -122,6 +146,9 @@ BlockAssetWrapper.contextTypes = {
   productionAssets: PropTypes.object,
 
   containerId: PropTypes.string,
+
+  figuresPosition: PropTypes.string,
+  figuresNumberMap: PropTypes.object
 };
 
 export default BlockAssetWrapper;

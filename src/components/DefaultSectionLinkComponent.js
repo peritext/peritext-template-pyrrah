@@ -16,13 +16,11 @@ export default ( {
     style={ style }
   >
     {children}
-    (
-      p. {
-        <span
-          className={ 'page-link' }
-          href={ `#section-${sectionId}` }
-        />
-      }
-  )
+    <span>(p. </span>
+    <span
+      className={ 'page-link' }
+      href={ `#section-${sectionId}` }
+    />
+    <span>)</span>
   </a>
 );

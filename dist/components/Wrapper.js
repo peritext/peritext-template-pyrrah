@@ -11,6 +11,8 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _peritextUtils = require("peritext-utils");
 
+var _helpers = require("../helpers");
+
 var _FrontCover = _interopRequireDefault(require("./FrontCover"));
 
 var _TitlePage = _interopRequireDefault(require("./TitlePage"));
@@ -41,9 +43,13 @@ var _Section = _interopRequireDefault(require("./Section"));
 
 var _defaultStyle = _interopRequireDefault(require("../defaultStyle"));
 
+var _Figures = _interopRequireDefault(require("./Figures"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -280,6 +286,7 @@ const Sections = ({
   const summary = edition.data.plan.summary;
   const {
     notesPosition = 'footnotes',
+    figuresPosition = 'endOfSections',
     displayHeader = false
   } = data;
   const sectionsBlocks = summary.filter(s => s.type === 'sections');
@@ -287,6 +294,14 @@ const Sections = ({
     // @todo handle custom sections order
     return [...res, ...buildSectionBlockSummary(sectionBlock, production)];
   }, []);
+  const {
+    figuresNumberMap,
+    figures
+  } = (0, _helpers.buildFiguresNumberMap)({
+    production,
+    sectionsIds,
+    figuresPosition
+  });
   return [...sectionsIds.map(({
     resourceId
   }, index) => {
@@ -294,6 +309,9 @@ const Sections = ({
     return _react.default.createElement(_Section.default, {
       section: section,
       notesPosition: notesPosition,
+      figuresPosition: figuresPosition,
+      figuresNumberMap: figuresNumberMap,
+      figures: figuresPosition === 'endOfSections' ? figures[resourceId] : undefined,
       key: `${index}-${resourceId}`,
       displayHeader: displayHeader,
       production: production,
@@ -312,6 +330,11 @@ const Sections = ({
     citations: citations,
     publicationTitle: publicationTitle,
     publicationSubtitle: publicationSubtitle
+  }) : null, figuresPosition === 'endOfContents' ? _react.default.createElement(_Figures.default, {
+    production: production,
+    translate: translate,
+    figures: figures,
+    figuresNumberMap: figuresNumberMap
   }) : null];
 };
 

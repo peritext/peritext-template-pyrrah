@@ -21,9 +21,13 @@ var _peritextUtils = require("peritext-utils");
 
 var _ResourcePreview = _interopRequireDefault(require("./ResourcePreview"));
 
+var _Figures = _interopRequireDefault(require("./Figures"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -32,7 +36,9 @@ class Section extends _react.Component {
     super(props);
 
     _defineProperty(this, "getChildContext", () => ({
-      notes: this.props.section.data.contents.notes
+      notes: this.props.section.data.contents.notes,
+      figuresPosition: this.props.figuresPosition,
+      figuresNumberMap: this.props.figuresNumberMap
     }));
 
     _defineProperty(this, "render", () => {
@@ -52,8 +58,11 @@ class Section extends _react.Component {
             }
           }
         },
+        figuresNumberMap,
         containerId,
         notesPosition,
+        figuresPosition = 'endOfSections',
+        figures,
         production,
         translate,
         publicationTitle,
@@ -63,7 +72,7 @@ class Section extends _react.Component {
       } = this.props;
       const title = (0, _peritextUtils.getResourceTitle)(this.props.section);
       return _react.default.createElement("section", {
-        className: `section has-notes-position-${notesPosition} level-${level} ${className}`,
+        className: `section has-notes-position-${notesPosition} has-figures-position-${figuresPosition} level-${level} ${className}`,
         title: title,
         id: `section-${containerId}-${id}`
       }, _react.default.createElement(_CitationsProvider.default, {
@@ -82,17 +91,23 @@ class Section extends _react.Component {
         className: 'section-authors'
       }, _react.default.createElement(_Authors.default, {
         authors: authors
-      })), _react.default.createElement(_Renderer.default, {
+      })), _react.default.createElement("div", {
+        className: 'section-contents-container'
+      }, _react.default.createElement(_Renderer.default, {
         raw: contents,
         notesPosition: notesPosition,
         containerId: containerId
-      }), notesPosition === 'endOfSections' && _react.default.createElement(_EndNotes.default, {
+      })), notesPosition === 'endOfSections' && _react.default.createElement(_EndNotes.default, {
         sectionsIds: [id],
         production: production,
         translate: translate,
         citations: citations,
         publicationTitle: publicationTitle,
         publicationSubtitle: publicationSubtitle
+      }), figuresPosition === 'endOfSections' && _react.default.createElement(_Figures.default, {
+        figures: figures,
+        production: production,
+        figuresNumberMap: figuresNumberMap
       })));
     });
   }
@@ -102,5 +117,7 @@ class Section extends _react.Component {
 var _default = Section;
 exports.default = _default;
 Section.childContextTypes = {
-  notes: _propTypes.default.object
+  notes: _propTypes.default.object,
+  figuresPosition: _propTypes.default.object,
+  figuresNumberMap: _propTypes.default.object
 };
