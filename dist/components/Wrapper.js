@@ -298,7 +298,9 @@ const Sections = ({
     figures
   } = (0, _helpers.buildFiguresNumberMap)({
     production,
-    sectionsIds,
+    sectionsIds: sectionsIds.map(({
+      resourceId
+    }) => resourceId),
     figuresPosition
   });
   return [...sectionsIds.map(({

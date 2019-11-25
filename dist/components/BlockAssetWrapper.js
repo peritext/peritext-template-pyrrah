@@ -54,14 +54,14 @@ const BlockAssetWrapper = ({
 
   if (figuresPosition !== 'inBody' && ['table'].includes(contextualizer.type)) {
     Component = () => _react.default.createElement("div", {
-      className: 'block-contextualization-placeholder'
+      className: 'block-contextualization-placeholder pagedjs_no-page-overflow-y'
     });
   }
 
   if (contextualization && Component) {
     const hide = !visibility.paged;
     return hide ? null : _react.default.createElement("figure", {
-      className: `block-contextualization-container ${contextualizer.type}`,
+      className: `block-contextualization-container pagedjs_no-page-overflow-y ${contextualizer.type}`,
       id: `contextualization-${containerId}-${assetId}`
     }, _react.default.createElement(Component, {
       resource: resource,

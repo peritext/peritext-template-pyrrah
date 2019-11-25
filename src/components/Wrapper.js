@@ -280,7 +280,11 @@ const Sections = ( {
     ];
   }, [] );
 
-  const { figuresNumberMap, figures } = buildFiguresNumberMap( { production, sectionsIds, figuresPosition } );
+  const { figuresNumberMap, figures } = buildFiguresNumberMap( {
+    production,
+    sectionsIds: sectionsIds.map( ( { resourceId } ) => resourceId ),
+    figuresPosition
+  } );
   return [
     ...sectionsIds.map( ( { resourceId }, index ) => {
       const section = production.resources[resourceId];

@@ -13,60 +13,41 @@ var _Section = _interopRequireDefault(require("./Section"));
 
 var _EndNotes = _interopRequireDefault(require("./EndNotes"));
 
+var _helpers = require("../helpers");
+
 var _peritextUtils = require("peritext-utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const ResourceSections = ({
   production,
-  // edition,
   translate,
   data = {
     showMentions: true,
     resourceTypes: ['glossary'],
     notesPosition: 'footnotes',
+    figuresPosition: 'inBody',
     customSummary: {
       active: false,
       summary: []
     },
     level: 0
   },
-  // citations,
   citationStyle,
   citationLocale,
   id,
   publicationTitle,
   publicationSubtitle
-  /*
-   * LinkComponent: propLinkComponent,
-   * MentionComponent: propMentionComponent,
-   */
-
-}, {
-  /*
-   * LinkComponent: contextLinkComponent,
-   * MentionComponent: contextMentionComponent,
-   */
-}) => {
+}, {}) => {
   const {
     /*
      * showMentions,
      * resourceTypes,
      */
     notesPosition,
-
-    /*
-     * customSummary,
-     * level: inputLevel,
-     */
+    figuresPosition,
     displayHeader = false
-  } = data; // const blockLevel = !isNaN( inputLevel );
-
-  /*
-   * const LinkComponent = propLinkComponent || contextLinkComponent;
-   * const MentionComponent = propMentionComponent || contextMentionComponent;
-   */
-
+  } = data;
   const summary = (0, _peritextUtils.buildResourceSectionsSummary)({
     production,
     options: data
@@ -75,6 +56,17 @@ const ResourceSections = ({
     production
     /*edition*/
 
+  });
+  const sectionsIds = summary.map(({
+    resourceId
+  }) => resourceId);
+  const {
+    figuresNumberMap,
+    figures
+  } = (0, _helpers.buildFiguresNumberMap)({
+    production,
+    sectionsIds,
+    figuresPosition
   });
   return [...summary.map(({
     resourceId,
@@ -87,6 +79,9 @@ const ResourceSections = ({
       notesPosition: notesPosition,
       key: `${id}-${resourceId}`,
       production: production,
+      figuresPosition: figuresPosition,
+      figuresNumberMap: figuresNumberMap,
+      figures: figuresPosition === 'endOfSections' ? figures[resourceId] : undefined,
       level: level,
       containerId: id,
       translate: translate,

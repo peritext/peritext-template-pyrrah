@@ -206,6 +206,74 @@ module.exports = {
         notesPosition: 'footnotes'
       }
     },
+    resourceSections: {
+      type: 'object',
+      default: {
+        resourceTypes: [ 'glossary' ],
+        customSummary: {
+          active: false,
+          summary: []
+        },
+        notesPosition: 'footnotes',
+        figuresPosition: 'inBody',
+        level: 0
+      },
+      properties: {
+        level: {
+          type: 'number',
+          uiType: 'select',
+          enum: [ 0, 1, 2, 3, 4, 5, 6 ]
+        },
+        resourceTypes: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: [ 'bib', 'image', 'table', 'video', 'embed', 'webpage', 'glossary' ]
+          },
+          uiType: 'select',
+          description: 'which types of resources to show'
+        },
+        customSummary: {
+          type: 'object',
+          uiType: 'customResourcesSummary',
+          properties: {
+            active: {
+              type: 'boolean'
+            },
+            summary: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  resourceId: {
+                    type: 'string',
+                  },
+                  level: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
+          }
+        },
+        hideEmptyResources: {
+          type: 'boolean',
+          description: 'whether to hide resources with no contents'
+        },
+        displayHeader: {
+          type: 'boolean',
+          description: 'whether to display resources headers in their views'
+        },
+        notesPosition: {
+          type: 'string',
+          enum: [ 'footnotes', 'endOfSections' ]
+        },
+        figuresPosition: {
+          type: 'string',
+          enum: [ 'inBody', 'endOfSections', 'endOfContents' ]
+        },
+      }
+    },
     customPage: {
       type: 'object',
       default: {
@@ -276,70 +344,6 @@ module.exports = {
           type: 'boolean',
           description: 'whether to sort references in ascending order'
         }
-      }
-    },
-
-    resourceSections: {
-      type: 'object',
-      default: {
-        resourceTypes: [ 'glossary' ],
-        customSummary: {
-          active: false,
-          summary: []
-        },
-        notesPosition: 'footnotes',
-        level: 0
-      },
-      properties: {
-        level: {
-          type: 'number',
-          uiType: 'select',
-          enum: [ 0, 1, 2, 3, 4, 5, 6 ]
-        },
-        resourceTypes: {
-          type: 'array',
-          items: {
-            type: 'string',
-            enum: [ 'bib', 'image', 'table', 'video', 'embed', 'webpage', 'glossary' ]
-          },
-          uiType: 'select',
-          description: 'which types of resources to show'
-        },
-        customSummary: {
-          type: 'object',
-          uiType: 'customResourcesSummary',
-          properties: {
-            active: {
-              type: 'boolean'
-            },
-            summary: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  resourceId: {
-                    type: 'string',
-                  },
-                  level: {
-                    type: 'number'
-                  }
-                }
-              }
-            }
-          }
-        },
-        hideEmptyResources: {
-          type: 'boolean',
-          description: 'whether to hide resources with no contents'
-        },
-        displayHeader: {
-          type: 'boolean',
-          description: 'whether to display resources headers in their views'
-        },
-        notesPosition: {
-          type: 'string',
-          enum: [ 'footnotes', 'endOfSections' ]
-        },
       }
     },
 

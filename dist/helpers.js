@@ -32,12 +32,8 @@ const buildFiguresNumberMap = ({
   sectionsIds,
   figuresPosition
 }) => {
-  const rawSectionsIds = sectionsIds.map(({
-    resourceId
-  }) => resourceId);
-
   if (figuresPosition === 'endOfContents') {
-    const contextualizations = rawSectionsIds.reduce((res, sectionId) => {
+    const contextualizations = sectionsIds.reduce((res, sectionId) => {
       const contents = production.resources[sectionId].data.contents;
       const mainContents = contents.contents;
       return [...res, ...parseEligibleContextualizations(production, mainContents), ...contents.notesOrder.reduce((res2, noteId) => {
@@ -67,7 +63,7 @@ const buildFiguresNumberMap = ({
     };
   } else if (figuresPosition === 'endOfSections') {
     const figures = {};
-    const figuresNumberMap = rawSectionsIds.reduce((res, sectionId) => {
+    const figuresNumberMap = sectionsIds.reduce((res, sectionId) => {
       const contents = production.resources[sectionId].data.contents;
       const mainContents = contents.contents;
       const contextualizations = [...parseEligibleContextualizations(production, mainContents), ...contents.notesOrder.reduce((res2, noteId) => {

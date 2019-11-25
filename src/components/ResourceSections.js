@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Section from './Section';
 import EndNotes from './EndNotes';
 
+import { buildFiguresNumberMap } from '../helpers';
+
 import {
   buildCitations,
   buildResourceSectionsSummary,
@@ -10,20 +12,18 @@ import {
 
 const ResourceSections = ( {
   production,
-  // edition,
   translate,
   data = {
     showMentions: true,
     resourceTypes: [ 'glossary' ],
     notesPosition: 'footnotes',
+    figuresPosition: 'inBody',
     customSummary: {
       active: false,
       summary: []
     },
     level: 0,
   },
-
-  // citations,
   citationStyle,
   citationLocale,
 
@@ -31,16 +31,7 @@ const ResourceSections = ( {
   publicationTitle,
   publicationSubtitle,
 
-  /*
-   * LinkComponent: propLinkComponent,
-   * MentionComponent: propMentionComponent,
-   */
 }, {
-
-  /*
-   * LinkComponent: contextLinkComponent,
-   * MentionComponent: contextMentionComponent,
-   */
 } ) => {
   const {
 
@@ -49,27 +40,15 @@ const ResourceSections = ( {
      * resourceTypes,
      */
     notesPosition,
-
-    /*
-     * customSummary,
-     * level: inputLevel,
-     */
+    figuresPosition,
     displayHeader = false
   } = data;
-
-  // const blockLevel = !isNaN( inputLevel );
-
-  /*
-   * const LinkComponent = propLinkComponent || contextLinkComponent;
-   * const MentionComponent = propMentionComponent || contextMentionComponent;
-   */
-
   const summary = buildResourceSectionsSummary( { production, options: data } );
 
   const citations = buildCitations( { production, /*edition*/ } );
-
+  const sectionsIds = summary.map( ( { resourceId } ) => resourceId );
+  const { figuresNumberMap, figures } = buildFiguresNumberMap( { production, sectionsIds, figuresPosition } );
   return [
-
         ...summary.map( ( { resourceId, level } ) => {
           const section = production.resources[resourceId];
           return (
@@ -79,6 +58,9 @@ const ResourceSections = ( {
               notesPosition={ notesPosition }
               key={ `${id}-${resourceId}` }
               production={ production }
+              figuresPosition={ figuresPosition }
+              figuresNumberMap={ figuresNumberMap }
+              figures={ figuresPosition === 'endOfSections' ? figures[resourceId] : undefined }
               level={ level }
               containerId={ id }
               translate={ translate }
