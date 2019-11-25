@@ -133,7 +133,7 @@
                 ]
             }
         ],
-        "react/require-optimization": 2,
+        "react/require-optimization": 0,
         "react/no-find-dom-node": 2,
 
         "object-curly-spacing": [
