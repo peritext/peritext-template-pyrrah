@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Section from './Section';
 import EndNotes from './EndNotes';
+import Figures from './Figures';
 
 import { buildFiguresNumberMap } from '../helpers';
 
@@ -85,6 +86,14 @@ const ResourceSections = ( {
             citationLocale={ citationLocale }
             publicationTitle={ publicationTitle }
             publicationSubtitle={ publicationSubtitle }
+          /> : null,
+        figuresPosition === 'endOfContents' ?
+          <Figures
+            production={ production }
+
+            translate={ translate }
+            figures={ figures }
+            figuresNumberMap={ figuresNumberMap }
           /> : null
 
       ];
