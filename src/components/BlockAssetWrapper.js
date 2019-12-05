@@ -40,8 +40,8 @@ const BlockAssetWrapper = ( {
 
   let Component = contextualizerModule && contextualizerModule.Block;
 
-  if ( figuresPosition !== 'inBody' && [ 'table' ].includes( contextualizer.type ) ) {
-    Component = () => <div className={ 'block-contextualization-placeholder pagedjs_no-page-overflow-y' } />;
+  if ( figuresPosition !== 'inBody' && [ 'table', 'source-code' ].includes( contextualizer.type ) ) {
+    Component = () => <div className={ 'block-contextualization-placeholder' } />;
   }
 
   if ( contextualization && Component ) {
