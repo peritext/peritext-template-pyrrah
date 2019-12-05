@@ -9,6 +9,7 @@ export default ( {
   edition,
   data: {
     backgroundColor,
+    textColor,
     customCoverFooter,
     animatedBackground,
     svgData
@@ -37,7 +38,8 @@ export default ( {
       id={ 'front-cover' }
       className={ `composition-block front-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}` }
       style={ {
-        backgroundColor
+        backgroundColor,
+        color: textColor,
       } }
     >
       <div className={ 'front-cover-content' }>

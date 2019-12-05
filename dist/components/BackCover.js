@@ -20,6 +20,7 @@ var _default = ({
   edition,
   data: {
     backgroundColor,
+    textColor,
     useAbstract = true,
     customMarkdownContents,
     animatedBackground,
@@ -36,7 +37,8 @@ var _default = ({
   return _react.default.createElement("section", {
     className: `composition-block back-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}`,
     style: {
-      backgroundColor
+      backgroundColor,
+      color: textColor
     }
   }, _react.default.createElement("div", {
     className: 'back-cover-content'

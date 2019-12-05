@@ -20,6 +20,7 @@ var _default = ({
   edition,
   data: {
     backgroundColor,
+    textColor,
     customCoverFooter,
     animatedBackground,
     svgData
@@ -47,7 +48,8 @@ var _default = ({
     id: 'front-cover',
     className: `composition-block front-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}`,
     style: {
-      backgroundColor
+      backgroundColor,
+      color: textColor
     }
   }, _react.default.createElement("div", {
     className: 'front-cover-content'

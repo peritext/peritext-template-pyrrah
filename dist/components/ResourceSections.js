@@ -13,6 +13,8 @@ var _Section = _interopRequireDefault(require("./Section"));
 
 var _EndNotes = _interopRequireDefault(require("./EndNotes"));
 
+var _Figures = _interopRequireDefault(require("./Figures"));
+
 var _helpers = require("../helpers");
 
 var _peritextUtils = require("peritext-utils");
@@ -104,6 +106,11 @@ const ResourceSections = ({
     citationLocale: citationLocale,
     publicationTitle: publicationTitle,
     publicationSubtitle: publicationSubtitle
+  }) : null, figuresPosition === 'endOfContents' ? _react.default.createElement(_Figures.default, {
+    production: production,
+    translate: translate,
+    figures: figures,
+    figuresNumberMap: figuresNumberMap
   }) : null];
 };
 

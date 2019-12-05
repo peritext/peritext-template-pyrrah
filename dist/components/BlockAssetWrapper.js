@@ -52,9 +52,9 @@ const BlockAssetWrapper = ({
   const contextualizerModule = contextualizers[contextualizer.type];
   let Component = contextualizerModule && contextualizerModule.Block;
 
-  if (figuresPosition !== 'inBody' && ['table'].includes(contextualizer.type)) {
+  if (figuresPosition !== 'inBody' && ['table', 'source-code'].includes(contextualizer.type)) {
     Component = () => _react.default.createElement("div", {
-      className: 'block-contextualization-placeholder pagedjs_no-page-overflow-y'
+      className: 'block-contextualization-placeholder'
     });
   }
 

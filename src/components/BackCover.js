@@ -9,6 +9,7 @@ export default ( {
   edition,
   data: {
     backgroundColor,
+    textColor,
     useAbstract = true,
     customMarkdownContents,
     animatedBackground,
@@ -27,6 +28,7 @@ export default ( {
       className={ `composition-block back-cover ${animatedBackground && animatedBackground !== 'none' ? `with-animated-background-${animatedBackground}` : ''}` }
       style={ {
       backgroundColor,
+      color: textColor
     } }
     >
       <div className={ 'back-cover-content' }>

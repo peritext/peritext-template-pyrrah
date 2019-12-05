@@ -564,7 +564,7 @@ cite{
     margin-bottom: 10px;
 }
 .front-cover .front-cover-authors{
-  color: var(--color-link-active);
+  // color: var(--color-link-active);
   font-size: 20px;
 }
 .front-cover .front-cover-footer{
@@ -607,7 +607,7 @@ cite{
     margin-bottom: 15px;
 }
 .back-cover .back-cover-authors{
-  color: var(--color-link-active);
+  // color: var(--color-link-active);
   font-size: 16px;
 }
 .back-cover .back-cover-text{
@@ -744,8 +744,9 @@ cite{
 .front-cover .front-cover-content,
 .back-cover .back-cover-content
 {
-  background: white;
-  color: var(--color-text);
+  // background: white;
+  // var(--color-text);
+  color: white;
   padding: 2cm;
 }
 .back-cover-content {

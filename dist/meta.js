@@ -22,7 +22,8 @@ module.exports = {
       type: 'frontCover',
       data: {
         animatedBackground: 'none',
-        backgroundColor: '#466CA6'
+        backgroundColor: '#466CA6',
+        textColor: '#FFF'
       }
     }, {
       type: 'titlePage'
@@ -46,6 +47,7 @@ module.exports = {
       type: 'backCover',
       data: {
         backgroundColor: '#D6CFC4',
+        textColor: '#FFF',
         useAbstract: true
       }
     }]
@@ -55,10 +57,15 @@ module.exports = {
       type: 'object',
       default: {
         animatedBackground: 'none',
-        backgroundColor: '#466CA6'
+        backgroundColor: '#466CA6',
+        textColor: '#FFF'
       },
       properties: {
         backgroundColor: {
+          type: 'string',
+          uiType: 'color'
+        },
+        textColor: {
           type: 'string',
           uiType: 'color'
         },
@@ -106,11 +113,17 @@ module.exports = {
       type: 'object',
       default: {
         backgroundColor: '#D6CFC4',
+        textColor: '#FFF',
         useAbstract: true
       },
       properties: {
         backgroundColor: {
-          type: 'string'
+          type: 'string',
+          uiType: 'color'
+        },
+        textColor: {
+          type: 'string',
+          uiType: 'color'
         },
         useAbstract: {
           type: 'boolean'
