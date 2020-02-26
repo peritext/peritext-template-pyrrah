@@ -6,7 +6,7 @@ const parseEligibleContextualizations = ( production, contents ) =>
       const contextualizationId = entity.data.asset.id;
       const contextualization = production.contextualizations[contextualizationId];
       const contextualizer = production.contextualizers[contextualization.contextualizerId];
-      if ( [ 'image', 'video', 'embed', 'table' ].includes( contextualizer.type ) ) {
+      if ( [ 'image', 'video', 'embed', 'table', 'vegaLite' ].includes( contextualizer.type ) ) {
         return [ ...res2, contextualizationId ];
       }
     }
