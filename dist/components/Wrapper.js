@@ -45,6 +45,8 @@ var _defaultStyle = _interopRequireDefault(require("../defaultStyle"));
 
 var _Figures = _interopRequireDefault(require("./Figures"));
 
+var _buildResourceSectionsSummary = _interopRequireDefault(require("peritext-utils/dist/buildResourceSectionsSummary"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -165,24 +167,15 @@ const buildToc = (production, edition, translate) => {
             return [...resLoc, ...newItems];
           }, []).filter(s => s)];
         } else if (element.type === 'resourceSections') {
-          const {
-            data: {
-              hideEmptyResources = false
-            }
-          } = element;
-          return [...res, ...Object.keys(production.resources).filter(resourceId => {
-            const resource = production.resources[resourceId];
-            return data.resourceTypes.includes(resource.metadata.type);
-          }).filter(resourceId => {
-            if (hideEmptyResources) {
-              const resource = production.resources[resourceId];
-              return (0, _peritextUtils.resourceHasContents)(resource);
-            }
-
-            return true;
-          }).sort(_peritextUtils.defaultSortResourceSections).reduce((resLoc, resourceId) => {
+          return [...res, ...(0, _buildResourceSectionsSummary.default)({
+            production,
+            option: data
+          }).reduce((resLoc, {
+            resourceId,
+            level: initLevel
+          }) => {
             const thatSection = production.resources[resourceId];
-            const thatLevel = 0;
+            const thatLevel = initLevel;
             const titlesMap = {
               'header-one': 1,
               'header-two': 2,

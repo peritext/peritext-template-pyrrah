@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { buildCitations, resourceHasContents, defaultSortResourceSections, getResourceTitle } from 'peritext-utils';
+import { buildCitations, getResourceTitle } from 'peritext-utils';
 
 import { buildFiguresNumberMap } from '../helpers';
 
@@ -23,6 +23,7 @@ import Section from './Section';
 
 import templateStyle from '../defaultStyle';
 import Figures from './Figures';
+import buildResourceSectionsSummary from 'peritext-utils/dist/buildResourceSectionsSummary';
 
 const EmptyPage = () => (
   <div className={ 'composition-block empty-page' } />
@@ -137,29 +138,12 @@ const buildToc = ( production, edition, translate ) => {
           ];
         }
         else if ( element.type === 'resourceSections' ) {
-          const {
-            data: {
-              hideEmptyResources = false
-            }
-          } = element;
           return [
             ...res,
-            ...Object.keys( production.resources )
-            .filter( ( resourceId ) => {
-              const resource = production.resources[resourceId];
-              return data.resourceTypes.includes( resource.metadata.type );
-            } )
-            .filter( ( resourceId ) => {
-              if ( hideEmptyResources ) {
-                const resource = production.resources[resourceId];
-                return resourceHasContents( resource );
-              }
-              return true;
-            } )
-            .sort( defaultSortResourceSections )
-            .reduce( ( resLoc, resourceId ) => {
+            ...buildResourceSectionsSummary( { production, option: data } )
+            .reduce( ( resLoc, { resourceId, level: initLevel } ) => {
                 const thatSection = production.resources[resourceId];
-                const thatLevel = 0;
+                const thatLevel = initLevel;
                 const titlesMap = {
                   'header-one': 1,
                   'header-two': 2,
