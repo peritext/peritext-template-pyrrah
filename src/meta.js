@@ -58,122 +58,6 @@ module.exports = {
       ]
   },
   summaryBlockDataTypes: {
-    frontCover: {
-      type: 'object',
-      default: {
-        animatedBackground: 'none',
-        backgroundColor: '#466CA6',
-        textColor: '#FFF'
-      },
-      properties: {
-        backgroundColor: {
-          type: 'string',
-          uiType: 'color'
-        },
-        textColor: {
-          type: 'string',
-          uiType: 'color'
-        },
-        customCoverFooter: {
-          type: 'string',
-          longString: true
-        },
-        animatedBackground: {
-          type: 'string',
-          description: 'animated background to use',
-          enum: [ 'gradient', 'none' ]
-        }
-      }
-    },
-    titlePage: {
-      type: 'object',
-      default: {
-      },
-      properties: {
-        customCoverFooter: {
-          type: 'string',
-          longString: true
-        },
-      }
-    },
-    colophon: {
-      type: 'object',
-      default: {
-      },
-      properties: {
-        customText: {
-          type: 'string',
-          longString: true
-        },
-        copyright: {
-          type: 'string'
-        },
-        issn: {
-          type: 'string'
-        },
-        isbn: {
-          type: 'string'
-        }
-      }
-    },
-    backCover: {
-      type: 'object',
-      default: {
-        backgroundColor: '#D6CFC4',
-        textColor: '#FFF',
-        useAbstract: true
-      },
-      properties: {
-        backgroundColor: {
-          type: 'string',
-          uiType: 'color'
-        },
-        textColor: {
-          type: 'string',
-          uiType: 'color'
-        },
-        useAbstract: {
-          type: 'boolean'
-        },
-        customMarkdownContents: {
-          type: 'string',
-          description: 'custom content to put on this page',
-          longString: true
-        },
-        animatedBackground: {
-          type: 'string',
-          description: 'animated background to use',
-          enum: [ 'gradient', 'none' ]
-        },
-        customCoverFooter: {
-          type: 'string',
-          longString: true
-        },
-      },
-
-    },
-    tableOfContents: {
-      type: 'object',
-      properties: {
-        customTitle: {
-          type: 'string',
-          description: 'Custom title of the table of contents section'
-        },
-        displayPageNumber: {
-          type: 'boolean',
-          description: 'whether to display page number'
-        },
-        level: {
-          type: 'number',
-          enum: [ 0, 1, 2, 3, 4 ],
-          description: 'level to use for displaying items in the table of contents'
-        }
-      },
-      default: {
-        displayPageNumber: true
-      }
-
-    },
     sections: {
       type: 'object',
       properties: {
@@ -299,6 +183,123 @@ module.exports = {
         },
       }
     },
+    frontCover: {
+      type: 'object',
+      default: {
+        animatedBackground: 'none',
+        backgroundColor: '#466CA6',
+        textColor: '#FFF'
+      },
+      properties: {
+        backgroundColor: {
+          type: 'string',
+          uiType: 'color'
+        },
+        textColor: {
+          type: 'string',
+          uiType: 'color'
+        },
+        customCoverFooter: {
+          type: 'string',
+          longString: true
+        },
+        animatedBackground: {
+          type: 'string',
+          description: 'animated background to use',
+          enum: [ 'gradient', 'none' ]
+        }
+      }
+    },
+    titlePage: {
+      type: 'object',
+      default: {
+      },
+      properties: {
+        customCoverFooter: {
+          type: 'string',
+          longString: true
+        },
+      }
+    },
+    colophon: {
+      type: 'object',
+      default: {
+      },
+      properties: {
+        customText: {
+          type: 'string',
+          longString: true
+        },
+        copyright: {
+          type: 'string'
+        },
+        issn: {
+          type: 'string'
+        },
+        isbn: {
+          type: 'string'
+        }
+      }
+    },
+    backCover: {
+      type: 'object',
+      default: {
+        backgroundColor: '#D6CFC4',
+        textColor: '#FFF',
+        useAbstract: true
+      },
+      properties: {
+        backgroundColor: {
+          type: 'string',
+          uiType: 'color'
+        },
+        textColor: {
+          type: 'string',
+          uiType: 'color'
+        },
+        useAbstract: {
+          type: 'boolean'
+        },
+        customMarkdownContents: {
+          type: 'string',
+          description: 'custom content to put on this page',
+          longString: true
+        },
+        animatedBackground: {
+          type: 'string',
+          description: 'animated background to use',
+          enum: [ 'gradient', 'none' ]
+        },
+        customCoverFooter: {
+          type: 'string',
+          longString: true
+        },
+      },
+
+    },
+    tableOfContents: {
+      type: 'object',
+      properties: {
+        customTitle: {
+          type: 'string',
+          description: 'Custom title of the table of contents section'
+        },
+        displayPageNumber: {
+          type: 'boolean',
+          description: 'whether to display page number'
+        },
+        level: {
+          type: 'number',
+          enum: [ 0, 1, 2, 3, 4 ],
+          description: 'level to use for displaying items in the table of contents'
+        }
+      },
+      default: {
+        displayPageNumber: true
+      }
+
+    },
+
     customPage: {
       type: 'object',
       default: {
@@ -378,7 +379,8 @@ module.exports = {
         showDescription: true,
         showMentions: true,
         showUncited: false,
-        glossaryTypes: [ 'person', 'place', 'event', 'notion', 'other' ]
+        glossaryTypes: [ 'person', 'place', 'event', 'notion', 'other' ],
+        tags: []
       },
       properties: {
         customTitle: {
@@ -400,6 +402,17 @@ module.exports = {
           },
           uiType: 'select',
           description: 'which types of glossary items to show'
+        },
+        tags: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+          uiType: 'select',
+          description: 'which tags to include for displaying the contents',
+          enumTargetMap: 'tags',
+          enumId: 'id',
+          enumLabel: 'name'
         },
         showUncited: {
           type: 'boolean',

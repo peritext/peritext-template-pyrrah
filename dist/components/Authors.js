@@ -12,10 +12,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const Authors = ({
   authors,
   displayRole = false
-}) => authors.map((author, index) => _react.default.createElement("span", {
+}) => authors.map((author = {}, index) => _react.default.createElement("span", {
   className: "author'",
   key: index
-}, author.given.trim(), " ", author.family.trim(), displayRole && author.role ? ` (${author.role})` : '')).reduce((prev, curr, index) => {
+}, author.given && author.given.trim(), " ", author.family && author.family.trim(), displayRole && author.role ? ` (${author.role})` : '')).reduce((prev, curr, index) => {
   if (index > 0) {
     return [prev, ', ', curr];
   }

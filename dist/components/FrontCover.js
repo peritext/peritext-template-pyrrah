@@ -55,15 +55,27 @@ var _default = ({
     className: 'front-cover-content'
   }, _react.default.createElement("h1", {
     id: id,
-    className: 'front-cover-title'
+    className: 'front-cover-title',
+    style: {
+      color: textColor
+    }
   }, finalTitle), finalSubtitle && _react.default.createElement("h2", {
-    className: 'front-cover-subtitle'
+    className: 'front-cover-subtitle',
+    style: {
+      color: textColor
+    }
   }, finalSubtitle), _react.default.createElement("h3", {
-    className: 'front-cover-authors'
+    className: 'front-cover-authors',
+    style: {
+      color: textColor
+    }
   }, metadata.authors && _react.default.createElement(_Authors.default, {
     authors: authors
   }))), customCoverFooter && customCoverFooter.length > 0 && _react.default.createElement("div", {
-    className: 'front-cover-footer'
+    className: 'front-cover-footer',
+    style: {
+      color: textColor
+    }
   }, _react.default.createElement(_MarkdownPlayer.default, {
     src: customCoverFooter
   })));
