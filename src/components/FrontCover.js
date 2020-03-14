@@ -46,14 +46,28 @@ export default ( {
         <h1
           id={ id }
           className={ 'front-cover-title' }
+          style={ {
+            color: textColor,
+          } }
         >
           {finalTitle}
         </h1>
         {
           finalSubtitle &&
-          <h2 className={ 'front-cover-subtitle' }>{finalSubtitle}</h2>
+          <h2
+            className={ 'front-cover-subtitle' }
+            style={ {
+              color: textColor,
+            } }
+          >{finalSubtitle}
+          </h2>
         }
-        <h3 className={ 'front-cover-authors' }>
+        <h3
+          className={ 'front-cover-authors' }
+          style={ {
+            color: textColor,
+          } }
+        >
           {
             metadata.authors &&
             <Authors authors={ authors } />
@@ -62,7 +76,12 @@ export default ( {
       </div>
       {
         customCoverFooter && customCoverFooter.length > 0 &&
-        <div className={ 'front-cover-footer' }>
+        <div
+          className={ 'front-cover-footer' }
+          style={ {
+            color: textColor,
+          } }
+        >
           <MarkdownPlayer src={ customCoverFooter } />
         </div>
       }
