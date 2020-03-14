@@ -5,13 +5,13 @@ const Authors = ( {
   displayRole = false,
 } ) =>
   authors
-    .map( ( author, index ) =>
+    .map( ( author = {}, index ) =>
       (
         <span
           className={ "author'" }
           key={ index }
         >
-          {author.given.trim()} {author.family.trim()}{
+          {author.given && author.given.trim()} {author.family && author.family.trim()}{
           displayRole && author.role ?
           ` (${author.role})`
           : ''
