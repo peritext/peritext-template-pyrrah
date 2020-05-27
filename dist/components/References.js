@@ -74,7 +74,7 @@ const References = ({
     // const entryName = entry.title;
     return _react.default.createElement("li", {
       key: index,
-      id: entry.citationKey,
+      id: entry.id,
       className: 'mention-item'
     }, _react.default.createElement("div", {
       className: 'title'

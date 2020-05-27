@@ -647,6 +647,18 @@ cite{
   text-align: right;
 }
 .table-of-contents .table-of-contents-element.level-0{
+  font-weight: 800;
+ font-size: 1.5rem;
+}
+.table-of-contents-element.level-0:not(:first-of-type) {
+ margin-top: 1rem;
+}
+
+.table-of-contents-element.level-1:first-of-type,
+.table-of-contents-element.level-2:first-of-type
+.table-of-contents-element.level-3:first-of-type
+ {
+ margin-top: .7rem; 
 }
 .table-of-contents .table-of-contents-element.level-1{
   margin-left: calc(.3 * var(--gutter-medium)); 

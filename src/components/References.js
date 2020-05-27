@@ -77,7 +77,7 @@ const References = ( {
             return (
               <li
                 key={ index }
-                id={ entry.citationKey }
+                id={ entry.id }
                 className={ 'mention-item' }
               >
                 <div
