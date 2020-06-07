@@ -29,9 +29,12 @@ var _default = ({
   citations,
   id
 }) => {
-  const notes = sectionsIds.reduce((results, resourceId) => results.concat(Object.keys(resources[resourceId].data.contents.notes).map(thatId => _objectSpread({}, resources[resourceId].data.contents.notes[thatId], {
-    id: thatId
-  }))), []);
+  const notes = sectionsIds.reduce((results, resourceId) => {
+    const theseNotes = resources[resourceId] && resources[resourceId].data && resources[resourceId].data.contents && resources[resourceId].data.contents.notes || {};
+    return results.concat(Object.keys(theseNotes).map(thatId => _objectSpread({}, theseNotes[thatId], {
+      id: thatId
+    })));
+  }, []);
   return _react.default.createElement("section", {
     className: 'end-notes',
     title: title,

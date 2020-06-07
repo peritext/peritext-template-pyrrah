@@ -13,11 +13,13 @@ export default ( {
   citations,
   id,
 } ) => {
-  const notes = sectionsIds.reduce( ( results, resourceId ) =>
-    results.concat(
-      Object.keys( resources[resourceId].data.contents.notes )
-      .map( ( thatId ) => ( { ...resources[resourceId].data.contents.notes[thatId], id: thatId } ) )
-    )
+  const notes = sectionsIds.reduce( ( results, resourceId ) => {
+    const theseNotes = ( resources[resourceId] && resources[resourceId].data && resources[resourceId].data.contents && resources[resourceId].data.contents.notes ) || {};
+    return results.concat(
+      Object.keys( theseNotes )
+      .map( ( thatId ) => ( { ...theseNotes[thatId], id: thatId } ) )
+    );
+  }
   , [] );
   return (
     <section

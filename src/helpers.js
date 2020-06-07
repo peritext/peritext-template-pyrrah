@@ -7,7 +7,9 @@ const parseEligibleContextualizations = ( production, contents ) =>
       const contextualization = production.contextualizations[contextualizationId];
       const contextualizer = production.contextualizers[contextualization.contextualizerId];
       if ( [ 'image', 'video', 'embed', 'table', 'vegaLite' ].includes( contextualizer.type ) ) {
-        return [ ...res2, contextualizationId ];
+        if ( !( contextualizer.type === 'video' && entity.type === 'INLINE_ASSET' ) ) {
+          return [ ...res2, contextualizationId ];
+        }
       }
     }
     return res2;

@@ -35,7 +35,9 @@ class Figures extends _react.Component {
       } = this.props;
       return figures.length ? _react.default.createElement("section", {
         className: 'end-figures'
-      }, _react.default.createElement("h2", null, "Figures"), _react.default.createElement("ul", {
+      }, _react.default.createElement("h2", {
+        className: 'end-figures-title'
+      }, "Figures"), _react.default.createElement("ul", {
         className: 'figures-list'
       }, figures.map(({
         contextualizationId

@@ -31,6 +31,12 @@ const BlockAssetWrapper = ( {
   const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
   const resource = production.resources[contextualization.sourceId];
+  const { metadata = {} } = resource;
+  const {
+    authors = [],
+    source,
+    // description
+  } = metadata;
   // const dimensions = context.dimensions || {};
   const fixedPresentationId = context.fixedPresentationId;
   // const onPresentationExit = context.onPresentationExit;
@@ -48,7 +54,7 @@ const BlockAssetWrapper = ( {
     const hide = !visibility.paged;
     return hide ? null : (
       <figure
-        className={ `block-contextualization-container pagedjs_no-page-overflow-y ${ contextualizer.type}` }
+        className={ `block-contextualization-container ${figuresPosition !== 'inBody' ? 'pagedjs_no-page-overflow-y' : ''} ${ contextualizer.type}` }
         id={ `contextualization-${containerId}-${assetId}` }
       >
         <Component
@@ -78,7 +84,7 @@ const BlockAssetWrapper = ( {
                           p.
                         </a>
                       </span>
-                      <span>).</span>
+                      <span>). </span>
                     </span>
                   }
                   <span>{contextualization.title || resource.metadata.title}</span>
@@ -87,6 +93,31 @@ const BlockAssetWrapper = ( {
                   <div className={ 'figure-legend' }>
                     <MarkdownPlayer src={ contextualization.legend } />
                   </div>
+                }
+                {
+                  source ?
+                    <div className={ 'source' }>
+                      {context.translate( 'Source' )}: {source}
+                    </div>
+                  : null
+                }
+                {
+                  authors && authors.length ?
+                    <div className={ 'authors' }>
+                      {context.translate( 'Authors' )}{': '}
+                      {
+                    authors
+                    .map( ( { family, given, affiliation }, index ) => (
+                      <span
+                        key={ index }
+                        className={ 'author' }
+                      >{given} {family}{affiliation ? ` (${affiliation})` : ''}
+                      </span>
+                    ) )
+                    .reduce( ( cur, next, index ) => [ ...cur, index === 0 ? null : ', ', next ], [] )
+                  }.
+                    </div>
+                  : null
                 }
               </div>
             :
@@ -159,7 +190,8 @@ BlockAssetWrapper.contextTypes = {
   containerId: PropTypes.string,
 
   figuresPosition: PropTypes.string,
-  figuresNumberMap: PropTypes.object
+  figuresNumberMap: PropTypes.object,
+  translate: PropTypes.func,
 };
 
 export default BlockAssetWrapper;

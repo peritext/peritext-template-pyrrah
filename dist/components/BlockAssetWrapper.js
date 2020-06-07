@@ -43,7 +43,15 @@ const BlockAssetWrapper = ({
   const containerId = context.containerId;
   const assets = context.productionAssets || {};
   const contextualizer = production.contextualizers[contextualization.contextualizerId];
-  const resource = production.resources[contextualization.sourceId]; // const dimensions = context.dimensions || {};
+  const resource = production.resources[contextualization.sourceId];
+  const {
+    metadata = {}
+  } = resource;
+  const {
+    authors = [],
+    source // description
+
+  } = metadata; // const dimensions = context.dimensions || {};
 
   const fixedPresentationId = context.fixedPresentationId; // const onPresentationExit = context.onPresentationExit;
 
@@ -61,7 +69,7 @@ const BlockAssetWrapper = ({
   if (contextualization && Component) {
     const hide = !visibility.paged;
     return hide ? null : _react.default.createElement("figure", {
-      className: `block-contextualization-container pagedjs_no-page-overflow-y ${contextualizer.type}`,
+      className: `block-contextualization-container ${figuresPosition !== 'inBody' ? 'pagedjs_no-page-overflow-y' : ''} ${contextualizer.type}`,
       id: `contextualization-${containerId}-${assetId}`
     }, _react.default.createElement(Component, {
       resource: resource,
@@ -78,11 +86,22 @@ const BlockAssetWrapper = ({
     }, displayFigureNumber && _react.default.createElement("span", null, _react.default.createElement("span", null, "Figure ", figuresNumberMap[contextualization.id], " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
       className: 'page-link',
       href: `#figure-pointer-${contextualization.id}`
-    }, "p.")), _react.default.createElement("span", null, ").")), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
+    }, "p.")), _react.default.createElement("span", null, "). ")), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
       className: 'figure-legend'
     }, _react.default.createElement(_MarkdownPlayer.default, {
       src: contextualization.legend
-    }))) : _react.default.createElement("div", null, _react.default.createElement("h4", {
+    })), source ? _react.default.createElement("div", {
+      className: 'source'
+    }, context.translate('Source'), ": ", source) : null, authors && authors.length ? _react.default.createElement("div", {
+      className: 'authors'
+    }, context.translate('Authors'), ': ', authors.map(({
+      family,
+      given,
+      affiliation
+    }, index) => _react.default.createElement("span", {
+      key: index,
+      className: 'author'
+    }, given, " ", family, affiliation ? ` (${affiliation})` : '')).reduce((cur, next, index) => [...cur, index === 0 ? null : ', ', next], []), ".") : null) : _react.default.createElement("div", null, _react.default.createElement("h4", {
       className: 'figure-title'
     }, _react.default.createElement("span", {
       id: `figure-pointer-${contextualization.id}`
@@ -132,7 +151,8 @@ BlockAssetWrapper.contextTypes = {
   productionAssets: _propTypes.default.object,
   containerId: _propTypes.default.string,
   figuresPosition: _propTypes.default.string,
-  figuresNumberMap: _propTypes.default.object
+  figuresNumberMap: _propTypes.default.object,
+  translate: _propTypes.default.func
 };
 var _default = BlockAssetWrapper;
 exports.default = _default;

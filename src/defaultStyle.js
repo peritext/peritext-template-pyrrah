@@ -164,10 +164,8 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  margin-left: 5mm;
   background: whitesmoke;
-  @top-left{
-    content: element(publicationTitle);
-  }
   @right-middle {
     content: counter(page);
     text-align: center;
@@ -179,6 +177,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
+  margin-right: 5mm;
   background: whitesmoke;
   @left-middle {
     content: counter(page);
@@ -267,6 +266,11 @@ const style = `
   page: end-figures;
   page-break-before: always;
 }
+/*
+.end-figures-title {
+  padding-left : calc(45.8mm - 5mm);
+}
+*/
 
 /**
  *
@@ -315,10 +319,12 @@ a,
 /**
  * Prevent overflow bugs
  */
+/*
 .csl-entry,
 a{
   word-break: break-all;
 }
+*/
 
 /* lists */
 .mentions-container{
@@ -328,6 +334,8 @@ a{
   list-style-type: none;
   padding: 0;
   margin-bottom: var(--gutter-medium);
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 /* .mention-item .title{} */
 
@@ -355,6 +363,19 @@ a{
   text-indent: 0;
 }
 
+.rendered-content h1,
+.rendered-content h2,
+.rendered-content h3,
+.rendered-content h4
+{
+  page-break-after: avoid;
+  break-after: avoid;
+} 
+.rendered-content blockquote {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
 ul + .unstyled,
 blockquote + .unstyled,
 figure + .unstyled,
@@ -370,6 +391,9 @@ figure + .unstyled,
 }
 
 /*.footnote-area .footnote{}*/
+.footnote-break {
+  opacity: 0;
+}
 
 .footnote-area .footnote sup{
   vertical-align: baseline;
@@ -408,6 +432,11 @@ figure + .unstyled,
 .block-contextualization-container .figure-legend p{
   margin-top: 0;
 }
+.block-contextualization-container .figure-caption .authors,
+.block-contextualization-container .figure-caption .source {
+  font-style: italic;
+  font-size: .8em;
+}
 .block-contextualization-container figure{
   display: flex;
   flex-flow: column nowrap;
@@ -418,7 +447,7 @@ figure + .unstyled,
 .block-contextualization-container img
 {
   max-width: 100%;
-  max-height: 10cm;
+  max-height: 100%;
 }
 .block-contextualization-container iframe
 {
@@ -488,6 +517,16 @@ right: -4cm;
   page-break-before: always;
   max-width: 100%;
   overflow: hidden;
+  background: white;
+}
+
+.block-contextualization-container.table table {
+  border-left: 1px solid black;
+  border-top: 1px solid black;
+}
+
+.block-contextualization-container table th {
+  padding: 10px;
 }
 
 .block-contextualization-container.table table th,
@@ -495,7 +534,10 @@ right: -4cm;
  {
     border-right: 1px solid black;
     border-bottom: 1px solid black;
-  font-size: 8px;
+    font-size: 12px;
+}
+.block-contextualization-container.table table tbody th{
+  font-weight: 400;
 }
 
 .block-contextualization-container.bib .figure-caption{
@@ -508,9 +550,18 @@ cite{
 /* images */
 .block-contextualization-container.image .static-images-container{
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   // justify-content: center;
 }
+
+.specific-image-container {
+  max-height: 100%;
+  flex: 1;
+}
+.specific-image-container:not(:last-of-type) {
+  padding-right: 10px;
+}
+
 .block-contextualization-container.image .static-images-container img{
   display: block;
 }
@@ -521,7 +572,11 @@ cite{
   padding: calc(.5 * var(--gutter-medium));
   padding-left: 0;
 }
-
+.inline-images-container {
+  padding-left: 1rem;
+  page-break-before: avoid;
+  break-before: avoid;
+}
 .inline-images-container img {
   max-width: 2rem;
   max-height: 1rem;
@@ -624,11 +679,13 @@ cite{
   list-style-type: none;
   margin: 0;
   font-size: 20px;
-}
-.table-of-contents .table-of-contents-element { 
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  page-break-inside: avoid;
+  break-inside: avoid;
   
 }
 .table-of-contents .table-of-contents-element .element-leading{
@@ -636,15 +693,16 @@ cite{
   content: " ";
   border-bottom: 1px dashed var(--color-text);
 }
+
 .table-of-contents .table-of-contents-element .element-title,
 .table-of-contents .table-of-contents-element .page-link
 {
    position: relative;
    top: .25em;
-   min-width: 50px;
 }
 .table-of-contents .table-of-contents-element .page-link{
   text-align: right;
+  min-width: 50px;
 }
 .table-of-contents .table-of-contents-element.level-0{
   font-weight: 800;
@@ -661,25 +719,25 @@ cite{
  margin-top: .7rem; 
 }
 .table-of-contents .table-of-contents-element.level-1{
-  margin-left: calc(.3 * var(--gutter-medium)); 
+  paddinng-left: calc(.4 * var(--gutter-medium)); 
 }
 .table-of-contents .table-of-contents-element.level-2{
-  margin-left: calc(.6 * var(--gutter-medium)); 
+  padding-left: calc(.8 * var(--gutter-medium)); 
   
 }
 .table-of-contents .table-of-contents-element.level-3{
-  margin-left: calc(.9 * var(--gutter-medium)); 
+  padding-left: calc(1.4 * var(--gutter-medium)); 
 }
 .table-of-contents .table-of-contents-element.level-4{
-  margin-left: calc(1.2 * var(--gutter-medium)); 
+  padding-left: calc(1.8 * var(--gutter-medium)); 
   
 }
 .table-of-contents .table-of-contents-element.level-5{
-  margin-left: calc(1.5 * var(--gutter-medium)); 
+  padding-left: calc(2.2 * var(--gutter-medium)); 
   
 }
 .table-of-contents .table-of-contents-element.level-6{
-  margin-left: calc(1.8 * var(--gutter-medium)); 
+  padding-left: calc(2.6 * var(--gutter-medium)); 
   
 }
 /* sections views */
@@ -717,6 +775,14 @@ cite{
   opacity: .8;
 }
 
+.footnote-ref{
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-before: avoid;
+  break-before: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
 
 /*.section-title{}*/
 

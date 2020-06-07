@@ -23,7 +23,7 @@ export default class Figures extends Component {
       <section
         className={ 'end-figures' }
       >
-        <h2>Figures</h2>
+        <h2 className={ 'end-figures-title' }>Figures</h2>
         <ul className={ 'figures-list' }>
           {
             figures.map( ( { contextualizationId }, index ) => {
