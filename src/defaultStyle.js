@@ -313,7 +313,7 @@ a,
 
 .composition-block-title{
   font-weight: 800;
-  font-size: 50px;
+  font-size: 40px;
 }
 
 /**
@@ -370,10 +370,14 @@ a{
 {
   page-break-after: avoid;
   break-after: avoid;
+  widows: 3;
+  orphans: 3;
 } 
 .rendered-content blockquote {
   page-break-before: avoid;
   break-before: avoid;
+  widows: 3;
+  orphans: 3;
 }
 
 ul + .unstyled,
@@ -712,14 +716,39 @@ cite{
  margin-top: 1rem;
 }
 
-.table-of-contents-element.level-1:first-of-type,
-.table-of-contents-element.level-2:first-of-type
-.table-of-contents-element.level-3:first-of-type
+
+.table-of-contents-element.level-0 + .level-1,
+.table-of-contents-element.level-1 + .level-2,
+.table-of-contents-element.level-2 + .level-3,
+.table-of-contents-element.level-3 + .level-4
  {
- margin-top: .7rem; 
+ margin-top: .3em; 
 }
+.table-of-contents-element.level-1 + .table-of-contents-element.level-0,
+.table-of-contents-element.level-2 + .table-of-contents-element.level-1,
+.table-of-contents-element.level-3 + .table-of-contents-element.level-2,
+.table-of-contents-element.level-4 + .table-of-contents-element.level-3
+ {
+ margin-top: .7em; 
+}
+.table-of-contents .table-of-contents-element.level-2 {
+  font-size: .95em;
+}
+
+.table-of-contents .table-of-contents-element.level-3 {
+  font-size: .9em;
+}
+
+.table-of-contents .table-of-contents-element.level-4,
+.table-of-contents .table-of-contents-element.level-5,
+.table-of-contents .table-of-contents-element.level-6,
+.table-of-contents .table-of-contents-element.level-7,
+.table-of-contents .table-of-contents-element.level-8 {
+  font-size: .85em;
+}
+
 .table-of-contents .table-of-contents-element.level-1{
-  paddinng-left: calc(.4 * var(--gutter-medium)); 
+  padding-left: calc(.4 * var(--gutter-medium)); 
 }
 .table-of-contents .table-of-contents-element.level-2{
   padding-left: calc(.8 * var(--gutter-medium)); 
@@ -784,7 +813,7 @@ cite{
   break-inside: avoid;
 }
 
-/*.section-title{}*/
+.section-title{}
 
 .resource-section .section-title{
   margin-top: 0;

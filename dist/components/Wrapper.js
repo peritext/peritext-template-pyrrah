@@ -151,7 +151,7 @@ const buildToc = (production, edition, translate) => {
               href: `section-${id}-${resourceId}`
             }];
 
-            if (level > 0) {
+            if (level > 0 && thatSection && thatSection.data && thatSection.data.contents) {
               const blocks = thatSection.data.contents.contents.blocks;
               blocks.forEach(block => {
                 if (titlesMap[block.type]) {
@@ -188,7 +188,7 @@ const buildToc = (production, edition, translate) => {
               href: `section-${id}-${resourceId}`
             }];
 
-            if (level > 0) {
+            if (level > 0 && thatSection && thatSection.data && thatSection.data.contents) {
               const blocks = thatSection.data.contents.contents.blocks;
               blocks.forEach(block => {
                 if (titlesMap[block.type]) {
@@ -222,7 +222,7 @@ const buildToc = (production, edition, translate) => {
             href: `section-${id}-${resourceId}`
           }];
 
-          if (level > 0) {
+          if (level > 0 && thatSection && thatSection.data && thatSection.data.contents) {
             const blocks = thatSection.data.contents.contents.blocks;
             blocks.forEach(block => {
               if (titlesMap[block.type]) {
