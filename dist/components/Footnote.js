@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
@@ -13,11 +13,11 @@ var _FootnoteRenderer = _interopRequireDefault(require("./FootnoteRenderer"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * This module exports a stateless reusable note pointer component
- * ============
- * @module quinoa-production-player/components/NotePointer
- */
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * Renders a not pointer as a pure component
@@ -27,37 +27,56 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {object} context - the context data of the component
  * @return {ReactElement} component - the component
  */
-const Footnote = ({
-  // children,
-  noteId = '',
-  notesPosition
-}, context) => {
-  const notes = context.notes;
+class Footnote extends _react.Component {
+  constructor(...args) {
+    super(...args);
 
-  if (notes) {
-    const note = notes[noteId];
+    _defineProperty(this, "getChildContext", () => ({
+      inNote: true
+    }));
 
-    if (note) {
-      return _react.default.createElement("sup", {
-        className: notesPosition === 'sidenotes' ? 'sidenote' : 'footnote',
-        id: `note-pointer-${noteId}`,
-        "data-notenumber": note.order
-      }, _react.default.createElement("span", {
-        className: 'footnote-content'
-      }, _react.default.createElement(_FootnoteRenderer.default, {
-        raw: note.contents
-      })));
-    }
+    _defineProperty(this, "render", () => {
+      const {
+        // children,
+        noteId = '',
+        notesPosition
+      } = this.props;
+      const {
+        context
+      } = this;
+      const notes = context.notes;
 
-    return null;
+      if (notes) {
+        const note = notes[noteId];
+
+        if (note) {
+          return _react.default.createElement("sup", {
+            className: notesPosition === 'sidenotes' ? 'sidenote' : 'footnote',
+            id: `note-pointer-${noteId}`,
+            "data-notenumber": note.order
+          }, _react.default.createElement("span", {
+            className: 'footnote-content'
+          }, _react.default.createElement(_FootnoteRenderer.default, {
+            raw: note.contents
+          })));
+        }
+
+        return null;
+      }
+
+      return null;
+    });
   }
 
-  return null;
-};
+}
 /**
  * Component's properties types
  */
 
+
+_defineProperty(Footnote, "childContextTypes", {
+  inNote: _propTypes.default.bool
+});
 
 Footnote.propTypes = {
   /**

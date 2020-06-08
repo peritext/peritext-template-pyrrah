@@ -3,7 +3,7 @@
  * ============
  * @module quinoa-production-player/components/NotePointer
  */
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Renderer from './FootnoteRenderer';
@@ -16,31 +16,44 @@ import Renderer from './FootnoteRenderer';
  * @param {object} context - the context data of the component
  * @return {ReactElement} component - the component
  */
-const Footnote = ( {
-  // children,
-  noteId = '',
-  notesPosition
-}, context ) => {
-  const notes = context.notes;
-  if ( notes ) {
-    const note = notes[noteId];
-    if ( note ) {
-      return (
-        <sup
-          className={ notesPosition === 'sidenotes' ? 'sidenote' : 'footnote' }
-          id={ `note-pointer-${noteId}` }
-          data-notenumber={ note.order }
-        >
-          <span className={ 'footnote-content' }>
-            <Renderer raw={ note.contents } />
-          </span>
-        </sup>
-      );
+class Footnote extends Component {
+  static childContextTypes = {
+    inNote: PropTypes.bool
+  }
+  getChildContext = () => ( {
+    inNote: true
+  } )
+
+  render = () => {
+    const {
+      // children,
+      noteId = '',
+      notesPosition
+    } = this.props;
+    const {
+      context
+    } = this;
+    const notes = context.notes;
+    if ( notes ) {
+      const note = notes[noteId];
+      if ( note ) {
+        return (
+          <sup
+            className={ notesPosition === 'sidenotes' ? 'sidenote' : 'footnote' }
+            id={ `note-pointer-${noteId}` }
+            data-notenumber={ note.order }
+          >
+            <span className={ 'footnote-content' }>
+              <Renderer raw={ note.contents } />
+            </span>
+          </sup>
+        );
+      }
+      return null;
     }
     return null;
   }
-  return null;
-};
+}
 
 /**
  * Component's properties types
