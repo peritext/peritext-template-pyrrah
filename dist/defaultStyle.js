@@ -814,7 +814,26 @@ cite{
   break-inside: avoid;
 }
 
-.section-title{}
+.section-title,
+.composition-block-title{
+  bookmark-label: content(text);
+  bookmark-level: 1;
+}
+.section.level-2 .section-title {
+  bookmark-level: 2;
+}
+.section.level-3 .section-title {
+  bookmark-level: 3;
+}
+.section.level-4 .section-title {
+  bookmark-level: 4;
+}
+.section.level-5 .section-title {
+  bookmark-level: 5;
+}
+.section.level-6 .section-title {
+  bookmark-level: 6;
+}
 
 .resource-section .section-title{
   margin-top: 0;
