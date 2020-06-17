@@ -359,6 +359,7 @@ a{
 .rendered-content .unstyled{
   text-indent: var(--gutter-medium);
   margin-bottom: calc(.4 * var(--gutter-medium));
+  hyphens: auto;
 }
 .rendered-content .unstyled:first-of-type {
   text-indent: 0;
@@ -374,11 +375,21 @@ a{
   widows: 3;
   orphans: 3;
 } 
+
+.rendered-content h1 + .unstyled,
+.rendered-content h2 + .unstyled,
+.rendered-content h3 + .unstyled,
+.rendered-content h4 + .unstyled
+{
+  orphans: 4;
+} 
+
 .rendered-content blockquote {
   page-break-before: avoid;
   break-before: avoid;
   widows: 3;
   orphans: 3;
+  hyphens: auto;
 }
 
 ul + .unstyled,
@@ -560,7 +571,7 @@ cite{
 }
 
 .specific-image-container {
-  max-height: 100%;
+  max-height: calc(100% - 5rem);
   flex: 1;
 }
 .specific-image-container:not(:last-of-type) {
@@ -711,7 +722,9 @@ cite{
 }
 .table-of-contents .table-of-contents-element.level-0{
   font-weight: 800;
- font-size: 1.5rem;
+  font-size: 1.5rem;
+  page-break-after: avoid;
+  break-after: avoid;
 }
 .table-of-contents-element.level-0:not(:first-of-type) {
  margin-top: 1rem;

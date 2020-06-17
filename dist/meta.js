@@ -325,6 +325,7 @@ module.exports = {
       default: {
         showUncitedReferences: false,
         showMentions: true,
+        showExpandedMentions: false,
         resourceTypes: ['bib'],
         sortingKey: 'date',
         sortingAscending: true
@@ -347,6 +348,10 @@ module.exports = {
           type: 'boolean',
           description: 'whether to show active mentions in the text for each reference'
         },
+        showExpandedMentions: {
+          type: 'boolean',
+          description: 'whether to show expanded mentions in the text for each reference element'
+        },
         sortingKey: {
           type: 'string',
           description: 'key to use for sorting references',
@@ -363,6 +368,7 @@ module.exports = {
       default: {
         showDescription: true,
         showMentions: true,
+        showExpandedMentions: false,
         showUncited: false,
         glossaryTypes: ['person', 'place', 'event', 'notion', 'other'],
         tags: []
@@ -378,6 +384,10 @@ module.exports = {
         showMentions: {
           type: 'boolean',
           description: 'whether to show active mentions in the text for each glossary element'
+        },
+        showExpandedMentions: {
+          type: 'boolean',
+          description: 'whether to show expanded mentions in the text for each glossary element'
         },
         glossaryTypes: {
           type: 'array',

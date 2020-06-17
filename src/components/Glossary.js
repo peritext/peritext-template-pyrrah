@@ -45,7 +45,14 @@ const Glossary = ( {
       </h2>
       <ul className={ 'mentions-container' }>
         {
-          glossary.map( ( entry, index ) => {
+          glossary
+          .sort( ( a, b ) => {
+            if ( a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase() ) {
+              return 1;
+            }
+            return -1;
+          } )
+          .map( ( entry, index ) => {
             // const entryName = entry.title;
             return (
               <li
