@@ -23,20 +23,30 @@ var _default = ({
     textColor,
     customCoverFooter,
     animatedBackground,
-    svgData
+    customHTML
   } = {},
   id
 }) => {
-  if (svgData) {
+  if (customHTML && customHTML.length) {
     return _react.default.createElement("section", {
-      id: 'front-cover',
-      className: 'composition-block front-cover',
+      className: 'composition-block back-cover',
       dangerouslySetInnerHTML: {
         /* eslint react/no-danger : 0 */
-        __html: svgData
+        __html: customHTML
       }
     });
-  }
+  } // if ( svgData ) {
+  //   return (
+  //     <section
+  //       id={ 'front-cover' }
+  //       className={ 'composition-block front-cover' }
+  //       dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
+  //         __html: svgData
+  //       } }
+  //     />
+  //   );
+  // }
+
 
   const {
     data: editionData = {}

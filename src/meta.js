@@ -188,7 +188,8 @@ module.exports = {
       default: {
         animatedBackground: 'none',
         backgroundColor: '#466CA6',
-        textColor: '#FFF'
+        textColor: '#FFF',
+        customHTML: ''
       },
       properties: {
         backgroundColor: {
@@ -200,6 +201,10 @@ module.exports = {
           uiType: 'color'
         },
         customCoverFooter: {
+          type: 'string',
+          longString: true
+        },
+        customHTML: {
           type: 'string',
           longString: true
         },
@@ -246,7 +251,8 @@ module.exports = {
       default: {
         backgroundColor: '#D6CFC4',
         textColor: '#FFF',
-        useAbstract: true
+        useAbstract: true,
+        customHTML: ''
       },
       properties: {
         backgroundColor: {
@@ -263,6 +269,10 @@ module.exports = {
         customMarkdownContents: {
           type: 'string',
           description: 'custom content to put on this page',
+          longString: true
+        },
+        customHTML: {
+          type: 'string',
           longString: true
         },
         animatedBackground: {
@@ -304,13 +314,18 @@ module.exports = {
       type: 'object',
       default: {
         displayInTableOfContents: true,
-        displayPageNumber: true
+        displayPageNumber: true,
+        customHTML: '',
       },
       properties: {
         title: {
           type: 'string'
         },
         markdownContents: {
+          type: 'string',
+          longString: true
+        },
+        customHTML: {
           type: 'string',
           longString: true
         },
@@ -339,6 +354,7 @@ module.exports = {
       default: {
         showUncitedReferences: false,
         showMentions: true,
+        showExpandedMentions: false,
         resourceTypes: [ 'bib' ],
         sortingKey: 'date',
         sortingAscending: true
@@ -361,6 +377,10 @@ module.exports = {
           type: 'boolean',
           description: 'whether to show active mentions in the text for each reference',
         },
+        showExpandedMentions: {
+          type: 'boolean',
+          description: 'whether to show expanded mentions in the text for each reference element',
+        },
         sortingKey: {
           type: 'string',
           description: 'key to use for sorting references',
@@ -378,6 +398,7 @@ module.exports = {
       default: {
         showDescription: true,
         showMentions: true,
+        showExpandedMentions: false,
         showUncited: false,
         glossaryTypes: [ 'person', 'place', 'event', 'notion', 'other' ],
         tags: []
@@ -393,6 +414,10 @@ module.exports = {
         showMentions: {
           type: 'boolean',
           description: 'whether to show active mentions in the text for each glossary element',
+        },
+        showExpandedMentions: {
+          type: 'boolean',
+          description: 'whether to show expanded mentions in the text for each glossary element',
         },
         glossaryTypes: {
           type: 'array',

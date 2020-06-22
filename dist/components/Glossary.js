@@ -62,7 +62,7 @@ const Glossary = ({
     // const entryName = entry.title;
     return _react.default.createElement("li", {
       key: index,
-      id: entry.resource.metadata.id,
+      id: `glossary-item-${entry.resource.id}`,
       className: 'mention-item'
     }, _react.default.createElement("div", {
       className: 'title'

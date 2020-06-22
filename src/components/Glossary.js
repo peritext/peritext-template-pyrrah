@@ -57,7 +57,7 @@ const Glossary = ( {
             return (
               <li
                 key={ index }
-                id={ entry.resource.metadata.id }
+                id={ `glossary-item-${entry.resource.id}` }
                 className={ 'mention-item' }
               >
                 <div

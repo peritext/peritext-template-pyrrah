@@ -396,6 +396,17 @@ const renderSummary = ({
         });
 
       case 'customPage':
+        if (element.data.customHTML && element.data.customHTML.length) {
+          return _react.default.createElement("div", {
+            id: element.data.customCssId || element.id,
+            key: index,
+            className: `composition-block custom-page ${element.data.displayPageNumber ? 'has-page-number' : ''}`,
+            dangerouslySetInnerHTML: {
+              __html: element.data.customHTML
+            }
+          });
+        }
+
         return _react.default.createElement("div", {
           id: element.data.customCssId || element.id,
           key: index,

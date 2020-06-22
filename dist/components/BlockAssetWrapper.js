@@ -94,7 +94,7 @@ const BlockAssetWrapper = ({
       className: 'source'
     }, context.translate('Source'), ": ", source) : null, authors && authors.length ? _react.default.createElement("div", {
       className: 'authors'
-    }, context.translate('Authors'), ': ', authors.map(({
+    }, authors.length > 1 ? context.translate('Authors') : context.translate('Author'), ': ', authors.map(({
       family,
       given,
       affiliation

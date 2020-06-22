@@ -20,6 +20,16 @@ export default ( {
   const {
     data: editionData = {}
   } = edition;
+  if ( editionData.customHTML && editionData.customHTML.length ) {
+    return (
+      <section
+        className={ 'composition-block back-cover' }
+        dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
+          __html: editionData.customHTML
+        } }
+      />
+    );
+  }
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
   const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;

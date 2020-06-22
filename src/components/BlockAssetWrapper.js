@@ -104,7 +104,7 @@ const BlockAssetWrapper = ( {
                 {
                   authors && authors.length ?
                     <div className={ 'authors' }>
-                      {context.translate( 'Authors' )}{': '}
+                      {authors.length > 1 ? context.translate( 'Authors' ) : context.translate( 'Author' )}{': '}
                       {
                     authors
                     .map( ( { family, given, affiliation }, index ) => (

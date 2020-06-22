@@ -464,6 +464,7 @@ figure + .unstyled,
 {
   max-width: 100%;
   max-height: 100%;
+  max-height: 8.5cm;
 }
 .block-contextualization-container iframe
 {
@@ -566,12 +567,18 @@ cite{
 /* images */
 .block-contextualization-container.image .static-images-container{
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   // justify-content: center;
+}
+.block-contextualization-container.image:not(.pagedjs_no-page-overflow-y) .static-images-container.multiple-images{
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+  display: grid;
 }
 
 .specific-image-container {
-  max-height: calc(100% - 5rem);
+  max-height: 8.5cm;
   flex: 1;
 }
 .specific-image-container:not(:last-of-type) {
@@ -589,14 +596,14 @@ cite{
   padding-left: 0;
 }
 .inline-images-container {
-  padding-left: 1rem;
+  padding-left: .3rem;
   page-break-before: avoid;
   break-before: avoid;
 }
 .inline-images-container img {
   max-width: 2rem;
   max-height: 1rem;
-  padding-right: .3rem;
+  padding-right: 0;
 }
 
 /* vegaLite visualizations */

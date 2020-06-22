@@ -17,7 +17,9 @@ const InlineAssetWrapper = ({
 }, context) => {
   const {
     production,
-    containerId
+    containerId,
+    figuresPosition,
+    figuresNumberMap = {}
   } = context;
   const assetId = data.asset && data.asset.id;
 
@@ -43,21 +45,28 @@ const InlineAssetWrapper = ({
      * @todo this is a fix for a rendering bug
      */
     if (contextualizer.type === 'glossary') {
-      return _react.default.createElement("span", {
-        id: `contextualization-${containerId}-${assetId}`
+      return _react.default.createElement("a", {
+        id: `contextualization-${containerId}-${assetId}`,
+        href: `#glossary-item-${resource.id}`,
+        className: 'glossary-mention'
       }, children);
     }
 
     return _react.default.createElement("span", {
       className: `inline-contextualization-container ${contextualizer.type}`,
       id: `contextualization-${containerId}-${assetId}`
-    }, _react.default.createElement(Component, {
+    }, figuresPosition !== 'inBody' && ['image', 'embed'].includes(contextualizer.type) ? _react.default.createElement("span", {
+      className: 'figure-pointer'
+    }, `(fig. ${figuresNumberMap[contextualization.id]} `, _react.default.createElement("span", null, _react.default.createElement("a", {
+      className: 'page-link',
+      href: `#end-figure-container-${contextualization.id}`
+    }, "p."))) : null, _react.default.createElement(Component, {
       contextualization: contextualization,
       contextualizer: contextualizer,
       resource: resource,
       renderingMode: 'paged',
       assets: assets
-    }, children));
+    }, children), figuresPosition !== 'inBody' && ['image', 'embed'].includes(contextualizer.type) ? ')' : null);
   }
 
   return null;
@@ -85,7 +94,9 @@ InlineAssetWrapper.contextTypes = {
   production: _propTypes.default.object,
   contextualizers: _propTypes.default.object,
   containerId: _propTypes.default.string,
-  productionAssets: _propTypes.default.object
+  productionAssets: _propTypes.default.object,
+  figuresPosition: _propTypes.default.string,
+  figuresNumberMap: _propTypes.default.object
 };
 var _default = InlineAssetWrapper;
 exports.default = _default;

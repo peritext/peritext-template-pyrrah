@@ -6,7 +6,12 @@ const InlineAssetWrapper = ( {
   data,
   children
 }, context ) => {
-  const { production, containerId } = context;
+  const {
+    production,
+    containerId,
+    figuresPosition,
+    figuresNumberMap = {}
+  } = context;
   const assetId = data.asset && data.asset.id;
   if ( !assetId || !production ) {
     return null;
@@ -31,10 +36,12 @@ const InlineAssetWrapper = ( {
      */
     if ( contextualizer.type === 'glossary' ) {
       return (
-        <span
+        <a
           id={ `contextualization-${containerId}-${assetId}` }
+          href={ `#glossary-item-${resource.id}` }
+          className={ 'glossary-mention' }
         >{children}
-        </span>
+        </a>
       );
 
     }
@@ -43,6 +50,22 @@ const InlineAssetWrapper = ( {
         className={ `inline-contextualization-container ${ contextualizer.type}` }
         id={ `contextualization-${containerId}-${assetId}` }
       >
+        {
+          figuresPosition !== 'inBody' && [ 'image', 'embed' ].includes( contextualizer.type ) ?
+            <span className={ 'figure-pointer' }>
+              {`(fig. ${figuresNumberMap[contextualization.id]} `}
+              <span>
+                <a
+                  className={ 'page-link' }
+                  href={ `#end-figure-container-${contextualization.id}` }
+                >
+                p.
+                </a>
+              </span>
+            </span>
+          :
+          null
+        }
         <Component
           contextualization={ contextualization }
           contextualizer={ contextualizer }
@@ -52,6 +75,12 @@ const InlineAssetWrapper = ( {
         >
           {children}
         </Component>
+        {
+          figuresPosition !== 'inBody' && [ 'image', 'embed' ].includes( contextualizer.type ) ?
+          ')'
+          :
+          null
+        }
       </span>
     );
   }
@@ -81,6 +110,8 @@ InlineAssetWrapper.contextTypes = {
   contextualizers: PropTypes.object,
   containerId: PropTypes.string,
   productionAssets: PropTypes.object,
+  figuresPosition: PropTypes.string,
+  figuresNumberMap: PropTypes.object,
 };
 
 export default InlineAssetWrapper;
