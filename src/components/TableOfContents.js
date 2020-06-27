@@ -9,14 +9,13 @@ const TocElement = ( {
     className={ `table-of-contents-element level-${level}` }
   >
     <span className={ 'element-title' }>
-      {title}
+      <span>{title}</span>
+      <span className={ 'element-leading' } />
     </span>
-    <span className={ 'element-leading' } />
     <a
       className={ 'page-link' }
-      href={ `#${ href}` }
-    >p.
-    </a>
+      href={ `#${href}` }
+    />
   </li>
 );
 

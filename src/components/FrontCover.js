@@ -19,7 +19,7 @@ export default ( {
   if ( customHTML && customHTML.length ) {
     return (
       <section
-        className={ 'composition-block back-cover' }
+        className={ 'composition-block back-cover  has-custom-html' }
         dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
           __html: customHTML
         } }

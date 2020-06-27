@@ -346,6 +346,9 @@ module.exports = {
         sortingAscending: true
       },
       properties: {
+        customTitle: {
+          type: 'string'
+        },
         resourceTypes: {
           type: 'array',
           items: {
@@ -366,6 +369,11 @@ module.exports = {
         showExpandedMentions: {
           type: 'boolean',
           description: 'whether to show expanded mentions in the text for each reference element'
+        },
+        groupingBy: {
+          type: 'string',
+          description: 'key to use for sorting references',
+          enum: ['none', 'general', 'detailed']
         },
         sortingKey: {
           type: 'string',

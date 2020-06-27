@@ -400,7 +400,7 @@ const renderSummary = ({
           return _react.default.createElement("div", {
             id: element.data.customCssId || element.id,
             key: index,
-            className: `composition-block custom-page ${element.data.displayPageNumber ? 'has-page-number' : ''}`,
+            className: `composition-block custom-page  has-custom-html ${element.data.displayPageNumber ? 'has-page-number' : ''}`,
             dangerouslySetInnerHTML: {
               __html: element.data.customHTML
             }

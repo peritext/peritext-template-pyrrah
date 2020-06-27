@@ -17,12 +17,12 @@ const TocElement = ({
   className: `table-of-contents-element level-${level}`
 }, _react.default.createElement("span", {
   className: 'element-title'
-}, title), _react.default.createElement("span", {
+}, _react.default.createElement("span", null, title), _react.default.createElement("span", {
   className: 'element-leading'
-}), _react.default.createElement("a", {
+})), _react.default.createElement("a", {
   className: 'page-link',
   href: `#${href}`
-}, "p."));
+}));
 
 var _default = ({
   tableOfContents,

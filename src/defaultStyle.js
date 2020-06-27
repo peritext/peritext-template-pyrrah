@@ -197,6 +197,13 @@ const style = `
   width: 100%;
   height: 100%;
 }
+.front-cover.has-custom-html {
+  page: cover-custom;
+}
+@page cover-custom {
+  padding: 0;
+  margin: 0;
+}
 
 .title-page{
   page: title-page;
@@ -227,21 +234,27 @@ const style = `
   width: 100%;
   height: 100%;
 }
+.back-cover.has-custom-html {
+  page: cover-custom;
+}
 .empty-page{
   page: empty-page;
 }
 
 .table-of-contents{
   page: table-of-contents;
-  page-break-before: right;
+  page-break-before: left;
 }
 .table-of-contents.has-page-number{
   page: table-of-contents-wpnumber;
-  page-break-before: right;
+  page-break-before: left;
 }
 
 .custom-page{
   page: custom-page;
+}
+.custom-page.has-custom-html {
+  page: cover-custom;
 }
 .section{
   page: section;
@@ -320,8 +333,7 @@ a,
  * Prevent overflow bugs
  */
 /*
-.csl-entry,
-a{
+.csl-entry a{
   word-break: break-all;
 }
 */
@@ -359,6 +371,8 @@ a{
   text-indent: var(--gutter-medium);
   margin-bottom: calc(.4 * var(--gutter-medium));
   hyphens: auto;
+  orphans: 3;
+  widows: 3;
 }
 .rendered-content .unstyled:first-of-type {
   text-indent: 0;
@@ -693,6 +707,11 @@ cite{
   font-style: italic;
 }
 
+/* references view components */
+.reference-type-title {
+  page-break-after: avoid;
+}
+
 /* toc views components */
 .table-of-contents .table-of-contents-elements-container{
   padding: 0;
@@ -704,16 +723,27 @@ cite{
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
+  align-items: flex-end;
   box-sizing: border-box;
   width: 100%;
   page-break-inside: avoid;
   break-inside: avoid;
-  
 }
+.table-of-contents .table-of-contents-element .element-title
+{
+  overflow: hidden;
+  flex: 1;
+}
+
+
 .table-of-contents .table-of-contents-element .element-leading{
   flex: 1;
   content: " ";
   border-bottom: 1px dashed var(--color-text);
+  position: absolute;
+  width: 100%;
+  bottom: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .table-of-contents .table-of-contents-element .element-title,
@@ -724,7 +754,7 @@ cite{
 }
 .table-of-contents .table-of-contents-element .page-link{
   text-align: right;
-  min-width: 50px;
+  min-width: 25px;
 }
 .table-of-contents .table-of-contents-element.level-0{
   font-weight: 800;
@@ -787,8 +817,13 @@ cite{
 }
 .table-of-contents .table-of-contents-element.level-6{
   padding-left: calc(2.6 * var(--gutter-medium)); 
-  
 }
+.table-of-contents .table-of-contents-element .element-leading,
+.table-of-contents .table-of-contents-element .page-link {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
 /* sections views */
 .section.has-notes-position-sidenotes .sidenote { 
   color: var(--color-link-default);
