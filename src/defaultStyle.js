@@ -65,13 +65,13 @@ const style = `
 @page table-of-contents {
 }
 @page table-of-contents-wpnumber:left {
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page table-of-contents-wpnumber:right {
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -79,13 +79,13 @@ const style = `
 @page custom-page {
 }
 @page custom-page-wpnumber:left {
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page custom-page-wpnumber:right {
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -103,7 +103,7 @@ const style = `
   @top-center{
     content: element(publicationTitle);
   }
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -114,7 +114,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
-  @left-middle{
+  @bottom-center{
     content: counter(page);
     text-align: center;
   }
@@ -135,7 +135,7 @@ const style = `
   @top-left{
     content: element(publicationTitle);
   }
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -146,7 +146,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -162,11 +162,12 @@ const style = `
 @page end-figures:left {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-left: 45.8mm;
+  margin-left: 48mm;
+  /* margin-left: 45.8mm;*/
   margin-right: var(--margin-inside);
   margin-left: 5mm;
   background: whitesmoke;
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -175,11 +176,12 @@ const style = `
 @page end-figures:right {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-right: 45.8mm;
+  /* margin-right: 45.8mm;*/
+  margin-right: 48mm;
   margin-left: var(--margin-inside);
   margin-right: 5mm;
   background: whitesmoke;
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -252,6 +254,7 @@ const style = `
 
 .custom-page{
   page: custom-page;
+  page-break-before: always;
 }
 .custom-page.has-custom-html {
   page: cover-custom;
@@ -347,7 +350,6 @@ a,
   padding: 0;
   margin-bottom: var(--gutter-medium);
   page-break-inside: avoid;
-  break-inside: avoid;
 }
 /* .mention-item .title{} */
 
@@ -373,6 +375,8 @@ a,
   hyphens: auto;
   orphans: 3;
   widows: 3;
+  text-align: justify;
+  line-height: 1.4;
 }
 .rendered-content .unstyled:first-of-type {
   text-indent: 0;
@@ -385,8 +389,10 @@ a,
 {
   page-break-after: avoid;
   break-after: avoid;
+  page-break-inside: avoid;
   widows: 3;
   orphans: 3;
+  hyphens: none;
 } 
 
 .rendered-content h1 + .unstyled,
@@ -399,10 +405,10 @@ a,
 
 .rendered-content blockquote {
   page-break-before: avoid;
-  break-before: avoid;
   widows: 3;
   orphans: 3;
   hyphens: auto;
+  line-height: 1.4;
 }
 
 ul + .unstyled,
@@ -477,8 +483,13 @@ figure + .unstyled,
 {
   max-width: 100%;
   max-height: 100%;
-  max-height: 8.5cm;
+  max-height: 10.5cm;
+  background: white;
 }
+.block-contextualization-container.vegaLite img {
+  max-height: 12.5cm;
+}
+
 .block-contextualization-container iframe
 {
   min-height: 30%;
@@ -536,7 +547,32 @@ right: -4cm;
   padding: 0;
 }
 .figures-list .end-figure-container{
-  margin-bottom: var(--gutter-medium);
+  margin-bottom: calc(2 * var(--gutter-medium));
+}
+
+.figures-list .end-figure-container figure:not(.table):not(.vegaLite) {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.figures-list .end-figure-container figure figcaption {
+  overflow: hidden;
+}
+.figures-list .end-figure-container figure .source {
+  word-break: break-word;
+}
+.figures-list .end-figure-container:nth-child(even) figure:not(.table):not(.vegaLite) {
+  flex-direction: row-reverse;
+}
+.figures-list .end-figure-container:nth-child(odd) figure:not(.table):not(.vegaLite) figcaption {
+  padding-left: 1rem;
+}
+.figures-list .end-figure-container:nth-child(even) figure:not(.table):not(.vegaLite) figcaption {
+  padding-right: 1rem;
+}
+
+.figures-list .end-figure-container figure:not(.table) figcaption {
+  max-width: 30%;
 }
 
 /**
@@ -547,12 +583,12 @@ right: -4cm;
   page-break-before: always;
   max-width: 100%;
   overflow: hidden;
-  background: white;
 }
 
 .block-contextualization-container.table table {
   border-left: 1px solid black;
   border-top: 1px solid black;
+  background: white;
 }
 
 .block-contextualization-container table th {
@@ -591,7 +627,7 @@ cite{
 }
 
 .specific-image-container {
-  max-height: 8.5cm;
+  max-height: 9.5cm;
   flex: 1;
 }
 .specific-image-container:not(:last-of-type) {
@@ -611,11 +647,10 @@ cite{
 .inline-images-container {
   padding-left: .3rem;
   page-break-before: avoid;
-  break-before: avoid;
 }
 .inline-images-container img {
   max-width: 2rem;
-  max-height: 1rem;
+  max-height: .9rem;
   padding-right: 0;
 }
 
@@ -627,6 +662,9 @@ cite{
   justify-content: center;
   padding: var(--gutter-medium);
   page-break-inside: avoid;
+}
+.block-contextualization-container.vegaLite img {
+  background: white;
 }
 /**
  *
@@ -727,7 +765,6 @@ cite{
   box-sizing: border-box;
   width: 100%;
   page-break-inside: avoid;
-  break-inside: avoid;
 }
 .table-of-contents .table-of-contents-element .element-title
 {
@@ -760,7 +797,6 @@ cite{
   font-weight: 800;
   font-size: 1.5rem;
   page-break-after: avoid;
-  break-after: avoid;
 }
 .table-of-contents-element.level-0:not(:first-of-type) {
  margin-top: 1rem;
@@ -780,6 +816,12 @@ cite{
 .table-of-contents-element.level-4 + .table-of-contents-element.level-3
  {
  margin-top: .7em; 
+}
+.table-of-contents-element.level-1 + .table-of-contents-element.level-0,
+.table-of-contents-element.level-2 + .table-of-contents-element.level-1
+{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .table-of-contents .table-of-contents-element.level-2 {
   font-size: .95em;
@@ -818,6 +860,7 @@ cite{
 .table-of-contents .table-of-contents-element.level-6{
   padding-left: calc(2.6 * var(--gutter-medium)); 
 }
+
 .table-of-contents .table-of-contents-element .element-leading,
 .table-of-contents .table-of-contents-element .page-link {
   font-size: 1rem;
@@ -861,11 +904,8 @@ cite{
 
 .footnote-ref{
   page-break-after: avoid;
-  break-after: avoid;
   page-break-before: avoid;
-  break-before: avoid;
   page-break-inside: avoid;
-  break-inside: avoid;
 }
 
 .section-title,
