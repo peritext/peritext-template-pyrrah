@@ -8,7 +8,8 @@ export default ( {
   },
   edition,
   data: {
-    customCoverFooter
+    customCoverFooter,
+    customHTML
   } = {
   },
   id
@@ -16,6 +17,16 @@ export default ( {
   const {
     data: editionData = {}
   } = edition;
+  if ( customHTML && customHTML.length ) {
+    return (
+      <section
+        className={ 'composition-block title-page  has-custom-html' }
+        dangerouslySetInnerHTML={ {/* eslint react/no-danger : 0 */
+          __html: customHTML
+        } }
+      />
+    );
+  }
 
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;

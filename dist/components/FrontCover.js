@@ -29,7 +29,7 @@ var _default = ({
 }) => {
   if (customHTML && customHTML.length) {
     return _react.default.createElement("section", {
-      className: 'composition-block back-cover  has-custom-html',
+      className: 'composition-block front-cover  has-custom-html',
       dangerouslySetInnerHTML: {
         /* eslint react/no-danger : 0 */
         __html: customHTML

@@ -4,6 +4,7 @@ const TocElement = ( {
   title,
   href,
   level = 0,
+  children,
 } ) => (
   <li
     className={ `table-of-contents-element level-${level}` }
@@ -16,6 +17,20 @@ const TocElement = ( {
       className={ 'page-link' }
       href={ `#${href}` }
     />
+    {
+        children && children.length ?
+          <ul>
+            {
+            children.map( ( child, childIndex ) => (
+              <TocElement
+                { ...child }
+                key={ childIndex }
+              />
+            ) )
+          }
+          </ul>
+        : null
+      }
   </li>
 );
 
@@ -39,7 +54,9 @@ export default ( {
     </h2>
     <ul className={ 'table-of-contents-elements-container' }>
       {
-        tableOfContents.map( ( item, index ) => {
+        tableOfContents
+        .filter( ( item ) => item.title.length )
+        .map( ( item, index ) => {
           return (
             <TocElement
               key={ index }

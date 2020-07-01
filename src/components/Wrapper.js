@@ -98,7 +98,7 @@ const buildToc = ( production, edition, translate ) => {
       case 'sections':
       case 'resourceSections':
         const { id } = element;
-        const { customSummary = { active: false }, level: blockLevel = 0 } = data;
+        const { customSummary = { active: false }, level: blockLevel = 0, figuresPosition = 'endOfSections' } = data;
         if ( customSummary.active ) {
           const { summary: thatCustomSummary } = customSummary;
           return [
@@ -127,6 +127,13 @@ const buildToc = ( production, edition, translate ) => {
                     } );
                   }
                 } );
+                if ( figuresPosition === 'endOfSections' ) {
+                  newItems.push( {
+                    title: translate( 'Figures' ),
+                    level: thatLevel + 1,
+                    href: `end-figures-${id}-${resourceId}`
+                  } );
+                }
               }
 
               return [

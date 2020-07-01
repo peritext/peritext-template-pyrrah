@@ -62,7 +62,7 @@ const BlockAssetWrapper = ({
 
   if (figuresPosition !== 'inBody' && ['table', 'source-code'].includes(contextualizer.type)) {
     Component = () => _react.default.createElement("div", {
-      className: 'block-contextualization-placeholder'
+      className: 'block-contextualization-placeholder pagedjs_no-page-overflow-y'
     });
   }
 

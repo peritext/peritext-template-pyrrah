@@ -18,15 +18,36 @@ export default class Figures extends Component {
   render = () => {
     const {
       figures = [],
+      containerId,
+      production,
+      id,
     } = this.props;
     return figures.length ? (
       <section
         className={ 'end-figures' }
+        id={ `end-figures-${containerId}-${id}` }
       >
         <h2 className={ 'end-figures-title' }>Figures</h2>
         <ul className={ 'figures-list' }>
           {
-            figures.map( ( { contextualizationId }, index ) => {
+            figures
+            .filter( ( figure ) => {
+              const contextualization = production && production.contextualizations && production.contextualizations[figure.contextualizationId];
+              if ( !contextualization ) {
+                return false;
+              }
+              const {
+                visibility = {
+                    screened: true,
+                    paged: true
+                  }
+              } = contextualization;
+              if ( !visibility.paged ) {
+                return false;
+              }
+              return true;
+            } )
+            .map( ( { contextualizationId }, index ) => {
               return (
                 <li
                   id={ `end-figure-container-${contextualizationId}` }

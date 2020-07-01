@@ -107,7 +107,9 @@ class Section extends _react.Component {
       }), figuresPosition === 'endOfSections' && _react.default.createElement(_Figures.default, {
         figures: figures,
         production: production,
-        figuresNumberMap: figuresNumberMap
+        figuresNumberMap: figuresNumberMap,
+        containerId: containerId,
+        id: id
       })));
     });
   }

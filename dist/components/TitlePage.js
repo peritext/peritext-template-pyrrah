@@ -19,13 +19,25 @@ var _default = ({
   },
   edition,
   data: {
-    customCoverFooter
+    customCoverFooter,
+    customHTML
   } = {},
   id
 }) => {
   const {
     data: editionData = {}
   } = edition;
+
+  if (customHTML && customHTML.length) {
+    return _react.default.createElement("section", {
+      className: 'composition-block title-page  has-custom-html',
+      dangerouslySetInnerHTML: {
+        /* eslint react/no-danger : 0 */
+        __html: customHTML
+      }
+    });
+  }
+
   const finalTitle = editionData.publicationTitle || metadata.title;
   const finalSubtitle = editionData.publicationSubtitle || metadata.subtitle;
   const authors = editionData.publicationAuthors && editionData.publicationAuthors.length ? editionData.publicationAuthors : metadata.authors;

@@ -5,16 +5,19 @@ export default ( {
   target,
   // children,
   className,
+  // MentionComponent,
+  onePerPage,
+  withoutP,
   id,
   style,
 } ) => (
   <a
     href={ href }
     target={ target }
-    className={ `page-link ${className || ''}` }
+    className={ `page-link ${className || ''} ${onePerPage ? 'one-per-page' : ''}` }
     id={ id }
     style={ style }
   >
-    p.
+    {withoutP ? '' : 'p.'}
   </a>
 );

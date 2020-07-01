@@ -101,6 +101,8 @@ class Section extends Component {
               figures={ figures }
               production={ production }
               figuresNumberMap={ figuresNumberMap }
+              containerId={ containerId }
+              id={ id }
             />
           }
         </CitationsProvider>

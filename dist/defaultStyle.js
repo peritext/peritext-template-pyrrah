@@ -43,6 +43,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  margin-left: var(--margin-inside);
   
   @top-left{
   }
@@ -56,6 +57,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
+  margin-right: var(--margin-inside);
   @top-right-corner {
   }
   @top-right {
@@ -66,13 +68,13 @@ const style = `
 @page table-of-contents {
 }
 @page table-of-contents-wpnumber:left {
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page table-of-contents-wpnumber:right {
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -80,13 +82,13 @@ const style = `
 @page custom-page {
 }
 @page custom-page-wpnumber:left {
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page custom-page-wpnumber:right {
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -101,10 +103,11 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  // margin-left: var(--margin-inside);
   @top-center{
     content: element(publicationTitle);
   }
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -115,7 +118,8 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
-  @left-middle{
+  // margin-right: var(--margin-inside);
+  @bottom-center{
     content: counter(page);
     text-align: center;
   }
@@ -133,10 +137,11 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  margin-left: var(--margin-inside);
   @top-left{
     content: element(publicationTitle);
   }
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -147,7 +152,8 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
-  @left-middle {
+  margin-right: var(--margin-inside);
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -163,11 +169,14 @@ const style = `
 @page end-figures:left {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-left: 45.8mm;
+  margin-left: 48mm;
+  /* margin-left: 45.8mm;*/
   margin-right: var(--margin-inside);
-  margin-left: 5mm;
+  margin-left: var(--margin-inside);
+  margin-left: 20mm;
+  margin-right: 20mm;
   background: whitesmoke;
-  @right-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -176,11 +185,13 @@ const style = `
 @page end-figures:right {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-right: 45.8mm;
+  /* margin-right: 45.8mm;*/
+  margin-right: 48mm;
   margin-left: var(--margin-inside);
-  margin-right: 5mm;
+  margin-left: 20mm;
+  margin-right: 20mm;
   background: whitesmoke;
-  @left-middle {
+  @bottom-center {
     content: counter(page);
     text-align: center;
   }
@@ -201,6 +212,7 @@ const style = `
 .front-cover.has-custom-html {
   page: cover-custom;
 }
+
 @page cover-custom {
   padding: 0;
   margin: 0;
@@ -215,7 +227,9 @@ const style = `
   width: 100%;
   height: 100%;
 }
-
+.title-page.has-custom-html {
+  page: cover-custom;
+}
 
 .colophon{
   page: colophon;
@@ -253,13 +267,14 @@ const style = `
 
 .custom-page{
   page: custom-page;
+  page-break-before: always;
 }
 .custom-page.has-custom-html {
   page: cover-custom;
 }
 .section{
   page: section;
-  page-break-before: right;
+  page-break-before: left;
 }
 .section.resource-section{
   page-break-before: never;
@@ -278,7 +293,7 @@ const style = `
 
 .end-figures{
   page: end-figures;
-  page-break-before: always;
+  page-break-before: right;
 }
 /*
 .end-figures-title {
@@ -312,7 +327,7 @@ a,
   color: inherit;
 }
 .page-link::after{
-  content: target-counter(attr(href), page);
+  content:  target-counter(attr(href), page);
 }
 .publication-title-running{
   position: running(publicationTitle); 
@@ -326,18 +341,19 @@ a,
 }
 
 .composition-block-title{
-  font-weight: 800;
+  font-weight: 600;
   font-size: 40px;
+  font-family: 'Source sans Pro', 'Source serif Pro', serif;
+  line-height: 1.2;
 }
 
 /**
  * Prevent overflow bugs
  */
-/*
+
 .csl-entry a{
-  word-break: break-all;
+  word-break: break-word;
 }
-*/
 
 /* lists */
 .mentions-container{
@@ -348,7 +364,6 @@ a,
   padding: 0;
   margin-bottom: var(--gutter-medium);
   page-break-inside: avoid;
-  break-inside: avoid;
 }
 /* .mention-item .title{} */
 
@@ -374,6 +389,10 @@ a,
   hyphens: auto;
   orphans: 3;
   widows: 3;
+  text-align: justify;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-rendering: optimizeLebility;
 }
 .rendered-content .unstyled:first-of-type {
   text-indent: 0;
@@ -386,8 +405,22 @@ a,
 {
   page-break-after: avoid;
   break-after: avoid;
+  page-break-inside: avoid;
   widows: 3;
   orphans: 3;
+  hyphens: none;
+  font-family: 'Source sans Pro', 'Source serif Pro', serif;
+  font-weight: 600;
+} 
+
+.rendered-content h1 + .rendered-content h2,
+.rendered-content h2 + .rendered-content h3,
+.rendered-content h3 + .rendered-content h4,
+.rendered-content h4 + .rendered-content h5
+{
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
 } 
 
 .rendered-content h1 + .unstyled,
@@ -399,11 +432,11 @@ a,
 } 
 
 .rendered-content blockquote {
-  page-break-before: avoid;
-  break-before: avoid;
-  widows: 3;
-  orphans: 3;
-  hyphens: auto;
+  // page-break-before: avoid;
+  // widows: 3;
+  // orphans: 3;
+  // hyphens: none;
+  line-height: 1.5;
 }
 
 ul + .unstyled,
@@ -411,6 +444,11 @@ blockquote + .unstyled,
 figure + .unstyled,
 .csl-entry{
   text-indent: none;
+}
+.csl-entry b,
+.csl-entry strong
+{
+  font-weight: 400;
 }
 
 .rendered-content sup{
@@ -424,6 +462,9 @@ figure + .unstyled,
 .footnote-break {
   opacity: 0;
 }
+.footnoteHandler {
+  line-height: 1;
+}
 
 .footnote-area .footnote sup{
   vertical-align: baseline;
@@ -431,7 +472,6 @@ figure + .unstyled,
 }
 .footnote-area .footnote sup::after{
   content: ".";
-  padding-right: .5em;
 }
 
 /**
@@ -478,8 +518,13 @@ figure + .unstyled,
 {
   max-width: 100%;
   max-height: 100%;
-  max-height: 8.5cm;
+  max-height: 10.5cm;
+  background: white;
 }
+.block-contextualization-container.vegaLite img {
+  max-height: 12.5cm;
+}
+
 .block-contextualization-container iframe
 {
   min-height: 30%;
@@ -537,7 +582,32 @@ right: -4cm;
   padding: 0;
 }
 .figures-list .end-figure-container{
-  margin-bottom: var(--gutter-medium);
+  margin-bottom: calc(3 * var(--gutter-medium));
+}
+
+.figures-list .end-figure-container figure:not(.table):not(.vegaLite) {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.figures-list .end-figure-container figure figcaption {
+  overflow: hidden;
+}
+.figures-list .end-figure-container figure .source {
+  word-break: break-word;
+}
+.figures-list .end-figure-container:nth-child(even) figure:not(.table):not(.vegaLite) {
+  flex-direction: row-reverse;
+}
+.figures-list .end-figure-container:nth-child(odd) figure:not(.table):not(.vegaLite) figcaption {
+  padding-left: 1rem;
+}
+.figures-list .end-figure-container:nth-child(even) figure:not(.table):not(.vegaLite) figcaption {
+  padding-right: 1rem;
+}
+
+.figures-list .end-figure-container figure:not(.table) figcaption {
+  max-width: 30%;
 }
 
 /**
@@ -548,12 +618,12 @@ right: -4cm;
   page-break-before: always;
   max-width: 100%;
   overflow: hidden;
-  background: white;
 }
 
 .block-contextualization-container.table table {
   border-left: 1px solid black;
   border-top: 1px solid black;
+  background: white;
 }
 
 .block-contextualization-container table th {
@@ -590,9 +660,12 @@ cite{
   grid-auto-rows: minmax(100px, auto);
   display: grid;
 }
+.block-contextualization-container.pagedjs_no-page-overflow-y.image .static-images-container.multiple-images .specific-image-container:not(:first-of-type) {
+  display: none;
+}
 
 .specific-image-container {
-  max-height: 8.5cm;
+  max-height: 9.5cm;
   flex: 1;
 }
 .specific-image-container:not(:last-of-type) {
@@ -612,11 +685,10 @@ cite{
 .inline-images-container {
   padding-left: .3rem;
   page-break-before: avoid;
-  break-before: avoid;
 }
 .inline-images-container img {
   max-width: 2rem;
-  max-height: 1rem;
+  max-height: .9rem;
   padding-right: 0;
 }
 
@@ -628,6 +700,9 @@ cite{
   justify-content: center;
   padding: var(--gutter-medium);
   page-break-inside: avoid;
+}
+.block-contextualization-container.vegaLite img {
+  background: white;
 }
 /**
  *
@@ -711,6 +786,7 @@ cite{
 /* references view components */
 .reference-type-title {
   page-break-after: avoid;
+  font-family: 'Source sans pro', serif;
 }
 
 /* toc views components */
@@ -728,7 +804,7 @@ cite{
   box-sizing: border-box;
   width: 100%;
   page-break-inside: avoid;
-  break-inside: avoid;
+  font-family: 'Source sans pro', sans-serif;
 }
 .table-of-contents .table-of-contents-element .element-title
 {
@@ -761,12 +837,14 @@ cite{
   font-weight: 800;
   font-size: 1.5rem;
   page-break-after: avoid;
-  break-after: avoid;
 }
 .table-of-contents-element.level-0:not(:first-of-type) {
  margin-top: 1rem;
 }
-
+.table-of-contents-element.level-1 {
+  margin-top: .8rem;
+  margin-bottom: .8rem;
+ } 
 
 .table-of-contents-element.level-0 + .level-1,
 .table-of-contents-element.level-1 + .level-2,
@@ -781,6 +859,12 @@ cite{
 .table-of-contents-element.level-4 + .table-of-contents-element.level-3
  {
  margin-top: .7em; 
+}
+.table-of-contents-element.level-1 + .table-of-contents-element.level-0,
+.table-of-contents-element.level-2 + .table-of-contents-element.level-1
+{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .table-of-contents .table-of-contents-element.level-2 {
   font-size: .95em;
@@ -819,6 +903,7 @@ cite{
 .table-of-contents .table-of-contents-element.level-6{
   padding-left: calc(2.6 * var(--gutter-medium)); 
 }
+
 .table-of-contents .table-of-contents-element .element-leading,
 .table-of-contents .table-of-contents-element .page-link {
   font-size: 1rem;
@@ -862,17 +947,19 @@ cite{
 
 .footnote-ref{
   page-break-after: avoid;
-  break-after: avoid;
   page-break-before: avoid;
-  break-before: avoid;
   page-break-inside: avoid;
-  break-inside: avoid;
+}
+
+.footnote-ref sup {
+  font-size: .7em;
 }
 
 .section-title,
 .composition-block-title{
   bookmark-label: content(text);
   bookmark-level: 1;
+  margin-top: 0;
 }
 .section.level-2 .section-title {
   bookmark-level: 2;
@@ -977,6 +1064,11 @@ cite{
   100% {
     background-position: 0% 50%
   }
+}
+
+
+.pagedjs_no-page-overflow-y{
+  display: none;
 }
 
 `;

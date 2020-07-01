@@ -31,15 +31,38 @@ class Figures extends _react.Component {
 
     _defineProperty(this, "render", () => {
       const {
-        figures = []
+        figures = [],
+        containerId,
+        production,
+        id
       } = this.props;
       return figures.length ? _react.default.createElement("section", {
-        className: 'end-figures'
+        className: 'end-figures',
+        id: `end-figures-${containerId}-${id}`
       }, _react.default.createElement("h2", {
         className: 'end-figures-title'
       }, "Figures"), _react.default.createElement("ul", {
         className: 'figures-list'
-      }, figures.map(({
+      }, figures.filter(figure => {
+        const contextualization = production && production.contextualizations && production.contextualizations[figure.contextualizationId];
+
+        if (!contextualization) {
+          return false;
+        }
+
+        const {
+          visibility = {
+            screened: true,
+            paged: true
+          }
+        } = contextualization;
+
+        if (!visibility.paged) {
+          return false;
+        }
+
+        return true;
+      }).map(({
         contextualizationId
       }, index) => {
         return _react.default.createElement("li", {

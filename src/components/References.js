@@ -109,7 +109,6 @@ const generalGroups = {
     'collection',
     'document',
     'legal_case',
-    'legislation',
     'manuscript',
     'pamphlet',
     'periodical',
@@ -245,7 +244,7 @@ const References = ( {
                               .find( ( mention ) => mention && mention.contextContent )
                             &&
 
-                            <div className={ 'mentions-list' }>
+                            <div className={ 'mentions-list pagedjs_reduce_mentions' }>
                               {
                               entry.resource.mentions
                               .filter( ( mention ) => mention !== undefined && mention.contextContent )
@@ -268,6 +267,7 @@ const References = ( {
                                     key={ count }
                                     href={ `#contextualization-${containerId}-${thatId}` }
                                     sectionId={ sectionId }
+                                    withoutP
                                   />
                                 );
                               } )

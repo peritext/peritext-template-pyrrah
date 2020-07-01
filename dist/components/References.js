@@ -23,7 +23,7 @@ const generalGroups = {
   webpages_and_blogposts: ['webpage', 'post', 'post-weblog', 'article-magazine', 'article-newspaper', 'interview', 'patent'],
   dictionaries_encyclopedias_entries: ['entry-dictionary', 'entry-encyclopedia', 'entry'],
   multimodal: ['speech', 'song', 'broadcast', 'dataset', 'hearing', 'map', 'motion_picture', 'musical_score', 'performance'],
-  other: ['review', 'review-book', 'treaty', 'figure', 'graphic', 'article', 'bill', 'classic', 'collection', 'document', 'legal_case', 'legislation', 'manuscript', 'pamphlet', 'periodical', 'personal_communication']
+  other: ['review', 'review-book', 'treaty', 'figure', 'graphic', 'article', 'bill', 'classic', 'collection', 'document', 'legal_case', 'manuscript', 'pamphlet', 'periodical', 'personal_communication']
 };
 
 const References = ({
@@ -132,7 +132,7 @@ const References = ({
 
         }
       })), showMentions && entry.resource.mentions && entry.resource.mentions.find(mention => mention && mention.contextContent) && _react.default.createElement("div", {
-        className: 'mentions-list'
+        className: 'mentions-list pagedjs_reduce_mentions'
       }, entry.resource.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
         const {
           contextContent: {
@@ -149,7 +149,8 @@ const References = ({
         return _react.default.createElement(MentionComponent, {
           key: count,
           href: `#contextualization-${containerId}-${thatId}`,
-          sectionId: sectionId
+          sectionId: sectionId,
+          withoutP: true
         });
       }).reduce((prev, curr, thatIndex) => {
         if (thatIndex === 0) {

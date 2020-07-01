@@ -55,7 +55,7 @@ const InlineAssetWrapper = ({
     return _react.default.createElement("span", {
       className: `inline-contextualization-container ${contextualizer.type}`,
       id: `contextualization-${containerId}-${assetId}`
-    }, figuresPosition !== 'inBody' && ['image', 'embed'].includes(contextualizer.type) ? _react.default.createElement("span", {
+    }, figuresPosition !== 'inBody' && ['image', 'embed'].includes(contextualizer.type) && figuresNumberMap[contextualization.id] !== undefined ? _react.default.createElement("span", {
       className: 'figure-pointer'
     }, `(fig. ${figuresNumberMap[contextualization.id]} `, _react.default.createElement("span", null, _react.default.createElement("a", {
       className: 'page-link',

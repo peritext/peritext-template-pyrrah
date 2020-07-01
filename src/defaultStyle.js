@@ -42,6 +42,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  margin-left: var(--margin-inside);
   
   @top-left{
   }
@@ -55,6 +56,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
+  margin-right: var(--margin-inside);
   @top-right-corner {
   }
   @top-right {
@@ -100,6 +102,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  // margin-left: var(--margin-inside);
   @top-center{
     content: element(publicationTitle);
   }
@@ -114,6 +117,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
+  // margin-right: var(--margin-inside);
   @bottom-center{
     content: counter(page);
     text-align: center;
@@ -132,6 +136,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-left: 45.8mm;
   margin-right: var(--margin-inside);
+  margin-left: var(--margin-inside);
   @top-left{
     content: element(publicationTitle);
   }
@@ -146,6 +151,7 @@ const style = `
   margin-bottom: 33mm;;
   margin-right: 45.8mm;
   margin-left: var(--margin-inside);
+  margin-right: var(--margin-inside);
   @bottom-center {
     content: counter(page);
     text-align: center;
@@ -165,7 +171,9 @@ const style = `
   margin-left: 48mm;
   /* margin-left: 45.8mm;*/
   margin-right: var(--margin-inside);
-  margin-left: 5mm;
+  margin-left: var(--margin-inside);
+  margin-left: 20mm;
+  margin-right: 20mm;
   background: whitesmoke;
   @bottom-center {
     content: counter(page);
@@ -179,7 +187,8 @@ const style = `
   /* margin-right: 45.8mm;*/
   margin-right: 48mm;
   margin-left: var(--margin-inside);
-  margin-right: 5mm;
+  margin-left: 20mm;
+  margin-right: 20mm;
   background: whitesmoke;
   @bottom-center {
     content: counter(page);
@@ -202,6 +211,7 @@ const style = `
 .front-cover.has-custom-html {
   page: cover-custom;
 }
+
 @page cover-custom {
   padding: 0;
   margin: 0;
@@ -216,7 +226,9 @@ const style = `
   width: 100%;
   height: 100%;
 }
-
+.title-page.has-custom-html {
+  page: cover-custom;
+}
 
 .colophon{
   page: colophon;
@@ -261,7 +273,7 @@ const style = `
 }
 .section{
   page: section;
-  page-break-before: right;
+  page-break-before: left;
 }
 .section.resource-section{
   page-break-before: never;
@@ -280,7 +292,7 @@ const style = `
 
 .end-figures{
   page: end-figures;
-  page-break-before: always;
+  page-break-before: right;
 }
 /*
 .end-figures-title {
@@ -314,7 +326,7 @@ a,
   color: inherit;
 }
 .page-link::after{
-  content: target-counter(attr(href), page);
+  content:  target-counter(attr(href), page);
 }
 .publication-title-running{
   position: running(publicationTitle); 
@@ -328,18 +340,19 @@ a,
 }
 
 .composition-block-title{
-  font-weight: 800;
+  font-weight: 600;
   font-size: 40px;
+  font-family: 'Source sans Pro', 'Source serif Pro', serif;
+  line-height: 1.2;
 }
 
 /**
  * Prevent overflow bugs
  */
-/*
+
 .csl-entry a{
-  word-break: break-all;
+  word-break: break-word;
 }
-*/
 
 /* lists */
 .mentions-container{
@@ -376,7 +389,9 @@ a,
   orphans: 3;
   widows: 3;
   text-align: justify;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-rendering: optimizeLebility;
 }
 .rendered-content .unstyled:first-of-type {
   text-indent: 0;
@@ -393,6 +408,18 @@ a,
   widows: 3;
   orphans: 3;
   hyphens: none;
+  font-family: 'Source sans Pro', 'Source serif Pro', serif;
+  font-weight: 600;
+} 
+
+.rendered-content h1 + .rendered-content h2,
+.rendered-content h2 + .rendered-content h3,
+.rendered-content h3 + .rendered-content h4,
+.rendered-content h4 + .rendered-content h5
+{
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
 } 
 
 .rendered-content h1 + .unstyled,
@@ -404,11 +431,11 @@ a,
 } 
 
 .rendered-content blockquote {
-  page-break-before: avoid;
-  widows: 3;
-  orphans: 3;
-  hyphens: auto;
-  line-height: 1.4;
+  // page-break-before: avoid;
+  // widows: 3;
+  // orphans: 3;
+  // hyphens: none;
+  line-height: 1.5;
 }
 
 ul + .unstyled,
@@ -416,6 +443,11 @@ blockquote + .unstyled,
 figure + .unstyled,
 .csl-entry{
   text-indent: none;
+}
+.csl-entry b,
+.csl-entry strong
+{
+  font-weight: 400;
 }
 
 .rendered-content sup{
@@ -429,6 +461,9 @@ figure + .unstyled,
 .footnote-break {
   opacity: 0;
 }
+.footnoteHandler {
+  line-height: 1;
+}
 
 .footnote-area .footnote sup{
   vertical-align: baseline;
@@ -436,7 +471,6 @@ figure + .unstyled,
 }
 .footnote-area .footnote sup::after{
   content: ".";
-  padding-right: .5em;
 }
 
 /**
@@ -547,7 +581,7 @@ right: -4cm;
   padding: 0;
 }
 .figures-list .end-figure-container{
-  margin-bottom: calc(2 * var(--gutter-medium));
+  margin-bottom: calc(3 * var(--gutter-medium));
 }
 
 .figures-list .end-figure-container figure:not(.table):not(.vegaLite) {
@@ -624,6 +658,9 @@ cite{
   grid-gap: 10px;
   grid-auto-rows: minmax(100px, auto);
   display: grid;
+}
+.block-contextualization-container.pagedjs_no-page-overflow-y.image .static-images-container.multiple-images .specific-image-container:not(:first-of-type) {
+  display: none;
 }
 
 .specific-image-container {
@@ -748,6 +785,7 @@ cite{
 /* references view components */
 .reference-type-title {
   page-break-after: avoid;
+  font-family: 'Source sans pro', serif;
 }
 
 /* toc views components */
@@ -765,6 +803,7 @@ cite{
   box-sizing: border-box;
   width: 100%;
   page-break-inside: avoid;
+  font-family: 'Source sans pro', sans-serif;
 }
 .table-of-contents .table-of-contents-element .element-title
 {
@@ -801,7 +840,10 @@ cite{
 .table-of-contents-element.level-0:not(:first-of-type) {
  margin-top: 1rem;
 }
-
+.table-of-contents-element.level-1 {
+  margin-top: .8rem;
+  margin-bottom: .8rem;
+ } 
 
 .table-of-contents-element.level-0 + .level-1,
 .table-of-contents-element.level-1 + .level-2,
@@ -908,10 +950,15 @@ cite{
   page-break-inside: avoid;
 }
 
+.footnote-ref sup {
+  font-size: .7em;
+}
+
 .section-title,
 .composition-block-title{
   bookmark-label: content(text);
   bookmark-level: 1;
+  margin-top: 0;
 }
 .section.level-2 .section-title {
   bookmark-level: 2;
@@ -1016,6 +1063,11 @@ cite{
   100% {
     background-position: 0% 50%
   }
+}
+
+
+.pagedjs_no-page-overflow-y{
+  display: none;
 }
 
 `;

@@ -53,7 +53,7 @@ const Glossary = ({
   }, customTitle || translate('Glossary list')), _react.default.createElement("ul", {
     className: 'mentions-container'
   }, glossary.sort((a, b) => {
-    if (a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase()) {
+    if (a.resource.data.name.toLowerCase().replace(/éèê/g, 'e') > b.resource.data.name.toLowerCase().replace(/éèê/g, 'e')) {
       return 1;
     }
 
@@ -71,7 +71,7 @@ const Glossary = ({
     }, _react.default.createElement(_MarkdownPlayer.default, {
       src: entry.resource.data.description
     })), showMentions && entry.mentions.length > 0 && _react.default.createElement("div", {
-      className: 'mentions-list'
+      className: 'mentions-list pagedjs_reduce_mentions'
     }, entry.mentions.filter(mention => mention !== undefined && mention.contextContent).map((mention, count) => {
       const {
         contextContent: {
@@ -88,6 +88,8 @@ const Glossary = ({
       return _react.default.createElement(MentionComponent, {
         key: count,
         href: `#contextualization-${containerId}-${thatId}`,
+        onePerPage: true,
+        withoutP: true,
         sectionId: sectionId
       });
     }).reduce((prev, curr, thatIndex) => {

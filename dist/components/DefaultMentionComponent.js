@@ -14,14 +14,17 @@ var _default = ({
   target,
   // children,
   className,
+  // MentionComponent,
+  onePerPage,
+  withoutP,
   id,
   style
 }) => _react.default.createElement("a", {
   href: href,
   target: target,
-  className: `page-link ${className || ''}`,
+  className: `page-link ${className || ''} ${onePerPage ? 'one-per-page' : ''}`,
   id: id,
   style: style
-}, "p.");
+}, withoutP ? '' : 'p.');
 
 exports.default = _default;

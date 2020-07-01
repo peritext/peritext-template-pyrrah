@@ -51,7 +51,7 @@ const InlineAssetWrapper = ( {
         id={ `contextualization-${containerId}-${assetId}` }
       >
         {
-          figuresPosition !== 'inBody' && [ 'image', 'embed' ].includes( contextualizer.type ) ?
+          figuresPosition !== 'inBody' && [ 'image', 'embed' ].includes( contextualizer.type ) && figuresNumberMap[contextualization.id] !== undefined ?
             <span className={ 'figure-pointer' }>
               {`(fig. ${figuresNumberMap[contextualization.id]} `}
               <span>

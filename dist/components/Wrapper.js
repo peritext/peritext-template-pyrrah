@@ -127,7 +127,8 @@ const buildToc = (production, edition, translate) => {
           customSummary = {
             active: false
           },
-          level: blockLevel = 0
+          level: blockLevel = 0,
+          figuresPosition = 'endOfSections'
         } = data;
 
         if (customSummary.active) {
@@ -162,6 +163,14 @@ const buildToc = (production, edition, translate) => {
                   });
                 }
               });
+
+              if (figuresPosition === 'endOfSections') {
+                newItems.push({
+                  title: translate('Figures'),
+                  level: thatLevel + 1,
+                  href: `end-figures-${id}-${resourceId}`
+                });
+              }
             }
 
             return [...resLoc, ...newItems];

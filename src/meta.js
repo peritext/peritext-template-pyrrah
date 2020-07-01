@@ -13,7 +13,7 @@ module.exports = {
     }
   },
   defaultBibType: 'book',
-  defaultAdditionalHTML: '<link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,700" rel="stylesheet">',
+  defaultAdditionalHTML: '<link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,700" rel="stylesheet"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">',
   defaultPlan: {
       type: 'linear',
       summary: [
@@ -218,12 +218,17 @@ module.exports = {
     titlePage: {
       type: 'object',
       default: {
+        customHTML: ''
       },
       properties: {
         customCoverFooter: {
           type: 'string',
           longString: true
         },
+        customHTML: {
+          type: 'string',
+          longString: true,
+        }
       }
     },
     colophon: {

@@ -9,10 +9,13 @@ var _react = _interopRequireDefault(require("react"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
 const TocElement = ({
   title,
   href,
-  level = 0
+  level = 0,
+  children
 }) => _react.default.createElement("li", {
   className: `table-of-contents-element level-${level}`
 }, _react.default.createElement("span", {
@@ -22,7 +25,9 @@ const TocElement = ({
 })), _react.default.createElement("a", {
   className: 'page-link',
   href: `#${href}`
-}));
+}), children && children.length ? _react.default.createElement("ul", null, children.map((child, childIndex) => _react.default.createElement(TocElement, _extends({}, child, {
+  key: childIndex
+})))) : null);
 
 var _default = ({
   tableOfContents,
@@ -37,7 +42,7 @@ var _default = ({
   className: 'composition-block-title peritext-block-title'
 }, customTitle && customTitle.trim().length ? customTitle : translate('Table of contents')), _react.default.createElement("ul", {
   className: 'table-of-contents-elements-container'
-}, tableOfContents.map((item, index) => {
+}, tableOfContents.filter(item => item.title.length).map((item, index) => {
   return _react.default.createElement(TocElement, {
     key: index,
     title: item.title,

@@ -47,7 +47,7 @@ const Glossary = ( {
         {
           glossary
           .sort( ( a, b ) => {
-            if ( a.resource.data.name.toLowerCase() > b.resource.data.name.toLowerCase() ) {
+            if ( a.resource.data.name.toLowerCase().replace( /éèê/g, 'e' ) > b.resource.data.name.toLowerCase().replace( /éèê/g, 'e' ) ) {
               return 1;
             }
             return -1;
@@ -73,7 +73,7 @@ const Glossary = ( {
                   </div>
                 }
                 {showMentions && entry.mentions.length > 0 &&
-                  <div className={ 'mentions-list' }>
+                  <div className={ 'mentions-list pagedjs_reduce_mentions' }>
                     {
                       entry.mentions
                       .filter( ( mention ) => mention !== undefined && mention.contextContent )
@@ -96,6 +96,8 @@ const Glossary = ( {
                           <MentionComponent
                             key={ count }
                             href={ `#contextualization-${containerId}-${thatId}` }
+                            onePerPage
+                            withoutP
                             sectionId={ sectionId }
                           />
                        );
