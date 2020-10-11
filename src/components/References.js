@@ -67,7 +67,7 @@ const generalGroups = {
     'standard',
     'regulation',
     'legislation',
-    'reports',
+    'report',
   ],
   software: [
     'software'

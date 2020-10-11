@@ -413,12 +413,17 @@ module.exports = {
         showMentions: true,
         showExpandedMentions: false,
         showUncited: false,
+        markdownContents: '',
         glossaryTypes: [ 'person', 'place', 'event', 'notion', 'other' ],
         tags: []
       },
       properties: {
         customTitle: {
           type: 'string',
+        },
+        markdownContents: {
+          type: 'string',
+          longString: true
         },
         showDescriptions: {
           type: 'boolean',

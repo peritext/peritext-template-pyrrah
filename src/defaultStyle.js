@@ -5,7 +5,7 @@ const style = `
 :root {
   --color-link-default: #99B6BD;/* bleu délavé */
   --color-link-active:#D4613E;/* rouille */
-  --color-text: #4d4c4c;
+  --color-text: black;/*#4d4c4c;*/
 
   font-family:'Source serif pro', serif;
   --gutter-medium: .5cm;
@@ -14,7 +14,9 @@ const style = `
   /*--margin-bottom: 33mm;*/
   --margin-top: 33mm;
   --margin-outside: 45.8mm;
-  --margin-inside: 23.3mm;
+  --margin-inside: 25mm;
+
+  --margin-short: 20mm;
 
 }
 
@@ -24,7 +26,7 @@ const style = `
  *
  */
 @page{
-  format: A4 portrait;
+  size: A4 portrait;
 }
 
 /* front cover */
@@ -66,13 +68,23 @@ const style = `
 }
 @page table-of-contents {
 }
+@page table-of-contents:left {
+  margin-left: 45.8mm;
+}
+
+@page table-of-contents:right {
+  margin-right: 45.8mm;
+}
+
 @page table-of-contents-wpnumber:left {
+  margin-left: 45.8mm;
   @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page table-of-contents-wpnumber:right {
+  margin-right: 45.8mm;;
   @bottom-center {
     content: counter(page);
     text-align: center;
@@ -81,12 +93,14 @@ const style = `
 @page custom-page {
 }
 @page custom-page-wpnumber:left {
+  margin-left: 45.8mm;;
   @bottom-center {
     content: counter(page);
     text-align: center;
   }
 }
 @page custom-page-wpnumber:right {
+  margin-right: 45.8mm;;
   @bottom-center {
     content: counter(page);
     text-align: center;
@@ -100,9 +114,8 @@ const style = `
 @page section:left {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-left: 45.8mm;
+  margin-left: 45.8mm;;
   margin-right: var(--margin-inside);
-  // margin-left: var(--margin-inside);
   @top-center{
     content: element(publicationTitle);
   }
@@ -115,9 +128,8 @@ const style = `
 @page section:right {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-right: 45.8mm;
+  margin-right: 45.8mm;;
   margin-left: var(--margin-inside);
-  // margin-right: var(--margin-inside);
   @bottom-center{
     content: counter(page);
     text-align: center;
@@ -168,12 +180,8 @@ const style = `
 @page end-figures:left {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  margin-left: 48mm;
-  /* margin-left: 45.8mm;*/
-  margin-right: var(--margin-inside);
-  margin-left: var(--margin-inside);
-  margin-left: 20mm;
-  margin-right: 20mm;
+  margin-left: 10mm;
+  margin-right: var(--margin-short);
   background: whitesmoke;
   @bottom-center {
     content: counter(page);
@@ -184,11 +192,8 @@ const style = `
 @page end-figures:right {
   margin-top: var(--margin-top);
   margin-bottom: 33mm;;
-  /* margin-right: 45.8mm;*/
-  margin-right: 48mm;
-  margin-left: var(--margin-inside);
-  margin-left: 20mm;
-  margin-right: 20mm;
+  margin-left: var(--margin-short);
+  margin-right: 10mm;
   background: whitesmoke;
   @bottom-center {
     content: counter(page);
@@ -233,6 +238,7 @@ const style = `
 .colophon{
   page: colophon;
   position: absolute;
+  page-break-before: right;
   left: 0;
   top: 0;
   width: 100%;
@@ -253,6 +259,7 @@ const style = `
 }
 .empty-page{
   page: empty-page;
+  page-break-after: always;
 }
 
 .table-of-contents{
@@ -271,9 +278,20 @@ const style = `
 .custom-page.has-custom-html {
   page: cover-custom;
 }
+.custom-page p {
+  margin-bottom: calc(.4 * var(--gutter-medium));
+  /*hyphens: auto;*/
+  orphans: 3;
+  widows: 3;
+  text-align: justify;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-rendering: optimizeLebility;
+}
 .section{
   page: section;
-  page-break-before: left;
+  page-break-before: right;
+  page-break-after: right;
 }
 .section.resource-section{
   page-break-before: never;
@@ -367,7 +385,8 @@ a,
 /* .mention-item .title{} */
 
 .glossary .mention-item .title{
-  font-weight: 800;
+  font-weight: 600;
+  font-family: 'Source sans pro';
 }
 /* .mention-item .description {} */
 .mention-item .mentions-list{
@@ -397,6 +416,15 @@ a,
   text-indent: 0;
 }
 
+.rendered-content .unstyled,
+.rendered-content blockquote,
+.rendered-content li {
+
+}
+
+.rendered-content li {
+  line-height: 1.5;
+}
 .rendered-content h1,
 .rendered-content h2,
 .rendered-content h3,
@@ -444,6 +472,11 @@ figure + .unstyled,
 .csl-entry{
   text-indent: none;
 }
+/*
+.unstyled + blockquote {
+  page-break-before: avoid;
+}
+*/
 .csl-entry b,
 .csl-entry strong
 {
@@ -502,9 +535,15 @@ figure + .unstyled,
   margin-top: 0;
 }
 .block-contextualization-container .figure-caption .authors,
-.block-contextualization-container .figure-caption .source {
+.block-contextualization-container .figure-caption .source,
+.block-contextualization-container .figure-caption .description
+ {
   font-style: italic;
   font-size: .8em;
+}
+.block-contextualization-container .figure-caption .description
+{
+  font-size: .6em;
 }
 .block-contextualization-container figure{
   display: flex;
@@ -517,7 +556,7 @@ figure + .unstyled,
 {
   max-width: 100%;
   max-height: 100%;
-  max-height: 10.5cm;
+  max-height: 11.5cm;
   background: white;
 }
 .block-contextualization-container.vegaLite img {
@@ -605,8 +644,59 @@ right: -4cm;
   padding-right: 1rem;
 }
 
+
+
 .figures-list .end-figure-container figure:not(.table) figcaption {
-  max-width: 30%;
+  max-width: 25%;
+}
+
+
+/**
+ * Helpers classes for manual finetuning 
+ */
+/**
+ * Figures column display
+ */
+.figures-list .end-figure-container.column figure {
+  flex-direction: column!important;
+}
+.figures-list .end-figure-container.column figure:not(.table) figcaption {
+  max-width: 100%!important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+/**
+ * Figure absolute positionning helpers
+ */
+.figures-list .end-figure-container.absolute {
+  position: absolute!important;
+}
+.figures-list .end-figure-container.absolute.top {
+  top: 0!important;
+}
+.figures-list .end-figure-container.absolute.left {
+  left: 0!important;
+}
+.figures-list .end-figure-container.absolute.right {
+  right: 0!important;
+}
+/**
+ * Allow big images
+ */
+.figures-list .end-figure-container.big-height img {
+  max-height: unset;
+}
+.figures-list .end-figure-container.big-width img {
+  max-width: unset;
+}
+/**
+ * Allow zooming in images through scaling
+ */
+.figures-list .end-figure-container .specific-image-container.zoom {
+  overflow: hidden;
+}
+.figures-list .end-figure-container .specific-image-container.zoom img {
+  position: relative;
 }
 
 /**
@@ -786,6 +876,8 @@ cite{
 .reference-type-title {
   page-break-after: avoid;
   font-family: 'Source sans pro', serif;
+  font-size: 1.6rem;
+  page-break-inside: avoid;
 }
 
 /* toc views components */
@@ -818,7 +910,7 @@ cite{
   border-bottom: 1px dashed var(--color-text);
   position: absolute;
   width: 100%;
-  bottom: 0.5rem;
+  bottom: 0.25rem;
   margin-left: 0.5rem;
 }
 
@@ -833,16 +925,18 @@ cite{
   min-width: 25px;
 }
 .table-of-contents .table-of-contents-element.level-0{
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1.5rem;
   page-break-after: avoid;
+  break-after: avoid;
 }
 .table-of-contents-element.level-0:not(:first-of-type) {
  margin-top: 1rem;
 }
 .table-of-contents-element.level-1 {
-  margin-top: .8rem;
-  margin-bottom: .8rem;
+  margin-top: .4rem;
+  margin-bottom: .4rem;
+  font-size: 1.1rem;
  } 
 
 .table-of-contents-element.level-0 + .level-1,
@@ -850,7 +944,8 @@ cite{
 .table-of-contents-element.level-2 + .level-3,
 .table-of-contents-element.level-3 + .level-4
  {
- margin-top: .3em; 
+  page-break-after: avoid;
+margin-top: .3em; 
 }
 .table-of-contents-element.level-1 + .table-of-contents-element.level-0,
 .table-of-contents-element.level-2 + .table-of-contents-element.level-1,
@@ -867,6 +962,7 @@ cite{
 }
 .table-of-contents .table-of-contents-element.level-2 {
   font-size: .95em;
+  margin-top: .2rem;
 }
 
 .table-of-contents .table-of-contents-element.level-3 {
@@ -959,6 +1055,10 @@ cite{
   bookmark-label: content(text);
   bookmark-level: 1;
   margin-top: 0;
+  margin-bottom: 1rem;
+}
+.section-title {
+    margin-bottom: 12rem;
 }
 .section.level-2 .section-title {
   bookmark-level: 2;
@@ -1068,6 +1168,10 @@ cite{
 
 .pagedjs_no-page-overflow-y{
   display: none;
+}
+
+@page {
+  size: A4 portrait;
 }
 
 `;

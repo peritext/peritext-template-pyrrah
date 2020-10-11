@@ -116,6 +116,7 @@ const buildToc = ( production, edition, translate ) => {
                 level: blockLevel + thatLevel,
                 href: `section-${id}-${resourceId}`
               } ];
+
               if ( level > 0 && thatSection && thatSection.data && thatSection.data.contents ) {
                 const blocks = thatSection.data.contents.contents.blocks;
                 blocks.forEach( ( block ) => {
@@ -127,14 +128,24 @@ const buildToc = ( production, edition, translate ) => {
                     } );
                   }
                 } );
+
                 if ( figuresPosition === 'endOfSections' ) {
-                  newItems.push( {
-                    title: translate( 'Figures' ),
-                    level: thatLevel + 1,
-                    href: `end-figures-${id}-${resourceId}`
+                  const { figuresNumberMap, figures } = buildFiguresNumberMap( {
+                    production,
+                    sectionsIds: [resourceId],
+                    figuresPosition
                   } );
+                  if (Object.keys(figures).reduce((sum, key) => sum + figures[key].length, 0)) {
+                    newItems.push( {
+                      title: translate( 'Figures' ),
+                      level: thatLevel + 1,
+                      href: `end-figures-${id}-${resourceId}`
+                    } );
+                  }
+                  
                 }
               }
+              
 
               return [
                 ...resLoc,
@@ -174,6 +185,20 @@ const buildToc = ( production, edition, translate ) => {
                     }
                   } );
                 }
+                if ( figuresPosition === 'endOfSections' ) {
+                  const { figuresNumberMap, figures } = buildFiguresNumberMap( {
+                    production,
+                    sectionsIds: [resourceId],
+                    figuresPosition
+                  } );
+                  if (Object.keys(figures).reduce((sum, key) => sum + figures[key].length, 0)) {
+                    newItems.push( {
+                      title: translate( 'Figures' ),
+                      level: thatLevel + 1,
+                      href: `end-figures-${id}-${resourceId}`
+                    } );
+                  }
+                }
                 return [
                   ...resLoc,
                   ...newItems
@@ -207,6 +232,20 @@ const buildToc = ( production, edition, translate ) => {
                     } );
                   }
                 } );
+              }
+              if ( figuresPosition === 'endOfSections' ) {
+                const { figuresNumberMap, figures } = buildFiguresNumberMap( {
+                  production,
+                  sectionsIds: [resourceId],
+                  figuresPosition
+                } );
+                if (Object.keys(figures).reduce((sum, key) => sum + figures[key].length, 0)) {
+                  newItems.push( {
+                    title: translate( 'Figures' ),
+                    level: thatLevel + 1,
+                    href: `end-figures-${id}-${resourceId}`
+                  } );
+                }
               }
               return [
                 ...resLoc,
@@ -489,6 +528,13 @@ const renderSummary = ( {
   } );
 };
 
+const editionHasGlossary = (edition = {}) => {
+  if (edition.data && edition.data.plan && edition.data.plan.summary) {
+    const summary = edition.data.plan.summary;
+    return summary.find(e => e.type === 'glossary') !== undefined;
+  }
+  return false;
+}
 export default class Template extends Component {
   constructor( props ) {
     super( props );
@@ -505,6 +551,7 @@ export default class Template extends Component {
 
       contextualizers: this.props.contextualizers,
       translate: this.translate,
+      useGlossary: editionHasGlossary(this.props.edition)
     };
   }
 
@@ -576,4 +623,5 @@ Template.childContextTypes = {
   productionAssets: PropTypes.object,
   contextualizers: PropTypes.object,
   preprocessedData: PropTypes.object,
+  useGlossary: PropTypes.bool
 };

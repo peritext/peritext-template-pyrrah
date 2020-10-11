@@ -49,7 +49,8 @@ const BlockAssetWrapper = ({
   } = resource;
   const {
     authors = [],
-    source // description
+    source,
+    description // description
 
   } = metadata; // const dimensions = context.dimensions || {};
 
@@ -68,6 +69,7 @@ const BlockAssetWrapper = ({
 
   if (contextualization && Component) {
     const hide = !visibility.paged;
+    const title = contextualization.title || resource.metadata.title;
     return hide ? null : _react.default.createElement("figure", {
       className: `block-contextualization-container ${figuresPosition !== 'inBody' ? 'pagedjs_no-page-overflow-y' : ''} ${contextualizer.type}`,
       id: `contextualization-${containerId}-${assetId}`
@@ -86,22 +88,24 @@ const BlockAssetWrapper = ({
     }, displayFigureNumber && _react.default.createElement("span", null, _react.default.createElement("span", null, "Figure ", figuresNumberMap[contextualization.id], " ("), _react.default.createElement("span", null, _react.default.createElement("a", {
       className: 'page-link',
       href: `#figure-pointer-${contextualization.id}`
-    }, "p.")), _react.default.createElement("span", null, "). ")), _react.default.createElement("span", null, contextualization.title || resource.metadata.title)), contextualization.legend && _react.default.createElement("div", {
+    }, "p.")), _react.default.createElement("span", null, "). ")), _react.default.createElement("span", null, title.trim(), title.trim().charAt(title.trim().length - 1) === '.' ? '' : '.')), contextualization.legend && _react.default.createElement("div", {
       className: 'figure-legend'
     }, _react.default.createElement(_MarkdownPlayer.default, {
       src: contextualization.legend
     })), source ? _react.default.createElement("div", {
       className: 'source'
-    }, context.translate('Source'), ": ", source) : null, authors && authors.length ? _react.default.createElement("div", {
+    }, context.translate('Source'), '\u00A0: ', source, source.length && source.charAt(source.length - 1) === '.' ? '' : '.') : null, authors && authors.length ? _react.default.createElement("div", {
       className: 'authors'
-    }, authors.length > 1 ? context.translate('Authors') : context.translate('Author'), ': ', authors.map(({
+    }, authors.length > 1 ? context.translate('Authors') : context.translate('Author'), '\u00A0: ', authors.map(({
       family,
       given,
       affiliation
     }, index) => _react.default.createElement("span", {
       key: index,
       className: 'author'
-    }, given, " ", family, affiliation ? ` (${affiliation})` : '')).reduce((cur, next, index) => [...cur, index === 0 ? null : ', ', next], []), ".") : null) : _react.default.createElement("div", null, _react.default.createElement("h4", {
+    }, given, " ", family, affiliation ? ` (${affiliation})` : '')).reduce((cur, next, index) => [...cur, index === 0 ? null : ', ', next], []), ".") : null, description ? _react.default.createElement("div", {
+      className: 'description'
+    }, description) : null) : _react.default.createElement("div", null, _react.default.createElement("h4", {
       className: 'figure-title'
     }, _react.default.createElement("span", {
       id: `figure-pointer-${contextualization.id}`

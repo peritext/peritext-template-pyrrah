@@ -16,8 +16,8 @@ export default ( {
     style={ style }
   >
     {children}
-    <span>(p. </span>
-    <span
+    <span>{'\u00A0(p. '}</span>
+    <a
       className={ 'page-link' }
       href={ `#section-${sectionId}` }
     />

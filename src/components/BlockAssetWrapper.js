@@ -35,6 +35,7 @@ const BlockAssetWrapper = ( {
   const {
     authors = [],
     source,
+    description,
     // description
   } = metadata;
   // const dimensions = context.dimensions || {};
@@ -52,6 +53,7 @@ const BlockAssetWrapper = ( {
 
   if ( contextualization && Component ) {
     const hide = !visibility.paged;
+    const title = contextualization.title || resource.metadata.title;
     return hide ? null : (
       <figure
         className={ `block-contextualization-container ${figuresPosition !== 'inBody' ? 'pagedjs_no-page-overflow-y' : ''} ${ contextualizer.type}` }
@@ -87,7 +89,7 @@ const BlockAssetWrapper = ( {
                       <span>). </span>
                     </span>
                   }
-                  <span>{contextualization.title || resource.metadata.title}</span>
+                  <span>{title.trim()}{title.trim().charAt(title.trim().length - 1) === '.' ? '' : '.'}</span>
                 </h4>
                 {contextualization.legend &&
                   <div className={ 'figure-legend' }>
@@ -97,14 +99,14 @@ const BlockAssetWrapper = ( {
                 {
                   source ?
                     <div className={ 'source' }>
-                      {context.translate( 'Source' )}: {source}
+                      {context.translate( 'Source' )}{'\u00A0: '}{source}{source.length && source.charAt(source.length - 1) === '.' ? '' : '.'}
                     </div>
                   : null
                 }
                 {
                   authors && authors.length ?
                     <div className={ 'authors' }>
-                      {authors.length > 1 ? context.translate( 'Authors' ) : context.translate( 'Author' )}{': '}
+                      {authors.length > 1 ? context.translate( 'Authors' ) : context.translate( 'Author' )}{'\u00A0: '}
                       {
                     authors
                     .map( ( { family, given, affiliation }, index ) => (
@@ -116,6 +118,13 @@ const BlockAssetWrapper = ( {
                     ) )
                     .reduce( ( cur, next, index ) => [ ...cur, index === 0 ? null : ', ', next ], [] )
                   }.
+                    </div>
+                  : null
+                }
+                {
+                  description ?
+                    <div className={ 'description' }>
+                      {description}
                     </div>
                   : null
                 }

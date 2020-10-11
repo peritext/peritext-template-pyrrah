@@ -10,7 +10,8 @@ const InlineAssetWrapper = ( {
     production,
     containerId,
     figuresPosition,
-    figuresNumberMap = {}
+    figuresNumberMap = {},
+    useGlossary = false,
   } = context;
   const assetId = data.asset && data.asset.id;
   if ( !assetId || !production ) {
@@ -35,15 +36,18 @@ const InlineAssetWrapper = ( {
      * @todo this is a fix for a rendering bug
      */
     if ( contextualizer.type === 'glossary' ) {
-      return (
+      return useGlossary ? (
         <a
           id={ `contextualization-${containerId}-${assetId}` }
           href={ `#glossary-item-${resource.id}` }
           className={ 'glossary-mention' }
         >{children}
         </a>
-      );
+      ) : children;
 
+    }
+    if ( contextualizer.type === 'video' ) {
+      return children;
     }
     return (
       <span
@@ -73,7 +77,7 @@ const InlineAssetWrapper = ( {
           renderingMode={ 'paged' }
           assets={ assets }
         >
-          {children}
+          {[ 'image', 'embed' ].includes( contextualizer.type ) ? <span style={{display: 'none'}}>{children}</span> : children}
         </Component>
         {
           figuresPosition !== 'inBody' && [ 'image', 'embed' ].includes( contextualizer.type ) ?
@@ -112,6 +116,7 @@ InlineAssetWrapper.contextTypes = {
   productionAssets: PropTypes.object,
   figuresPosition: PropTypes.string,
   figuresNumberMap: PropTypes.object,
+  useGlossary: PropTypes.bool,
 };
 
 export default InlineAssetWrapper;

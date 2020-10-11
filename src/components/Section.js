@@ -106,6 +106,7 @@ class Section extends Component {
             />
           }
         </CitationsProvider>
+        <div className={ 'composition-block empty-page' } />
       </section>
     );
   }

@@ -7,6 +7,17 @@ import {
   buildGlossary,
 } from 'peritext-utils';
 
+function cleanStr(str)
+{
+    return str
+        .toLowerCase()
+        .replace(/[ÀÁÂÃÄÅ]/g,"A")
+        .replace(/[àáâãäå]/g,"a")
+        .replace(/[éêëè]/g,"e")
+        //.... all the rest
+        .replace(/[^a-z0-9]/gi,''); // final clean up
+}
+
 const Glossary = ( {
   production,
   edition,
@@ -47,7 +58,11 @@ const Glossary = ( {
         {
           glossary
           .sort( ( a, b ) => {
-            if ( a.resource.data.name.toLowerCase().replace( /éèê/g, 'e' ) > b.resource.data.name.toLowerCase().replace( /éèê/g, 'e' ) ) {
+
+            if (a.resource.data.name.toLowerCase().match( /éèê/g ) ) {
+            }
+
+            if ( cleanStr(a.resource.data.name) > cleanStr(b.resource.data.name.toLowerCase()) ) {
               return 1;
             }
             return -1;
